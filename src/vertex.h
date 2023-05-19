@@ -2,8 +2,8 @@
 // Created by rita on 12-03-2023.
 //
 
-#ifndef RAILWAYMANAGEMENT_VERTEX_H
-#define RAILWAYMANAGEMENT_VERTEX_H
+#ifndef TRAVELLINGSALESMAN_VERTEX_H
+#define TRAVELLINGSALESMAN_VERTEX_H
 
 #include <iostream>
 #include <vector>
@@ -12,16 +12,13 @@
 #include <algorithm>
 #include "edge.h"
 
-#define INF std::numeric_limits<double>::max()
-
 class Edge;
-enum class Service: unsigned int;
 
 class Vertex {
-public:
-    explicit Vertex(std::string id);
+  public:
+    explicit Vertex(const unsigned int &id);
 
-    [[nodiscard]] std::string getId() const;
+    [[nodiscard]] const unsigned int &getId() const;
 
     [[nodiscard]] std::vector<Edge *> getAdj() const;
 
@@ -37,7 +34,7 @@ public:
 
     [[nodiscard]] std::vector<Edge *> getIncoming() const;
 
-    void setId(std::string info);
+    void setId(const unsigned int &id);
 
     void setVisited(bool visited);
 
@@ -49,12 +46,12 @@ public:
 
     void setPath(Edge *path);
 
-    Edge *addEdge(Vertex *dest, unsigned int w, Service s);
+    Edge *addEdge(Vertex *dest, unsigned int w);
 
-    bool removeEdge(const std::string& destID);
+    bool removeEdge(const unsigned int &destID);
 
-private:
-    std::string id;                // identifier
+  private:
+    unsigned int id;                // identifier
     std::vector<Edge *> adj;  // outgoing edges
 
     // auxiliary fields
@@ -68,4 +65,4 @@ private:
 };
 
 
-#endif //RAILWAYMANAGEMENT_VERTEX_H
+#endif //TRAVELLINGSALESMAN_VERTEX_H

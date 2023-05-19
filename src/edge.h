@@ -2,8 +2,8 @@
 // Created by rita on 12-03-2023.
 //
 
-#ifndef RAILWAYMANAGEMENT_EDGE_H
-#define RAILWAYMANAGEMENT_EDGE_H
+#ifndef TRAVELLINGSALESMAN_EDGE_H
+#define TRAVELLINGSALESMAN_EDGE_H
 
 #include <memory>
 #include "vertex.h"
@@ -18,7 +18,7 @@ enum class Service : unsigned int {
 
 class Edge {
   public:
-    Edge(Vertex *orig, Vertex *dest, unsigned int w, Service s);
+    Edge(Vertex *orig, Vertex *dest, unsigned int w);
 
     [[nodiscard]] Vertex *getDest() const;
 
@@ -74,4 +74,4 @@ class Edge {
 
 };
 
-#endif //RAILWAYMANAGEMENT_EDGE_H
+#endif //TRAVELLINGSALESMAN_EDGE_H

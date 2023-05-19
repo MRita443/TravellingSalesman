@@ -2,48 +2,39 @@
 // Created by rita on 28-02-2023.
 //
 
-#ifndef RAILWAYMANAGEMENT_STATION_H
-#define RAILWAYMANAGEMENT_STATION_H
+#ifndef TRAVELLINGSALESMAN_STATION_H
+#define TRAVELLINGSALESMAN_STATION_H
 
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 
 class Station {
-private:
+  private:
+    unsigned int id;
+    double latitude;
+    double longitude;
     std::string name;
-    std::string district;
-    std::string municipality;
-    std::string township;
-    std::string line;
-public:
+  public:
     Station();
 
-    Station(std::string name, std::string district, std::string municipality,
-            std::string township,
-            std::string line);
+    Station(unsigned int id, double latitude, double longitude, std::string name);
 
-    explicit Station(std::string name);
+    const unsigned int &getId() const;
+
+    void setId(const unsigned int &id);
+
+    const double &getLatitude() const;
+
+    void setLatitude(const double &latitude);
+
+    const double &getLongitude() const;
+
+    void setLongitude(const double &longitude);
 
     [[nodiscard]] const std::string &getName() const;
 
-    [[nodiscard]] const std::string &getDistrict() const;
-
-    [[nodiscard]] const std::string &getMunicipality() const;
-
-    [[nodiscard]] const std::string &getTownship() const;
-
-    [[nodiscard]] const std::string &getLine() const;
-
     void setName(const std::string &name);
-
-    void setDistrict(const std::string &district);
-
-    void setMunicipality(const std::string &municipality);
-
-    void setTownship(const std::string &township);
-
-    void setLine(const std::string &line);
 
     Station &operator=(const Station &station);
 };
@@ -51,13 +42,13 @@ public:
 
 struct StationHash {
     std::size_t operator()(const Station &Station) const {
-        return std::hash<std::string>()(Station.getName());
+        return std::hash<unsigned int>()(Station.getId());
     }
 };
 
 struct StationEquals {
     bool operator()(const Station &Station1, const Station &Station2) const {
-        return Station1.getName() == Station2.getName();
+        return Station1.getId() == Station2.getId();
     }
 };
 
@@ -67,4 +58,4 @@ template<typename T>
 using StationMap = std::unordered_map<Station, T, StationHash, StationEquals>;
 
 
-#endif //RAILWAYMANAGEMENT_STATION_H
+#endif //TRAVELLINGSALESMAN_STATION_H

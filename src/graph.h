@@ -26,9 +26,9 @@ class Graph {
   public:
     Graph();
 
-    [[nodiscard]] Vertex *findVertex(const std::string &id) const;
+    [[nodiscard]] Vertex *findVertex(const unsigned int &id) const;
 
-    bool addVertex(const std::string &id);
+    bool addVertex(const unsigned int &id);
 
     [[nodiscard]] unsigned int getNumVertex() const;
 

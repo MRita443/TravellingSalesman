@@ -2,8 +2,8 @@
 // Created by rita on 12-03-2023.
 //
 
-#ifndef RAILWAYMANAGEMENT_VERTEX_H
-#define RAILWAYMANAGEMENT_VERTEX_H
+#ifndef TRAVELLINGSALESMAN_VERTEX_H
+#define TRAVELLINGSALESMAN_VERTEX_H
 
 #include <iostream>
 #include <vector>
@@ -31,7 +31,7 @@ public:
 
     [[nodiscard]] unsigned int getIndegree() const;
 
-    [[nodiscard]] int getCost() const;
+    [[nodiscard]] int getDist() const;
 
     [[nodiscard]] Edge *getPath() const;
 
@@ -45,7 +45,7 @@ public:
 
     void setIndegree(unsigned int indegree);
 
-    void setCost(int dist);
+    void setDist(int dist);
 
     void setPath(Edge *path);
 
@@ -61,11 +61,11 @@ private:
     bool visited = false; // used by DFS, BFS, Prim ...
     bool processing = false; // used by isDAG (in addition to the visited attribute)
     unsigned int indegree; // used by topsort
-    int cost;
+    int dist;
     Edge *path = nullptr;
     std::vector<Edge *> incoming; // incoming edges
 
 };
 
 
-#endif //RAILWAYMANAGEMENT_VERTEX_H
+#endif //TRAVELLINGSALESMAN_VERTEX_H

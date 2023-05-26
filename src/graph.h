@@ -34,62 +34,20 @@ class Graph {
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    std::vector<Edge *> randomlySelectEdges(unsigned int numEdges);
+    std::pair<Edge *, Edge *>
+    addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c);
 
     static void activateEdges(const std::vector<Edge *> &Edges);
 
-    std::list<std::string> superSourceCreator(const std::string &vertexId) const;
-
-    [[nodiscard]] unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
-
-    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
-
-    std::pair<std::list<std::pair<std::string, std::string>>, unsigned int>
-    calculateNetworkMaxFlow(Graph &residualGraph);
+    static void deactivateEdges(const std::vector<Edge *> &edges);
 
     [[nodiscard]] unsigned int getTotalEdges() const;
-
-    void augmentPath(const std::string &target, const unsigned int &value) const;
-
-    bool path(const std::list<std::string> &source, const std::string &target) const;
 
     std::pair<Edge *, Edge *>
     addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
 
-    std::pair<unsigned int, unsigned int>
-
-    minCostMaxFlow(const std::string &source, const std::string &target, Graph &residualGraph);
-
-    static unsigned int findListBottleneck(const std::list<Edge *> &edges);
-
-    void makeMinCostResidual(Graph &minCostResidual);
-
-    static void augmentMinCostPath(const std::list<Edge *> &edges, const unsigned int &value);
-
-    std::vector<std::pair<std::string, double>>
-    topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph);
-
-    double getAverageIncomingFlux(const std::list<Station> &stations, Graph &residualGraph);
-
-    std::list<Edge *> bellmanFord(const std::string &source);
-
     void visitedDFS(Vertex *source);
 
-    [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
-
-    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string &stationId) const;
-
-    std::pair<unsigned int, unsigned int>
-    maxFlowDeactivatedEdges(const std::vector<Edge *> &selectedEdges, const std::list<std::string> &source,
-                            const std::string &target, Graph &residualGraph);
-
-    unsigned int
-    incomingReducedFlux(const std::vector<Edge *> &edges, const std::string &station, Graph &residualGraph);
-
-    static void deactivateEdges(const std::vector<Edge *> &edges);
-
-    std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int>>>
-    topReductions(const std::vector<Edge *> &edges, Graph &residualGraph);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

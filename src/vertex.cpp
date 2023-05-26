@@ -9,15 +9,14 @@
 Vertex::Vertex(std::string id) : id(std::move(id)) {}
 
 /**
- * Adds a new outgoing edge to the Vertex, with a given destination and capacity
+ * Adds a new outgoing edge to the Vertex, with a given destination and distance
  * Time Complexity: O(1)
  * @param d - Pointer to the destination Vertex
- * @param w - Edge capacity
- * @param service - Service of the Edge
+ * @param w - Edge distance
  * @return Pointer to the new Edge created
  */
-Edge *Vertex::addEdge(Vertex *d, unsigned int w, Service service) {
-    auto newEdge = new Edge(this, d, w, service);
+Edge *Vertex::addEdge(Vertex *d, unsigned int w) {
+    auto newEdge = new Edge(this, d, w);
     adj.push_back(newEdge);
     d->incoming.push_back(newEdge);
     return newEdge;
@@ -75,8 +74,8 @@ unsigned int Vertex::getIndegree() const {
     return this->indegree;
 }
 
-int Vertex::getCost() const {
-    return this->cost;
+int Vertex::getDist() const {
+    return this->dist;
 }
 
 Edge *Vertex::getPath() const {
@@ -103,8 +102,8 @@ void Vertex::setIndegree(unsigned int indegree) {
     this->indegree = indegree;
 }
 
-void Vertex::setCost(int cost) {
-    this->cost = cost;
+void Vertex::setDist(int dist) {
+    this->dist = dist;
 }
 
 void Vertex::setPath(Edge *path) {

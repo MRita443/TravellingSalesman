@@ -1,7 +1,3 @@
-//
-// Created by rita on 05-05-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_EDGE_H
 #define TRAVELLINGSALESMAN_EDGE_H
 

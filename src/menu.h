@@ -1,7 +1,3 @@
-//
-// Created by ricardo on 05-05-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_MENU_H
 #define TRAVELLINGSALESMAN_MENU_H
 

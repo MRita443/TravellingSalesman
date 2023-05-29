@@ -1,7 +1,3 @@
-//
-// Created by rita on 05-05-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_VERTEX_H
 #define TRAVELLINGSALESMAN_VERTEX_H
 

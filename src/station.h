@@ -1,7 +1,3 @@
-//
-// Created by rita on 19-05-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_STATION_H
 #define TRAVELLINGSALESMAN_STATION_H
 

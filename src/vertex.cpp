@@ -1,7 +1,3 @@
-//
-// Created by rita on 05-05-2023.
-//
-
 #include "vertex.h"
 
 #include <utility>

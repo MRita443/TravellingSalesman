@@ -67,14 +67,24 @@ Graph::addAndGetBidirectionalEdge(const std::string &source, const std::string &
 }
 
 /**
+ * @brief Takes an edge pointer and sets the selected state of that edge and its reverse to the given value
+ * 
+ * @param edge - Pointer to the edge to be set
+ * @param selected - Value to set the selected state to
+ */
+void Graph::setSelectedEdge(const Edge *edge, bool selected) {
+    edge->setSelected(selected);
+    edge->getReverse()->setSelected(selected);
+}
+
+/**
  * Takes a vector of edge pointers and sets the selected state of those edges and their reverses to false
  * Time Complexity: O(size(edges))
  * @param edges - Vector of edge pointers to be deactivated
  */
 void Graph::deactivateEdges(const std::vector<Edge *> &edges) {
     for (Edge *edge: edges) {
-        edge->setSelected(false);
-        edge->getReverse()->setSelected(false);
+        setSelectedEdge(edge, false);
     }
 }
 
@@ -85,8 +95,7 @@ void Graph::deactivateEdges(const std::vector<Edge *> &edges) {
  */
 void Graph::activateEdges(const std::vector<Edge *> &edges) {
     for (Edge *edge: edges) {
-        edge->setSelected(true);
-        edge->getReverse()->setSelected(true);
+        setSelectedEdge(edge, true);
     }
 }
 
@@ -102,6 +111,49 @@ void Graph::visitedDFS(Vertex *source) {
             visitedDFS(e->getDest());
         }
     }
+}
+
+/**
+ * @brief Builds a MST using Kruskal's algorithm
+ * Time Complexity: O(|E|log|E|)
+ */
+void Graph::kruskal(){
+    std::list<Edge *> edges;
+    for (Vertex *v : vertexSet){
+        //v->setVisited(false); //TODO: Check if this is necessary
+        for (Edge *e: v->getAdj()){
+            edges.push_back(e);
+            e->setSelected(false);
+        }
+    }
+    UFDS ufds(vertexSet.size());
+
+    edges.sort([](Edge *e1, Edge *e2) {return e1->getDist() < e2->getDist();});
+
+    for (Edge *e: edges) {
+        if (!isSameSet(e->getOrig()->getId(), e->getDest()->getId())) {
+            e->setSelected(true);
+            linkSets(e->getOrig);
+        }
+    }
+    return;
+}
+
+/**
+ * @brief Iterates through the vertex set using DFS, respecting if an edge is selected or not
+ * Registers the path taken in the vertex's path attribute
+ * Time Complexity: O(|V|+|E|)
+ * @param source - Vertex where the DFS starts
+ */
+void Graph::dfsKruskalPath(Vertex *source){
+    v->setVisited(true);
+    for (Edge *e : v->getAdj()){
+        if(!e->getDest()->isVisited() && e->isSelected()){
+            e->getDest()->setPath(e);
+            dfsKruskalPath(e->getDest());
+        }
+    }
+    return;
 }
 
 bool inSolution(unsigned int j, unsigned int *solution, unsigned int n) {

@@ -1,5 +1,5 @@
 //
-// Created by rita on 19-05-2023.
+// Created by rita on 05-05-2023.
 //
 
 #ifndef TRAVELLINGSALESMAN_GRAPH_H
@@ -26,25 +26,22 @@ class Graph {
   public:
     Graph();
 
-    [[nodiscard]] Vertex *findVertex(const std::string &id) const;
+    [[nodiscard]] Vertex *findVertex(const std::string &id) const; //
 
-    bool addVertex(const std::string &id);
+    bool addVertex(const std::string &id); //
 
-    [[nodiscard]] unsigned int getNumVertex() const;
+    [[nodiscard]] unsigned int getNumVertex() const; //
 
-    [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
+    [[nodiscard]] std::vector<Vertex *> getVertexSet() const; //
 
     std::pair<Edge *, Edge *>
-    addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c);
+    addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int dist);
 
     static void activateEdges(const std::vector<Edge *> &Edges);
 
     static void deactivateEdges(const std::vector<Edge *> &edges);
 
-    [[nodiscard]] unsigned int getTotalEdges() const;
-
-    std::pair<Edge *, Edge *>
-    addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
+    [[nodiscard]] unsigned int getTotalEdges() const; //
 
     void visitedDFS(Vertex *source);
 

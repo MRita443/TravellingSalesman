@@ -1,5 +1,5 @@
 //
-// Created by rita on 12-03-2023.
+// Created by rita on 05-05-2023.
 //
 
 #ifndef TRAVELLINGSALESMAN_VERTEX_H
@@ -61,7 +61,7 @@ private:
     bool visited = false; // used by DFS, BFS, Prim ...
     bool processing = false; // used by isDAG (in addition to the visited attribute)
     unsigned int indegree; // used by topsort
-    int dist;
+    int dist; //TODO replace by unsorted_map to store distances between every pair of vertices
     Edge *path = nullptr;
     std::vector<Edge *> incoming; // incoming edges
 

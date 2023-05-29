@@ -18,23 +18,20 @@
 #include "dataRepository.h"
 
 class Menu {
-private:
+  private:
     DataRepository dataRepository;
-    Graph residualGraph;
     Graph graph;
-    std::string static const stationsFilePath;
-    std::string static const networkFilePath;
     unsigned static const COLUMN_WIDTH;
     unsigned static const COLUMNS_PER_LINE;
 
-public:
+  public:
     Menu();
 
-    void extractStationsFile();
+    void extractNodesFile(const std::string &filename);
 
-    void extractNetworkFile();
+    void extractEdgesFile(const std::string &filename, bool hasDescriptors = true, bool hasLabels = false);
 
-    void extractFileInfo();
+    void extractFileInfo(const std::string &edgesFilename, const std::string &nodesFilename = "");
 
     void initializeMenu();
 
@@ -50,13 +47,8 @@ public:
 
     static bool checkInput(unsigned int checkLength = 0);
 
-    static void stationDoesntExist();
+    static void nodeDoesntExist();
 
-    void edmondsKarpExample();
-
-    void minCostExample();
-
-    void incomingFlowExample();
 };
 
 

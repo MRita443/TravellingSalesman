@@ -3,32 +3,35 @@
 //
 
 #include "menu.h"
-#include "station.h"
+#include "node.h"
 
 using namespace std;
 
 unsigned const Menu::COLUMN_WIDTH = 50;
 unsigned const Menu::COLUMNS_PER_LINE = 3;
-string const Menu::stationsFilePath = "../dataset/stations.csv";
-string const Menu::networkFilePath = "../dataset/network.csv";
 
 Menu::Menu() = default;
 
 /**
  * Delegates initialization of the menu, calling the appropriate functions for information extraction and output
  */
-void Menu::initializeMenu() {
+/*void Menu::initializeMenu() {
     extractFileInfo();
     mainMenu();
-}
+}*/
 
 /**
  * Delegates extracting file info, calling the appropriate functions for each file
  * Time Complexity: O(n*v), where n is the number of lines of network.csv and v is the number of lines in stations.csv
  */
-void Menu::extractFileInfo() {
-    extractStationsFile();
-    extractNetworkFile();
+void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &nodesFilename) {
+    if (!nodesFilename.empty()) {
+        extractNodesFile(nodesFilename);
+    }
+    if (edgesFilename == "../dataset/Toy-Graphs/tourism.csv") extractEdgesFile(edgesFilename, true, true);
+    if (edgesFilename.find("Extra_Fully_Connected_Graphs") != std::string::npos) {
+        extractEdgesFile(edgesFilename, false);
+    } else extractEdgesFile(edgesFilename);
 }
 
 /**
@@ -66,17 +69,17 @@ bool Menu::checkInput(unsigned int checkLength) {
 }
 
 /**
- * Outputs to the screen a message indicating that the given Station doesn't exist
+ * Outputs to the screen a message indicating that the given Node doesn't exist
  * Time Complexity: O(1)
  */
-void Menu::stationDoesntExist() {
-    cout << "A station with this name doesn't exist!" << endl;
+void Menu::nodeDoesntExist() {
+    cout << "A node with this id doesn't exist!" << endl;
 }
 
 /**
  * Outputs main menu screen and calls other menu screens according to user input
  */
-void Menu::mainMenu() {
+/*void Menu::mainMenu() {
 
     unsigned char commandIn = '\0';
     string line;
@@ -122,19 +125,95 @@ void Menu::mainMenu() {
             }
         }
     }
-}
+}*/
 
 /**
- * Extracts and stores the information of stations.csv
+ * Extracts and stores the information of a nodes file
+ * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of stations.csv
+ */
+void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bool hasLabels) {
+    {
+        ifstream nodes(filename);
+
+        string currentParam, currentLine;
+        string originName, destinationName;
+        unsigned int originId, destinationId;
+        double distance;
+
+        int counter = 0;
+
+        getline(nodes, currentParam); //Ignore first line with just descriptors
+
+        while (getline(nodes, currentLine)) {
+            currentLine.erase(currentLine.end() - 1); //Remove \r
+            istringstream iss(currentLine);
+            while (getline(iss, currentParam, ',')) {
+                switch (counter++) {
+                    case 0: {
+                        originId = stoul(currentParam);
+                        break;
+                    }
+                    case 1: {
+                        destinationId = stoul(currentParam);
+                        break;
+                    }
+                    case 2: {
+                        distance = stod(currentParam);
+                        if (!hasLabels) counter = 0;
+                        break;
+                    }
+                    case 3: {
+                        originName = currentParam;
+                        break;
+                    }
+                    case 4: {
+                        destinationName = currentParam;
+                        counter = 0;
+                        break;
+                    }
+                }
+                if (counter == 0) {
+                    shared_ptr<Node> origin = dataRepository.findNode(originId);
+                    shared_ptr<Node> destination = dataRepository.findNode(destinationId);
+
+                    if (!origin) {
+                        Node originNode;
+                        if (!graph.addVertex(originId)) break;
+                        if (hasLabels) originNode = dataRepository.addNodeEntry(originId, 0, 0, originName);
+                        else originNode = dataRepository.addNodeEntry(originId);
+                        originNode.addDistToNodeEntry(destinationId, distance);
+                        if (!originNode.addDistToNodeEntry(destinationId, distance)) break;
+                    } else if (!origin->addDistToNodeEntry(destinationId, distance)) break;
+
+                    if (!destination) {
+                        Node destinationNode;
+                        if (!graph.addVertex(destinationId)) break;
+                        if (hasLabels)
+                            destinationNode = dataRepository.addNodeEntry(destinationId, 0, 0, destinationName);
+                        else destinationNode = dataRepository.addNodeEntry(destinationId);
+                        if (!destinationNode.addDistToNodeEntry(originId, distance)) break;
+                    } else if (!destination->addDistToNodeEntry(originId, distance)) break;
+
+                    if (!graph.addBidirectionalEdge(originId, destinationId, distance)) break;
+
+                }
+            }
+        }
+    }
+}
+
+
+/**
+ * Extracts and stores the information of a nodes file
  * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of stations.csv
  */
 void Menu::extractNodesFile(const std::string &filename) {
     {
-        ifstream nodes(stationsFilePath);
+        ifstream nodes(filename);
 
         string currentParam, currentLine;
         unsigned int id;
-        double latitude, longitude;
+        double longitude, latitude;
 
         int counter = 0;
 
@@ -150,100 +229,31 @@ void Menu::extractNodesFile(const std::string &filename) {
                         break;
                     }
                     case 1: {
-                        latitude = stod(currentParam);
+                        longitude = stod(currentParam);
                         break;
                     }
                     case 2: {
-                        longitude = stod(currentParam);
+                        latitude = stod(currentParam);
                         counter = 0;
                         break;
                     }
                 }
                 if (counter == 0) {
-                    if (!graph.addVertex(name)) break;
-                    if (!residualGraph.addVertex(name)) break;
-                    Station newStation = dataRepository.addStationEntry(name, district, municipality, township, line);
-                    dataRepository.addStationToMunicipalityEntry(municipality, newStation);
-                    dataRepository.addStationToDistrictEntry(district, newStation);
-                    dataRepository.addStationToTownshipEntry(township, newStation);
+                    if (!graph.addVertex(id)) break;
+                    dataRepository.addNodeEntry(id, latitude, longitude);
                 }
             }
         }
     }
 }
 
-
-/**
- * Extracts and stores the information of flights.csv
- * Time Complexity: 0(n*v), where n is the number of lines of network.csv and v is the number of nodes in graph
- */
-void Menu::extractNetworkFile() {
-
-    ifstream network(networkFilePath);
-
-    string currentParam, currentLine;
-    string sourceName, targetName;
-    Service service;
-    unsigned int capacity;
-
-    int counter = 0;
-
-    getline(network, currentParam); //Ignore first line with just descriptors
-
-    while (getline(network, currentLine)) {
-        currentLine.erase(currentLine.end() - 1); //Remove \r
-        istringstream iss(currentLine);
-        while (getline(iss, currentParam, ',')) {
-            if (currentParam.find('"') != string::npos) { //If the line contains "
-                string leftover;
-                currentParam.erase(currentParam.begin()); //Erase first "
-                if (currentParam.find('"') != string::npos) { //Closing " already in string
-                    currentParam.erase(currentParam.end() - 1); //Remove last "
-                } else {
-                    getline(iss, leftover, '"'); //Get leftover string until closing "
-                    currentParam.append(leftover);
-                    getline(iss, leftover, ','); //Remove trailing ,
-                }
-            }
-            switch (counter++) {
-                case 0: {
-                    sourceName = currentParam;
-                    break;
-                }
-                case 1: {
-                    targetName = currentParam;
-                    break;
-                }
-                case 2: {
-                    capacity = stoul(currentParam);
-                    break;
-                }
-                case 3: {
-                    service = currentParam == "STANDARD" ? Service::STANDARD : Service::ALFA_PENDULAR;
-                    counter = 0;
-                    break;
-                }
-            }
-            if (counter == 0) {
-                auto [regular, regularReverse] = graph.addAndGetBidirectionalEdge(sourceName, targetName, capacity,
-                                                                                  service);
-                auto [residual, residualReverse] = residualGraph.addAndGetBidirectionalEdge(sourceName, targetName,
-                                                                                            capacity, service);
-                regular->setCorrespondingEdge(residual);
-                regularReverse->setCorrespondingEdge(residualReverse);
-                residual->setCorrespondingEdge(regular);
-                residualReverse->setCorrespondingEdge(regularReverse);
-            }
-        }
-    }
-}
 
 
 /**
  * Outputs basic service metrics menu screen and decides graph function calls according to user input
  * @return - Last inputted command, or '\0' for previous menu command
  */
-unsigned int Menu::serviceMetricsMenu() {
+/*unsigned int Menu::serviceMetricsMenu() {
     unsigned char commandIn = '\0';
 
     while (commandIn != 'q') {
@@ -413,13 +423,14 @@ unsigned int Menu::serviceMetricsMenu() {
         }
     }
     return commandIn;
-}
+}*/
 
 
 /**
  * Outputs cost optimization menu screen and decides graph function calls according to user input
  * @return - Last inputted command, or '\0' for previous menu command
  */
+/*
 unsigned int Menu::costOptMenu() {
     unsigned char commandIn = '\0';
 
@@ -484,12 +495,13 @@ unsigned int Menu::costOptMenu() {
     }
     return commandIn;
 }
+*/
 
 /**
  * Outputs cost optimization menu screen and decides graph function calls according to user input
  * @return - Last inputted command, or '\0' for previous menu command
  */
-unsigned int Menu::failuresMenu() {
+/*unsigned int Menu::failuresMenu() {
     unsigned char commandIn = '\0';
 
     while (commandIn != 'q') {
@@ -606,7 +618,7 @@ unsigned int Menu::failuresMenu() {
         }
     }
     return commandIn;
-}
+}*/
 
 
 /**
@@ -614,7 +626,7 @@ unsigned int Menu::failuresMenu() {
  * @return - vector<Edge*> containing all the Edges to be deactivated
  *
  */
-vector<Edge *> Menu::edgeFailureMenu() {
+/*vector<Edge *> Menu::edgeFailureMenu() {
     unsigned char commandIn;
     vector<Edge *> edges;
 
@@ -704,4 +716,4 @@ vector<Edge *> Menu::edgeFailureMenu() {
                 break;
         }
     }
-}
+}*/

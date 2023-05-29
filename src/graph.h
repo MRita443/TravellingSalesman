@@ -15,7 +15,7 @@
 #include <list>
 
 #include "vertex.h"
-#include "station.h"
+#include "node.h"
 
 class Graph {
   private:
@@ -53,9 +53,6 @@ class Graph {
 
     bool path(const std::list<std::string> &source, const std::string &target) const;
 
-    std::pair<Edge *, Edge *>
-    addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
-
     std::pair<unsigned int, unsigned int>
 
     minCostMaxFlow(const std::string &source, const std::string &target, Graph &residualGraph);
@@ -67,9 +64,9 @@ class Graph {
     static void augmentMinCostPath(const std::list<Edge *> &edges, const unsigned int &value);
 
     std::vector<std::pair<std::string, double>>
-    topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph);
+    topGroupings(const std::unordered_map<std::string, std::list<Node>> &group, Graph &residualGraph);
 
-    double getAverageIncomingFlux(const std::list<Station> &stations, Graph &residualGraph);
+    double getAverageIncomingFlux(const std::list<Node> &stations, Graph &residualGraph);
 
     std::list<Edge *> bellmanFord(const std::string &source);
 
@@ -90,6 +87,8 @@ class Graph {
 
     std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int>>>
     topReductions(const std::vector<Edge *> &edges, Graph &residualGraph);
+
+    bool addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, unsigned int length);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

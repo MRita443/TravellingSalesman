@@ -56,21 +56,19 @@ class Edge {
 
     void initializeCost();
 
+    int getLength() const;
+
+    void setLength(int length);
+
   private:
     Vertex *orig;
     Vertex *dest; // destination vertex
-    unsigned int capacity; // edge capacity
-    Service service;
 
     // auxiliary fields
     bool selected = true;
     Edge *reverse = nullptr;
 
-    //corresponding edge in the residual/regular graph
-    Edge *correspondingEdge = nullptr;
-
-    unsigned int flow = 0; // for flow-related problems
-    int cost;
+    int length;
 
 };
 

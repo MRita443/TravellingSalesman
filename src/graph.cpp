@@ -50,20 +50,21 @@ bool Graph::addVertex(const unsigned int &id) {
  * @param c - Capacity of the Edge to be added
  * @return Pair containing a pointer to the created Edge and to its reverse
  */
-std::pair<Edge *, Edge *>
-Graph::addAndGetBidirectionalEdge(const unsigned int &source, const unsigned int &dest, unsigned int c) {
+bool
+Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, unsigned int length) {
     auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
-        return {nullptr, nullptr};
+        return false;
 
-    auto e1 = v1->addEdge(v2, c);
-    auto e2 = v2->addEdge(v1, c);
+    auto e1 = v1->addEdge(v2, length);
+    auto e2 = v2->addEdge(v1, length);
     e1->setReverse(e2);
     e2->setReverse(e1);
 
     totalEdges++;
-    return {e1, e2};
+
+    return true;
 }
 
 /*
@@ -602,7 +603,7 @@ sort_pair_decreasing_second(const std::pair<std::string, double> &left, const st
  *//*
 
 std::vector<std::pair<std::string, double>>
-Graph::topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph) {
+Graph::topGroupings(const std::unordered_map<std::string, std::list<Node>> &group, Graph &residualGraph) {
     std::vector<std::pair<std::string, double>> result;
     for (const auto &it: group) {
         double average = getAverageIncomingFlux(it.second, residualGraph);
@@ -620,9 +621,9 @@ Graph::topGroupings(const std::unordered_map<std::string, std::list<Station>> &g
  * @param residualGraph - Graph object representing the graph's residual network
  *//*
 
-double Graph::getAverageIncomingFlux(const std::list<Station> &stations, Graph &residualGraph) {
+double Graph::getAverageIncomingFlux(const std::list<Node> &stations, Graph &residualGraph) {
     double flux_sum = 0;
-    for (const Station &s: stations) {
+    for (const Node &s: stations) {
         const std::string &sid = s.getName();
         flux_sum += incomingFlux(sid, residualGraph);
     }

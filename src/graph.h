@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <list>
 
+#include "UFDS.h"
 #include "vertex.h"
 #include "station.h"
 
@@ -37,6 +38,8 @@ class Graph {
     std::pair<Edge *, Edge *>
     addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int dist);
 
+    static void setSelectedEdge(const Edge *edge, bool selected);
+
     static void activateEdges(const std::vector<Edge *> &Edges);
 
     static void deactivateEdges(const std::vector<Edge *> &edges);
@@ -44,6 +47,10 @@ class Graph {
     [[nodiscard]] unsigned int getTotalEdges() const; //
 
     void visitedDFS(Vertex *source);
+
+    void dfsKruskalPath(Vertex *source);
+
+    static void kruskal();
 
 };
 

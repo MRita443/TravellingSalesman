@@ -19,9 +19,9 @@ enum class Service: unsigned int;
 
 class Vertex {
 public:
-    explicit Vertex(std::string id);
+    explicit Vertex(unsigned int id);
 
-    [[nodiscard]] std::string getId() const;
+    [[nodiscard]] unsigned int getId() const;
 
     [[nodiscard]] std::vector<Edge *> getAdj() const;
 
@@ -37,7 +37,7 @@ public:
 
     [[nodiscard]] std::vector<Edge *> getIncoming() const;
 
-    void setId(std::string info);
+    void setId(unsigned int info);
 
     void setVisited(bool visited);
 
@@ -54,7 +54,7 @@ public:
     bool removeEdge(const std::string& destID);
 
 private:
-    std::string id;                // identifier
+    unsigned int id;                // identifier
     std::vector<Edge *> adj;  // outgoing edges
 
     // auxiliary fields

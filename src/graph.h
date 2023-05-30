@@ -8,6 +8,7 @@
 #include <tuple>
 #include <list>
 #include <algorithm>
+#include <memory>
 #include "vertex.h"
 #include "node.h"
 #include "UFDS.h"
@@ -15,50 +16,34 @@
 class Graph {
   private:
     unsigned int totalEdges = 0;
-    std::vector<Vertex *> vertexSet;    // vertex set
-    std::unordered_map<std::string, Vertex *> idToVertex;
+    VertexPointerTable vertexSet;    // vertex set
 
   public:
     Graph();
 
-    [[nodiscard]] Vertex *findVertex(const unsigned int &id) const;
-
-    bool addVertex(const unsigned int &id);
-
     [[nodiscard]] unsigned int getNumVertex() const;
 
-    [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
-
-    std::vector<Edge *> randomlySelectEdges(unsigned int numEdges);
-
-    static void activateEdges(const std::vector<Edge *> &Edges);
+    [[nodiscard]] VertexPointerTable getVertexSet() const;
 
     [[nodiscard]] unsigned int getTotalEdges() const;
 
-    void visitedDFS(Vertex *source);
+    [[nodiscard]] std::shared_ptr<Vertex> findVertex(const unsigned int &id) const;
 
-    static void deactivateEdges(const std::vector<Edge *> &edges);
+    bool addVertex(const unsigned int &id);
 
-    bool addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, unsigned int length);
+    bool addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length);
 
-    [[nodiscard]] unsigned int getNumVertex() const; //
+    static void setSelectedEdge(const std::shared_ptr<Edge>& edge, bool selected);
 
-    [[nodiscard]] std::vector<Vertex *> getVertexSet() const; //
+    static void deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges);
 
+    static void activateEdges(const std::vector<std::shared_ptr<Edge>> &Edges);
 
-    static void setSelectedEdge(const Edge *edge, bool selected);
+    void visitedDFS(const std::shared_ptr<Vertex>& source);
 
-    static void activateEdges(const std::vector<Edge *> &Edges);
+    void dfsKruskalPath(const std::shared_ptr<Vertex>& source);
 
-    static void deactivateEdges(const std::vector<Edge *> &edges);
-
-    [[nodiscard]] unsigned int getTotalEdges() const; //
-
-    void visitedDFS(Vertex *source);
-
-    void dfsKruskalPath(Vertex *source);
-
-    static void kruskal();
+    void kruskal();
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

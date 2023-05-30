@@ -7,10 +7,9 @@ unsigned int Graph::getNumVertex() const {
     return (unsigned int) vertexSet.size();
 }
 
-std::vector<Vertex *> Graph::getVertexSet() const {
+VertexPointerTable Graph::getVertexSet() const {
     return vertexSet;
 }
-
 
 unsigned int Graph::getTotalEdges() const {
     return totalEdges;
@@ -22,29 +21,27 @@ unsigned int Graph::getTotalEdges() const {
  * @param id - Id of the vertex to be found
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
-Vertex *Graph::findVertex(const unsigned int &id) const {
-    return vertexSet.at(id);
+std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
+    auto it = vertexSet.find(std::make_shared<Vertex>(id));
+    return it != vertexSet.end() ? *it : nullptr;
 }
 
 /**
- * Adds a vertex with a given id to the Graph, representing a given station
+ * Adds a vertex with a given id to the Graph, representing a given NODE
  * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param id - Id of the Vertex to add
  * @return True if successful, and false if a vertex with the given id already exists
  */
 bool Graph::addVertex(const unsigned int &id) {
-    if (vertexSet.size() > id) return false;
-    vertexSet.push_back(new Vertex(id));
-    return true;
+    return vertexSet.insert(std::make_shared<Vertex>(id)).second;
 }
 
 /**
- * Adds and returns a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c, representing a Service s
+ * Adds a bidirectional edge to the Graph between the vertices with id source and dest, and a given length
  * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param source - Id of the source Vertex
  * @param dest - Id of the destination Vertex
- * @param c - Capacity of the Edge to be added
- * @return Pair containing a pointer to the created Edge and to its reverse
+ * @param length - Length of the Edge to be added
  */
 bool
 Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length) {
@@ -65,34 +62,34 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
 
 
 /**
- * @brief Takes an edge pointer and sets the selected state of that edge and its reverse to the given value
+ * @brief Takes an Edge pointer and sets the selected state of that edge and its reverse to the given value
  * 
  * @param edge - Pointer to the edge to be set
  * @param selected - Value to set the selected state to
  */
-void Graph::setSelectedEdge(const Edge *edge, bool selected) {
+void Graph::setSelectedEdge(const std::shared_ptr<Edge>& edge, bool selected) {
     edge->setSelected(selected);
     edge->getReverse()->setSelected(selected);
 }
 
 /**
- * Takes a vector of edge pointers and sets the selected state of those edges and their reverses to false
+ * Takes a vector of Edge pointers and sets the selected state of those edges and their reverses to false
  * Time Complexity: O(size(edges))
- * @param edges - Vector of edge pointers to be deactivated
+ * @param edges - Vector of Edge pointers to be deactivated
  */
-void Graph::deactivateEdges(const std::vector<Edge *> &edges) {
-    for (Edge *edge: edges) {
+void Graph::deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
+    for (const std::shared_ptr<Edge> &edge: edges) {
         setSelectedEdge(edge, false);
     }
 }
 
 /**
- * Takes a vector of edge pointers and sets the selected state of those edges and their reverses to true
+ * Takes a vector of Edge pointers and sets the selected state of those edges and their reverses to true
  * Time Complexity: O(size(edges))
- * @param edges - Vector of edge pointers to be activated
+ * @param edges - Vector of Edge pointers to be activated
  */
-void Graph::activateEdges(const std::vector<Edge *> &edges) {
-    for (Edge *edge: edges) {
+void Graph::activateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
+    for (const std::shared_ptr<Edge> &edge: edges) {
         setSelectedEdge(edge, true);
     }
 }
@@ -102,9 +99,9 @@ void Graph::activateEdges(const std::vector<Edge *> &edges) {
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
 */
-void Graph::visitedDFS(Vertex *source) {
+void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
-    for (Edge const *e: source->getAdj()) {
+    for (const std::shared_ptr<Edge> &e: source->getAdj()) {
         if (!e->getDest()->isVisited()) {
             visitedDFS(e->getDest());
         }
@@ -116,27 +113,28 @@ void Graph::visitedDFS(Vertex *source) {
  * @brief Builds a MST using Kruskal's algorithm
  * Time Complexity: O(|E|log|E|)
  */
-void Graph::kruskal(){
-    std::list<Edge *> edges;
-    for (Vertex *v : vertexSet){
+/*void Graph::kruskal() {
+    std::list<std::shared_ptr<Edge>> edges;
+    for (const std::shared_ptr<Vertex>& v: vertexSet) {
         //v->setVisited(false); //TODO: Check if this is necessary
-        for (Edge *e: v->getAdj()){
+        for (const std::shared_ptr<Edge>& e: v->getAdj()) {
             edges.push_back(e);
             e->setSelected(false);
         }
     }
     UFDS ufds(vertexSet.size());
 
-    edges.sort([](Edge *e1, Edge *e2) {return e1->getDist() < e2->getDist();});
+    edges.sort([](const std::shared_ptr<Edge> &e1, const std::shared_ptr<Edge> &e2) {
+        return e1->getLength() < e2->getLength();
+    });
 
-    for (Edge *e: edges) {
+    for (const std::shared_ptr<Edge> &e: edges) {
         if (!isSameSet(e->getOrig()->getId(), e->getDest()->getId())) {
             e->setSelected(true);
             linkSets(e->getOrig);
         }
     }
-    return;
-}
+}*/
 
 /**
  * @brief Iterates through the vertex set using DFS, respecting if an edge is selected or not
@@ -144,19 +142,18 @@ void Graph::kruskal(){
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
  */
-void Graph::dfsKruskalPath(Vertex *source){
-    v->setVisited(true);
-    for (Edge *e : v->getAdj()){
-        if(!e->getDest()->isVisited() && e->isSelected()){
+void Graph::dfsKruskalPath(const std::shared_ptr<Vertex> &source) {
+    source->setVisited(true);
+    for (const std::shared_ptr<Edge>& e: source->getAdj()) {
+        if (!e->getDest()->isVisited() && e->isSelected()) {
             e->getDest()->setPath(e);
             dfsKruskalPath(e->getDest());
         }
     }
-    return;
 }
 
 
-bool inSolution(unsigned int j, unsigned int *solution, unsigned int n) {
+bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n) {
     for (int i = 0; i < n; i++) {
         if (solution[i] == j) {
             return true;

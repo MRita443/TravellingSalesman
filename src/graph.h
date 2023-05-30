@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-//
-// Created by rita on 19-05-2023.
-//
-
-=======
->>>>>>> 4d6103ca541f171ed6dcd1a443ca589fc70b2197
 #ifndef TRAVELLINGSALESMAN_GRAPH_H
 #define TRAVELLINGSALESMAN_GRAPH_H
 
@@ -15,16 +8,9 @@
 #include <tuple>
 #include <list>
 #include <algorithm>
-#include <list>
-
-<<<<<<< HEAD
 #include "vertex.h"
 #include "node.h"
-=======
 #include "UFDS.h"
-#include "vertex.h"
-#include "station.h"
->>>>>>> 4d6103ca541f171ed6dcd1a443ca589fc70b2197
 
 class Graph {
   private:
@@ -35,7 +21,6 @@ class Graph {
   public:
     Graph();
 
-<<<<<<< HEAD
     [[nodiscard]] Vertex *findVertex(const unsigned int &id) const;
 
     bool addVertex(const unsigned int &id);
@@ -55,10 +40,6 @@ class Graph {
     static void deactivateEdges(const std::vector<Edge *> &edges);
 
     bool addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, unsigned int length);
-
-    [[nodiscard]] Vertex *findVertex(const std::string &id) const; //
-
-    bool addVertex(const std::string &id); //
 
     [[nodiscard]] unsigned int getNumVertex() const; //
 

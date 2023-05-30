@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-//
-// Created by rita on 28-02-2023.
-//
-
-=======
->>>>>>> 4d6103ca541f171ed6dcd1a443ca589fc70b2197
 #ifndef TRAVELLINGSALESMAN_MENU_H
 #define TRAVELLINGSALESMAN_MENU_H
 
-
-<<<<<<< HEAD
 #include <iostream>
 #include <string>
 #include <iomanip>

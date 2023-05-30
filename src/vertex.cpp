@@ -104,5 +104,5 @@ void Vertex::setPath(Edge *path) {
 }
 
 int Vertex::getDist() const {
-    return 0;
+    return this->dist;
 }

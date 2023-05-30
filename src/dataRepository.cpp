@@ -25,6 +25,8 @@ Node &
 DataRepository::addNodeEntry(unsigned int id, double latitude, double longitude, const std::string &name) {
     std::shared_ptr<Node> newNode(new Node(id, latitude, longitude, name));
     nodes.insert(newNode);
+    sumLatitude += latitude;
+    sumLongitude += longitude;
     return *newNode;
 }
 
@@ -37,4 +39,12 @@ DataRepository::addNodeEntry(unsigned int id, double latitude, double longitude,
 shared_ptr<Node> DataRepository::findNode(const unsigned int &id) {
     auto it = nodes.find(make_shared<Node>(id));
     return it != nodes.end() ? *it : nullptr;
+}
+
+long DataRepository::getAverageLatitude() {
+    return nodes.empty() ? 0 : (long) sumLatitude / (long) nodes.size();
+}
+
+long DataRepository::getAverageLongitude() {
+    return nodes.empty() ? 0 : (long) sumLongitude / (long) nodes.size();
 }

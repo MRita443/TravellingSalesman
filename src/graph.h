@@ -9,9 +9,11 @@
 #include <list>
 #include <algorithm>
 #include <memory>
+#include <set>
 #include "vertex.h"
 #include "node.h"
 #include "UFDS.h"
+#include "dataRepository.h"
 
 class Graph {
   private:
@@ -52,6 +54,10 @@ class Graph {
                       const unsigned int **dists);
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
+
+    long nearestInsertion(const std::shared_ptr<Vertex>& start);
+
+    void updateViableEdges(edgeSet viableEdges, UFDS partialTour, unsigned int sourceId);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

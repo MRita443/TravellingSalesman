@@ -67,7 +67,7 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
  * @param edge - Pointer to the edge to be set
  * @param selected - Value to set the selected state to
  */
-void Graph::setSelectedEdge(const std::shared_ptr<Edge>& edge, bool selected) {
+void Graph::setSelectedEdge(const std::shared_ptr<Edge> &edge, bool selected) {
     edge->setSelected(selected);
     edge->getReverse()->setSelected(selected);
 }
@@ -144,7 +144,7 @@ void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
  */
 void Graph::dfsKruskalPath(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
-    for (const std::shared_ptr<Edge>& e: source->getAdj()) {
+    for (const std::shared_ptr<Edge> &e: source->getAdj()) {
         if (!e->getDest()->isVisited() && e->isSelected()) {
             e->getDest()->setPath(e);
             dfsKruskalPath(e->getDest());
@@ -164,8 +164,9 @@ bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned in
 
 void
 Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist,
-             unsigned int currentNodeIdx,
-             unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n, const unsigned int **dists) {
+                    unsigned int currentNodeIdx,
+                    unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
+                    const unsigned int **dists) {
     if (currentNodeIdx == n) {
         //Could need to verify here if last node connects to first
 
@@ -197,4 +198,65 @@ unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned i
     unsigned int bestSolutionDist = UINT_MAX;
     tspRecursion(currentSolution, 0, 1, bestSolutionDist, path, n, dists);
     return bestSolutionDist;
+}
+
+long Graph::nearestInsertion(const std::shared_ptr<Vertex> &start) {
+    long distance = 0;
+    UFDS partialTour(vertexSet.size());
+    edgeSet viableEdges; //Orders edges by length
+    std::list<Edge> edgesInTour;
+
+    auto adjacent = start->getAdj();
+    std::sort(adjacent.begin(), adjacent.end(), [](const std::shared_ptr<Edge> &e1, const std::shared_ptr<Edge> &e2) {
+        return e1->getLength() < e2->getLength();
+    });
+
+    //Initialize the partial tour with the chosen vertex and its closest neighbour
+    partialTour.linkSets(start->getId(), adjacent[0]->getDest()->getId());
+    edgesInTour.push_back(*adjacent[0]);
+
+    updateViableEdges(viableEdges, partialTour, start->getId());
+
+    std::shared_ptr<Vertex> newVertex;
+    std::shared_ptr<Vertex> oldVertex;
+
+    //Two cities are already in the tour, repeat for the leftover cities
+    for (int i = 2; i < vertexSet.size(); i++) {
+        //Edges in viableEdges come from outside vertexes to inside the tour vertexes, and are ordered from smallest to biggest length
+        newVertex = viableEdges.begin()->getOrig();
+        oldVertex = viableEdges.begin()->getDest();
+
+        edgesInTour.sort(
+                [](Edge e1, Edge e2) { return }); //TODO: Ver uma maneira melhor de ter acesso às coordenadas de um nó
+        //Ver se desdobrar a edge encontrada em duas é possível com as edges existentes
+
+        long insertionDistance = distance - oldVertex->getPath()->getLength(); //TODO: Somar as duas edges novas
+        long sequenceDistance = distance + viableEdges.begin()->getLength();
+
+        if (sequenceDistance < insertionDistance) {
+            edgesInTour.push_back(*viableEdges.begin());
+            distance = sequenceDistance;
+        } else {
+            edgesInTour.remove(*oldVertex->getPath());
+            //Add two new edges
+            distance = insertionDistance;
+        }
+        partialTour.linkSets(start->getId(), newVertex->getId());
+        updateViableEdges(viableEdges, partialTour, start->getId());
+    }
+    return distance;
+}
+
+void Graph::updateViableEdges(edgeSet viableEdges, UFDS partialTour, unsigned int sourceId) {
+    for (const std::shared_ptr<Vertex> &v: vertexSet) {
+        //If this vertex is not in the partial tour
+        if (!partialTour.isSameSet(sourceId, v->getId())) {
+            for (const std::shared_ptr<Edge> &e: v->getAdj()) {
+                //If the other end of the edge is in the partial tour
+                if (partialTour.isSameSet(sourceId, e->getDest()->getId())) {
+                    viableEdges.insert(*e);
+                } else viableEdges.erase(*e); //Remove it because it might have been there from before
+            }
+        }
+    }
 }

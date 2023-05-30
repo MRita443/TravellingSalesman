@@ -11,6 +11,8 @@ class DataRepository {
 
   private:
     nodePointerTable nodes;
+    double sumLatitude = 0;
+    double sumLongitude = 0;
 
   public:
     DataRepository();
@@ -23,7 +25,9 @@ class DataRepository {
 
     Node &addNodeEntry(unsigned int id, double latitude = constants::INF, double longitude = constants::INF,
                        const std::string &name = "");
+    long getAverageLatitude();
 
+    long getAverageLongitude();
 };
 
 

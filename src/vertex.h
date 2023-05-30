@@ -1,7 +1,3 @@
-//
-// Created by rita on 12-03-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_VERTEX_H
 #define TRAVELLINGSALESMAN_VERTEX_H
 
@@ -28,7 +24,7 @@ class Vertex {
 
     [[nodiscard]] unsigned int getIndegree() const;
 
-    [[nodiscard]] int getCost() const;
+    [[nodiscard]] int getDist() const;
 
     [[nodiscard]] Edge *getPath() const;
 
@@ -42,7 +38,6 @@ class Vertex {
 
     void setIndegree(unsigned int indegree);
 
-    void setCost(int dist);
 
     void setPath(Edge *path);
 
@@ -50,7 +45,10 @@ class Vertex {
 
     bool removeEdge(const unsigned int &destID);
 
-  private:
+    void setDist(int dist);
+
+
+private:
     unsigned int id;                // identifier
     std::vector<Edge *> adj;  // outgoing edges
 
@@ -58,11 +56,11 @@ class Vertex {
     bool visited = false; // used by DFS, BFS, Prim ...
     bool processing = false; // used by isDAG (in addition to the visited attribute)
     unsigned int indegree = 0; // used by topsort
-    int cost;
+
+    int dist; //TODO replace by unsorted_map to store distances between every pair of vertices
     Edge *path = nullptr;
     std::vector<Edge *> incoming; // incoming edges
 
 };
-
 
 #endif //TRAVELLINGSALESMAN_VERTEX_H

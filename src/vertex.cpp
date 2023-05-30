@@ -1,18 +1,13 @@
-//
-// Created by rita on 12-03-2023.
-//
-
 #include "vertex.h"
 
 
 Vertex::Vertex(const unsigned int &id) : id(id) {}
 
 /**
- * Adds a new outgoing edge to the Vertex, with a given destination and capacity
+ * Adds a new outgoing edge to the Vertex, with a given destination and distance
  * Time Complexity: O(1)
  * @param d - Pointer to the destination Vertex
- * @param w - Edge capacity
- * @param service - Service of the Edge
+ * @param w - Edge distance
  * @return Pointer to the new Edge created
  */
 Edge *Vertex::addEdge(Vertex *d, unsigned int w) {
@@ -75,9 +70,6 @@ unsigned int Vertex::getIndegree() const {
     return this->indegree;
 }
 
-int Vertex::getCost() const {
-    return this->cost;
-}
 
 Edge *Vertex::getPath() const {
     return this->path;
@@ -103,10 +95,14 @@ void Vertex::setIndegree(unsigned int indegree) {
     this->indegree = indegree;
 }
 
-void Vertex::setCost(int cost) {
-    this->cost = cost;
+void Vertex::setDist(int dist) {
+    this->dist = dist;
 }
 
 void Vertex::setPath(Edge *path) {
     this->path = path;
+}
+
+int Vertex::getDist() const {
+    return 0;
 }

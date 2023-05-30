@@ -1,7 +1,3 @@
-//
-// Created by rita on 19-05-2023.
-//
-
 #include "graph.h"
 #include <climits>
 
@@ -51,7 +47,7 @@ bool Graph::addVertex(const unsigned int &id) {
  * @return Pair containing a pointer to the created Edge and to its reverse
  */
 bool
-Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, unsigned int length) {
+Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length) {
     auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
@@ -59,461 +55,53 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
 
     auto e1 = v1->addEdge(v2, length);
     auto e2 = v2->addEdge(v1, length);
+
     e1->setReverse(e2);
     e2->setReverse(e1);
 
     totalEdges++;
-
     return true;
 }
 
-/*
 
-*/
 /**
- * Single-source or Multi-source Edmonds-Karp algorithm to find the the network's max flow
- * Time Complexity: O(|VE²|)
- * @param source - List of ids of the source Vertex(es)
- * @param target - Id of the target Vertex
- * @param residualGraph - Graph object representing this Graph's residual network
- * @return unsigned int representing computed value of max flow
- *//*
-
-
-unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph) {
-    for (Vertex const *v: vertexSet) {
-        for (Edge *e: v->getAdj()) {
-            e->setFlow(0);
-            e->getCorrespondingEdge()->setCapacity(e->getCapacity()); //Reset residual edge capacity
-        }
-    }
-
-    // Initialize the maximum flow to 0
-    unsigned int maxFlow = 0;
-
-    while (residualGraph.path(source, target)) {
-
-        // Find the bottleneck capacity of the path
-        unsigned int bottleneckCapacity = residualGraph.findBottleneck(target);
-
-        // Augment the flow by the bottleneck capacity
-        residualGraph.augmentPath(target, bottleneckCapacity);
-
-        // Update the maximum flow with the bottleneck capacity
-        maxFlow += bottleneckCapacity;
-    }
-    return maxFlow;
+ * @brief Takes an edge pointer and sets the selected state of that edge and its reverse to the given value
+ * 
+ * @param edge - Pointer to the edge to be set
+ * @param selected - Value to set the selected state to
+ */
+void Graph::setSelectedEdge(const Edge *edge, bool selected) {
+    edge->setSelected(selected);
+    edge->getReverse()->setSelected(selected);
 }
 
-*/
 /**
- * Adapted BFS that checks if there is a valid path connecting the source and target vertices. Indicated for use on residual graphs
- * Time Complexity: O(|V| + |E|)
- * @param source - List of ids of the source Vertex(es)
- * @param target - Id of the target Vertex
- * @return True if a path was found, false if not
- *//*
-
-bool Graph::path(const std::list<std::string> &source, const std::string &target) const {
-
-    for (Vertex *v: vertexSet) {
-        v->setVisited(false);
-        v->setPath(nullptr);
-    }
-
-    std::queue<std::string> q;
-    for (const auto &it: source) {
-        q.push(it);
-        findVertex(it)->setVisited(true);
-    }
-
-    while (!q.empty()) {
-        Vertex const *currentVertex = findVertex(q.front());
-        q.pop();
-        for (Edge *e: currentVertex->getAdj()) {
-            if (!e->getDest()->isVisited() && e->getCapacity() > 0 && e->isSelected()) {
-                q.push(e->getDest()->getId());
-                e->getDest()->setVisited(true);
-                e->getDest()->setPath(e);
-                if (e->getDest()->getId() == target) return true;
-            }
-        }
-    }
-    return false;
-}
-
-*/
-/**
- * Bellman-Ford algorithm variation that returns a list of edges belonging to a negative cycle that was found
- * Time Complexity: O(|VE|)
- * @param source - Id of source Vertex, to which distances will be relative to
- * @return List of pointers to Edges that belong to a negative cycle, or an empty list if no negative cycle was found
- *//*
-
-std::list<Edge *> Graph::bellmanFord(const std::string &source) {
-    for (Vertex *v: vertexSet) {
-        v->setCost(UINT32_MAX);
-        v->setPath(nullptr);
-    }
-    findVertex(source)->setCost(0);
-
-    for (int i = 1; i <= vertexSet.size(); i++) { //V times
-        for (Vertex *v: vertexSet) { //Relax every Edge
-            for (Edge *e: v->getIncoming()) {
-                if (e->getCapacity() > 0) {
-                    int tempCost = e->getOrig()->getCost() + e->getCost();
-                    if (tempCost < v->getCost()) {
-                        if (i == vertexSet.size()) { //Edge being relaxed on Nth iteration - Negative cycle!
-                            Vertex *currentVertex = v;
-                            std::list<Edge *> negativeCycle;
-
-                            //Get beginning of cycle
-                            for (int j = 0; j < vertexSet.size(); j++) {
-                                currentVertex = currentVertex->getPath()->getOrig();
-                            }
-
-                            for (Vertex *temp = currentVertex;; temp = temp->getPath()->getOrig()) {
-                                negativeCycle.push_back(currentVertex->getPath());
-                                if (temp == currentVertex && negativeCycle.size() > 1) return negativeCycle;
-                            }
-                        }
-                        v->setCost(tempCost);
-                        v->setPath(e);
-                    }
-                }
-            }
-        }
-    }
-    return {};
-}
-
-*/
-/**
- * Cycle-cancelling algorithm for finding the minimum cost for the maximum flow of this Graph's network
- * Time Complexity: O(|VE²|)
- * @param source - Id of the source Vertex
- * @param target - Id of the target Vertex
- * @param residualGraph - Graph object representing this Graph's residual network
- * @return A pair of unsigned ints representing the value of the max flow and its min cost
- *//*
-
-std::pair<unsigned int, unsigned int>
-Graph::minCostMaxFlow(const std::string &source, const std::string &target, Graph &residualGraph) {
-    std::pair<unsigned int, unsigned int> result;
-    result.first = edmondsKarp({source}, target, residualGraph);
-
-    Graph minCostResidual;
-    makeMinCostResidual(minCostResidual);
-
-    std::list<Edge *> negativeCycle = minCostResidual.bellmanFord(source);
-    while (!negativeCycle.empty()) {
-        unsigned int bottleneckCapacity = findListBottleneck(negativeCycle);
-        augmentMinCostPath(negativeCycle, bottleneckCapacity);
-        negativeCycle = minCostResidual.bellmanFord(source);
-    }
-
-    unsigned int cost = 0;
-    for (Vertex *v: vertexSet) {
-        for (Edge *e: v->getAdj()) {
-            cost += e->getCost() * e->getFlow();
-        }
-    }
-    result.second = cost;
-
-    return result;
-}
-
-*/
-/**
- * Finds the minimum available capacity value in the path connecting source and target vertices
- * Time Complexity: O(|E|)
- * @param target - Id of the target Vertex
- * @return Bottleneck (minimum) capacity of the path connecting source to target
- *//*
-
-unsigned int Graph::findBottleneck(const std::string &target) const {
-    Vertex const *currentVertex = findVertex(target);
-    unsigned int currBottleneck;
-    unsigned int bottleneck = UINT32_MAX;
-
-    while (currentVertex->getPath() != nullptr) {
-
-        currBottleneck = currentVertex->getPath()->getCapacity();
-        currentVertex = currentVertex->getPath()->getOrig();
-
-        if (currBottleneck < bottleneck) {
-            bottleneck = currBottleneck;
-        }
-    }
-    return bottleneck;
-}
-
-*/
-/**
- * Finds the minimum available capacity value of the edges passed as parameter
- * Time Complexity: O(|E|)
- * @param edges - List of pointers to the Edges to evaluate
- * @return Bottleneck (minimum) capacity of the list of Edges
- *//*
-
-unsigned int Graph::findListBottleneck(const std::list<Edge *> &edges) {
-    unsigned int currBottleneck;
-    unsigned int bottleneck = UINT32_MAX;
-
-    for (Edge *e: edges) {
-        currBottleneck = e->getCapacity();
-        if (currBottleneck < bottleneck)
-            bottleneck = currBottleneck;
-    }
-    return bottleneck;
-}
-
-
-*/
-/**
- * Augments or reduces the flow in the regular Graph path connecting source to target by value units, and updates the residual network. Indicated for use on residual graphs
- * Time Complexity: O(|E|)
- * @param target - Id of the target Vertex
- * @param value - Number of units to alter the flow by
- *//*
-
-void Graph::augmentPath(const std::string &target, const unsigned int &value) const {
-    Vertex const *currentVertex = findVertex(target);
-
-    while (currentVertex->getPath() != nullptr) {
-        Edge *residualEdge = currentVertex->getPath();
-        Edge *reverseResidualEdge = residualEdge->getReverse();
-        Edge *regularEdge = residualEdge->getCorrespondingEdge();
-        Edge *reverseRegularEdge = regularEdge->getReverse();
-
-
-        if (regularEdge->getFlow() + value > regularEdge->getCapacity()) { //Intended value exceeds capacity
-
-            //Augment flow in regular graph
-            unsigned int intendedValue = regularEdge->getFlow() + value;
-            regularEdge->setFlow(regularEdge->getCapacity());
-            reverseRegularEdge->setFlow(reverseRegularEdge->getFlow() - (intendedValue -
-                                                                         regularEdge->getCapacity())); //Reduce reverse edge flow by exceeding amount
-            //Update residual Graph edges
-            residualEdge->setCapacity(0);
-            reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() + (intendedValue -
-                                                                                   regularEdge->getCapacity()));
-
-        } else { //Intended value is within capacity
-
-            //Augment flow in regular graph
-            regularEdge->setFlow(regularEdge->getFlow() + value);
-
-            //Update residual Graph edges
-            residualEdge->setCapacity(regularEdge->getCapacity() - regularEdge->getFlow());
-            reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() + value);
-
-        }
-        currentVertex = currentVertex->getPath()->getOrig();
-    }
-}
-
-*/
-/**
- * Augments or reduces the flow in the regular graph edges by value units, and updates the residual network. Indicated for use on residual graphs auxiliary to the min cost max flow algorithm
- * Time Complexity: O(|E|)
- * @param edges - List of pointers to the Edges whose flow will be altered
- * @param value - Number of units to alter the flow by
- *//*
-
-void Graph::augmentMinCostPath(const std::list<Edge *> &edges, const unsigned int &value) {
-
-    for (Edge *residualEdge: edges) {
-        Edge *reverseResidualEdge = residualEdge->getReverse(); //For each minCostResidual edge, its reverse is the corresponding negative cost edge, and vice-versa
-        Edge *regularEdge = residualEdge->getCorrespondingEdge();
-
-        if (residualEdge->getCost() < 0) {
-            //Reduce flow in regular graph
-            regularEdge->setFlow(regularEdge->getFlow() - value);
-
-            //Update residual Graph edges
-            residualEdge->setCapacity(residualEdge->getCapacity() + value);
-            reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() - value);
-        } else {
-            //Augment flow in regular graph
-            regularEdge->setFlow(regularEdge->getFlow() + value);
-
-            //Update residual Graph edges
-            residualEdge->setCapacity(residualEdge->getCapacity() - value);
-            reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() + value);
-        }
-    }
-}
-
-
-*/
-/**
- * Randomly selects numEdges edges to be deactivated
- * Time Complexity: O(|E|)
- * @param numEdges - Number of edges to be deactivated
- * @return A vector of pointers to all the Edges chosen
- *//*
-
-std::vector<Edge *> Graph::randomlySelectEdges(unsigned int numEdges) {
-    unsigned int stationNum;
-    Vertex *currentVertex;
-    unsigned int choice;
-    std::vector<Edge *> deactivatedEdges = {};
-
-    while (deactivatedEdges.size() < numEdges) {
-        stationNum = rand() % vertexSet.size();
-        currentVertex = vertexSet[stationNum];
-
-        if (currentVertex->getAdj().empty()) continue;
-        choice = rand() % currentVertex->getAdj().size();
-
-        if (currentVertex->getAdj()[choice]->isSelected()) {
-            deactivatedEdges.push_back(currentVertex->getAdj()[choice]);
-        }
-    }
-    return deactivatedEdges;
-}
-
-*/
-/**
- * Takes a vector of edge pointers and sets the selected state of those edges, their reverses and their corresponding edges in the residual graph to false
+ * Takes a vector of edge pointers and sets the selected state of those edges and their reverses to false
  * Time Complexity: O(size(edges))
  * @param edges - Vector of edge pointers to be deactivated
- *//*
-
+ */
 void Graph::deactivateEdges(const std::vector<Edge *> &edges) {
     for (Edge *edge: edges) {
-        edge->setSelected(false);
-        edge->getCorrespondingEdge()->setSelected(false);
-        edge->getReverse()->setSelected(false);
-        edge->getReverse()->getCorrespondingEdge()->setSelected(false);
+        setSelectedEdge(edge, false);
     }
 }
 
-*/
 /**
- * Takes a vector of edge pointers and sets the selected state of those edges, their reverses and their corresponding edges in the residual graph to true
+ * Takes a vector of edge pointers and sets the selected state of those edges and their reverses to true
  * Time Complexity: O(size(edges))
  * @param edges - Vector of edge pointers to be activated
- *//*
-
+ */
 void Graph::activateEdges(const std::vector<Edge *> &edges) {
     for (Edge *edge: edges) {
-        edge->setSelected(true);
-        edge->getCorrespondingEdge()->setSelected(true);
-        edge->getReverse()->setSelected(true);
-        edge->getReverse()->getCorrespondingEdge()->setSelected(true);
+        setSelectedEdge(edge, true);
     }
 }
 
-*/
-/**
- * Calculates the maximum flow between a source vertex and a target vertex with the edges inputted to the function being deactivated and reactivated after calculating the maximum flow
- * Time Complexity: O(|VE²|)
- * @param selectedEdges - Vector of edges to be deactivated and later reactivated
- * @param source - List of Ids of source vertexes
- * @param target - Id of the target Vertex
- * @param residualGraph - Graph object representing this Graph's residual network
- * @return A pair with the max flow before deactivating the Edges and after
- *//*
-
-std::pair<unsigned int, unsigned int>
-Graph::maxFlowDeactivatedEdges(const std::vector<Edge *> &selectedEdges, const std::list<std::string> &source,
-                               const std::string &target, Graph &residualGraph) {
-
-    std::pair<unsigned int, unsigned int> result;
-    result.first = edmondsKarp(source, target, residualGraph);
-    deactivateEdges(selectedEdges);
-    result.second = edmondsKarp(source, target, residualGraph);
-    activateEdges(selectedEdges);
-
-    return result;
-}
-
-
-*/
-/**
-* Finds the stations that are at the end of the indicated station's line (i.e have only connection to one other station)
- * Time Complexity: O(|V+E|)
- * @param stationId - Id of the starting station
-*//*
-
-std::list<std::string> Graph::findEndOfLines(const std::string &stationId) const {
-    std::list<std::string> eol_stations;
-    std::queue<Vertex *> q;
-
-    for (Vertex *v: vertexSet) v->setVisited(false);
-    q.push(findVertex(stationId));
-
-    while (!q.empty()) {
-        Vertex *curr = q.front();
-        q.pop();
-        curr->setVisited(true);
-        if (curr->getAdj().size() == 1) eol_stations.push_back(curr->getId());
-        for (Edge const *e: curr->getAdj()) {
-            if (!e->getDest()->isVisited()) {
-                q.push(e->getDest());
-            }
-        }
-    }
-    return eol_stations;
-}
-
-
-*/
-/**
- * Creates an ordered vector with incoming fluxes of each station before and after edge deactivation
- * Time Complexity: O(|V²E²|)
- * @param edges - Edges to be deactivated
- * @param residualGraph - Graph object representing the graph's residual network
- * @return An ordered vector of pairs, with the name of the station first, and a pair of the original max flow and the reduced max flow
- *//*
-
-std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int>>>
-Graph::topReductions(const std::vector<Edge *> &edges, Graph &residualGraph) {
-    std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int>>> result;
-
-    for (Vertex *v: vertexSet) {
-        unsigned int baseFlow = incomingFlux(v->getId(), residualGraph);
-        unsigned int reducedFlow = incomingReducedFlux(edges, v->getId(), residualGraph);
-        result.push_back({v->getId(), {baseFlow, reducedFlow}});
-    }
-
-    std::sort(result.begin(), result.end(), [](const std::pair<std::string, std::pair<unsigned int, unsigned int>> &p1,
-                                               const std::pair<std::string, std::pair<unsigned int, unsigned int>> &p2) {
-        return (p1.second.first == 0 ? 0 : (100 - ((p1.second.second * 1.0) / p1.second.first) * 100)) >
-               (p2.second.first == 0 ? 0 : (100 - ((p2.second.second * 1.0) / p2.second.first) * 100));
-    });
-
-    return result;
-}
-
-
-*/
-/**
- * Creates a list with every vertex on the edges of the connected component of VertexId, excluding itself
- * Time Complexity: O(V)
- * @param vertexId - Id of Vertex to be excluded from the list
- * @return A list with every vertex id on the edges of the connected component except the one selected in the function
- *//*
-
-std::list<std::string> Graph::superSourceCreator(const std::string &vertexId) const {
-    std::list<std::string> superSource = findEndOfLines(vertexId);
-    for (auto it = superSource.begin(); it != superSource.end(); it++)
-        if (*it == vertexId) {
-            superSource.erase(it);
-            break;
-        }
-    return superSource;
-}
-
-*/
 /**
  * DFS traversal variation that sets the visited attribute to true of the nodes the DFS traverses to
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
- *//*
-
+*/
 void Graph::visitedDFS(Vertex *source) {
     source->setVisited(true);
     for (Edge const *e: source->getAdj()) {
@@ -523,140 +111,50 @@ void Graph::visitedDFS(Vertex *source) {
     }
 }
 
-*/
-/**
- * Finds the pairs of stations with max Max-Flow
- * Time Complexity: O(|V³|*|E²|)
- * @param residualGraph - Graph object representing the graph's residual network
- * @return A pair consisting of a list of pairs, the stations with max-flow, and an unsigned int of the value of the max flow between them
- *//*
 
-std::pair<std::list<std::pair<std::string, std::string>>, unsigned int>
-Graph::calculateNetworkMaxFlow(Graph &residualGraph) {
-    unsigned int max = 0;
-    std::list<std::pair<std::string, std::string>> stationList;
-    for (auto itV1 = vertexSet.begin(); itV1 < vertexSet.end(); itV1++) {
-        Vertex *v1 = *itV1;
-        for (Vertex *aux: vertexSet) aux->setVisited(false);
-        visitedDFS(*itV1);
-        for (auto itV2 = itV1 + 1; itV2 < vertexSet.end(); itV2++) {
-            Vertex *v2 = *itV2;
-            if (v2->isVisited()) {
-                unsigned int itFlow = edmondsKarp({v1->getId()}, v2->getId(), residualGraph);
-                if (itFlow == max) stationList.emplace_back(v1->getId(), v2->getId());
-                if (itFlow > max) {
-                    max = itFlow;
-                    stationList = {{v1->getId(), v2->getId()}};
-                }
-            }
+/**
+ * @brief Builds a MST using Kruskal's algorithm
+ * Time Complexity: O(|E|log|E|)
+ */
+void Graph::kruskal(){
+    std::list<Edge *> edges;
+    for (Vertex *v : vertexSet){
+        //v->setVisited(false); //TODO: Check if this is necessary
+        for (Edge *e: v->getAdj()){
+            edges.push_back(e);
+            e->setSelected(false);
         }
     }
-    return {stationList, max};
-}
+    UFDS ufds(vertexSet.size());
 
-*/
-/**
- * Finds the incoming flux that a certain station can receive (i.e the amount of trains that can arrive there at the same time)
- * Time Complexity: O(|VE²|)
- * @param station - Vertex's ID
- * @param residualGraph - Graph object representing the graph's residual network
- * @return Max flow that can arrive at the given vertex from all the network
- *//*
+    edges.sort([](Edge *e1, Edge *e2) {return e1->getDist() < e2->getDist();});
 
-unsigned int Graph::incomingFlux(const std::string &station, Graph &residualGraph) {
-    std::list<std::string> superSource = superSourceCreator(station);
-    return edmondsKarp(superSource, station, residualGraph);
-}
-
-*/
-/**
- * Finds the incoming flux that a certain station can receive (i.e the amount of trains that can arrive there at the same time), with edges deactivated
- * Time Complexity: O(|VE²|)
- * @param edges - Vector of pointers to the Edges to be deactivated
- * @param station - Vertex's ID
- * @param residualGraph - Graph object representing the graph's residual network
- * @return Max flow that can arrive at the given vertex from all the network
- *//*
-
-unsigned int
-Graph::incomingReducedFlux(const std::vector<Edge *> &edges, const std::string &station, Graph &residualGraph) {
-    std::list<std::string> superSource = superSourceCreator(station);
-    deactivateEdges(edges);
-    unsigned int result = edmondsKarp(superSource, station, residualGraph);
-    activateEdges(edges);
-    return result;
-}
-
-
-bool
-sort_pair_decreasing_second(const std::pair<std::string, double> &left, const std::pair<std::string, double> &right) {
-    return left.second > right.second;
-}
-
-*/
-/**
- * Creates an ordered vector with incoming fluxes of previously grouped stations
- * Time Complexity: O(|V²E²| * m), with m being the size of group
- * @param group - Map that identifies a group of stations
- * @param residualGraph - Graph object representing the graph's residual network
- * @return An ordered vector of pairs with decreasing average flow (second element), identified by its grouping name (first element)
- *//*
-
-std::vector<std::pair<std::string, double>>
-Graph::topGroupings(const std::unordered_map<std::string, std::list<Node>> &group, Graph &residualGraph) {
-    std::vector<std::pair<std::string, double>> result;
-    for (const auto &it: group) {
-        double average = getAverageIncomingFlux(it.second, residualGraph);
-        result.emplace_back(it.first, average);
+    for (Edge *e: edges) {
+        if (!isSameSet(e->getOrig()->getId(), e->getDest()->getId())) {
+            e->setSelected(true);
+            linkSets(e->getOrig);
+        }
     }
-    std::sort(result.begin(), result.end(), sort_pair_decreasing_second);
-    return result;
+    return;
 }
 
-*/
 /**
- * Finds the average incoming flux for every station in a list (normally, representing a township, etc.)
- * Time Complexity: O(n|VE²|), n being the size of stations
- * @param stations - List with the stations' id
- * @param residualGraph - Graph object representing the graph's residual network
- *//*
-
-double Graph::getAverageIncomingFlux(const std::list<Node> &stations, Graph &residualGraph) {
-    double flux_sum = 0;
-    for (const Node &s: stations) {
-        const std::string &sid = s.getName();
-        flux_sum += incomingFlux(sid, residualGraph);
-    }
-    return flux_sum / (double) stations.size();
-}
-
-*/
-/**
- * Based on this Graph, builds an auxiliary min cost max flow residual graph in minCostResidual, with edges representing removing flow having negative cost
+ * @brief Iterates through the vertex set using DFS, respecting if an edge is selected or not
+ * Registers the path taken in the vertex's path attribute
  * Time Complexity: O(|V|+|E|)
- * @param minCostResidual - Graph object in which to construct the residual network
- *//*
-
-void Graph::makeMinCostResidual(Graph &minCostResidual) {
-    for (Vertex *v: vertexSet) {
-        minCostResidual.addVertex(v->getId());
-    }
-    for (Vertex *v: vertexSet) {
-        for (Edge *e: v->getAdj()) {
-            auto [edge, negativeCostEdge] = minCostResidual.addAndGetBidirectionalEdge(
-                    e->getOrig()->getId(), e->getDest()->getId(), e->getCapacity(), e->getService());
-
-            negativeCostEdge->setCost(-edge->getCost());
-
-            edge->setCapacity(e->getCapacity() - e->getFlow());
-            negativeCostEdge->setCapacity(e->getFlow());
-
-            edge->setCorrespondingEdge(e);
-            negativeCostEdge->setCorrespondingEdge(e);
+ * @param source - Vertex where the DFS starts
+ */
+void Graph::dfsKruskalPath(Vertex *source){
+    v->setVisited(true);
+    for (Edge *e : v->getAdj()){
+        if(!e->getDest()->isVisited() && e->isSelected()){
+            e->getDest()->setPath(e);
+            dfsKruskalPath(e->getDest());
         }
     }
+    return;
 }
-*/
+
 
 bool inSolution(unsigned int j, unsigned int *solution, unsigned int n) {
     for (int i = 0; i < n; i++) {

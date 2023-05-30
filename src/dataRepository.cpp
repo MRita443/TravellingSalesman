@@ -1,7 +1,3 @@
-//
-// Created by rita on 17-03-2023.
-//
-
 #include "dataRepository.h"
 
 using namespace std;
@@ -32,7 +28,6 @@ DataRepository::addNodeEntry(unsigned int id, double latitude, double longitude,
     nodes.insert(newNode);
     return *newNode;
 }
-
 
 /**
  * Finds the Node object with the given name

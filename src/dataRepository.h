@@ -1,11 +1,6 @@
-//
-// Created by rita on 17-03-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_DATAREPOSITORY_H
 #define TRAVELLINGSALESMAN_DATAREPOSITORY_H
 
-#include <list>
 #include <algorithm>
 #include <iostream>
 #include <optional>

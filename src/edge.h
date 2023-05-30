@@ -1,7 +1,3 @@
-//
-// Created by rita on 12-03-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_EDGE_H
 #define TRAVELLINGSALESMAN_EDGE_H
 
@@ -9,12 +5,6 @@
 #include "vertex.h"
 
 class Vertex;
-
-enum class Service : unsigned int {
-    STANDARD = 0,
-    ALFA_PENDULAR = 1,
-    VERY_EXPENSIVE = 2
-};
 
 class Edge {
   public:
@@ -34,9 +24,9 @@ class Edge {
 
     void print() const;
 
-    [[nodiscard]] unsigned int getLength() const;
+    [[nodiscard]] double getLength() const;
 
-    void setLength(int length);
+    void setLength(double length);
 
   private:
     Vertex *orig;
@@ -46,8 +36,7 @@ class Edge {
     bool selected = true;
     Edge *reverse = nullptr;
 
-    unsigned int length;
-
+    double length;
 };
 
 #endif //TRAVELLINGSALESMAN_EDGE_H

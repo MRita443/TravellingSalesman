@@ -1,7 +1,3 @@
-//
-// Created by rita on 28-02-2023.
-//
-
 #include "menu.h"
 #include "node.h"
 

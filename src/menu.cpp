@@ -18,7 +18,7 @@ Menu::Menu() = default;
 
 /**
  * Delegates extracting file info, calling the appropriate functions for each file
- * Time Complexity: O(n*v), where n is the number of lines of network.csv and v is the number of lines in stations.csv
+ * Time Complexity: O(n*v), where n is the number of lines of edgesFilename and v is the number of lines in nodesFilename
  */
 void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &nodesFilename) {
     if (!nodesFilename.empty()) {
@@ -124,8 +124,8 @@ void Menu::nodeDoesntExist() {
 }*/
 
 /**
- * Extracts and stores the information of a nodes file
- * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of stations.csv
+ * Extracts and stores the information of an edges file
+ * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of the file
  */
 void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bool hasLabels) {
 
@@ -200,7 +200,7 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
 
 /**
  * Extracts and stores the information of a nodes file
- * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of stations.csv
+ * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of the file
  */
 void Menu::extractNodesFile(const std::string &filename) {
     {

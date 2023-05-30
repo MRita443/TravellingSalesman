@@ -27,7 +27,7 @@ std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
 }
 
 /**
- * Adds a vertex with a given id to the Graph, representing a given NODE
+ * Adds a vertex with a given id to the Graph, representing a given Node
  * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param id - Id of the Vertex to add
  * @return True if successful, and false if a vertex with the given id already exists
@@ -153,7 +153,7 @@ void Graph::dfsKruskalPath(const std::shared_ptr<Vertex> &source) {
 }
 
 
-bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n) {
+bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned int n) {
     for (int i = 0; i < n; i++) {
         if (solution[i] == j) {
             return true;
@@ -163,7 +163,7 @@ bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n) {
 }
 
 void
-tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist,
+Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist,
              unsigned int currentNodeIdx,
              unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n, const unsigned int **dists) {
     if (currentNodeIdx == n) {
@@ -191,7 +191,7 @@ tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist,
     }
 }
 
-unsigned int tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
+unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
     unsigned int currentSolution[n];
     currentSolution[0] = 0;
     unsigned int bestSolutionDist = UINT_MAX;

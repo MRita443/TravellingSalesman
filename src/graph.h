@@ -18,23 +18,26 @@ class Graph {
   private:
     unsigned int totalEdges = 0;
     std::vector<Vertex *> vertexSet;    // vertex set
-    std::unordered_map<std::string, Vertex *> idToVertex;
+    std::unordered_map<unsigned int, Vertex *> idToVertex;
+    std::pair<unsigned int, std::list<Vertex *>> tour;
 
   public:
     Graph();
 
-    [[nodiscard]] Vertex *findVertex(const std::string &id) const; //
+    [[nodiscard]] Vertex *findVertex(const unsigned int &id) const;
 
-    bool addVertex(const std::string &id); //
+    [[nodiscard]] Edge *findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
+
+    bool addVertex(const unsigned int &id); //
 
     [[nodiscard]] unsigned int getNumVertex() const; //
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const; //
 
     std::pair<Edge *, Edge *>
-    addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int dist);
+    addAndGetBidirectionalEdge(const unsigned int &source, const unsigned int &dest, unsigned int dist);
 
-    static void setSelectedEdge(const Edge *edge, bool selected);
+    static void setSelectedEdge(Edge *edge, bool selected);
 
     static void activateEdges(const std::vector<Edge *> &Edges);
 
@@ -44,9 +47,13 @@ class Graph {
 
     void visitedDFS(Vertex *source);
 
-    void dfsKruskalPath(Vertex *source);
+    bool isConnectable(Vertex *candidate) const;
 
-    static void kruskal();
+    void preorderMSTTraversal(Vertex *source);
+
+    void kruskal();
+
+    void triangularTSPTour();
 
 };
 

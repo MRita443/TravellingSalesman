@@ -45,7 +45,7 @@ public:
 
     void setPath(Edge *path);
 
-    Edge *addEdge(Vertex *dest, unsigned int w, Service s);
+    Edge *addEdge(Vertex *dest, unsigned int w);
 
     bool removeEdge(const std::string& destID);
 

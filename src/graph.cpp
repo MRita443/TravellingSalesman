@@ -22,10 +22,24 @@ unsigned int Graph::getTotalEdges() const {
  * @param id - Id of the vertex to be found
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
-Vertex *Graph::findVertex(const std::string &id) const {
+Vertex *Graph::findVertex(const unsigned int &id) const {
     auto it = idToVertex.find(id);
     if (it == idToVertex.end()) { return nullptr; }
     return it->second;
+}
+
+/**
+ * Finds the edge connecting two vertices
+ * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
+ * @param v1id - Id of the first vertex
+ * @param v2id - Id of the second vertex
+ * @return Pointer to the edge that connects both vertices
+ */
+Edge *Graph::findEdge(const unsigned int &v1id, const unsigned int &v2id) const{
+    for (Edge *e : findVertex(v1id)->getAdj()){
+        if (e->getDest()->getId() == v2id) return e;
+    }
+    return nullptr;
 }
 
 /**
@@ -34,7 +48,7 @@ Vertex *Graph::findVertex(const std::string &id) const {
  * @param id - Id of the Vertex to add
  * @return True if successful, and false if a vertex with the given id already exists
  */
-bool Graph::addVertex(const std::string &id) {
+bool Graph::addVertex(const unsigned int &id) {
     if (findVertex(id) != nullptr)
         return false;
     vertexSet.push_back(new Vertex(id));
@@ -51,7 +65,7 @@ bool Graph::addVertex(const std::string &id) {
  * @return Pair containing a pointer to the created Edge and to its reverse
  */
 std::pair<Edge *, Edge *>
-Graph::addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int dist) {
+Graph::addAndGetBidirectionalEdge(const unsigned int &source, const unsigned int &dest, unsigned int dist) {
     auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
@@ -68,11 +82,11 @@ Graph::addAndGetBidirectionalEdge(const std::string &source, const std::string &
 
 /**
  * @brief Takes an edge pointer and sets the selected state of that edge and its reverse to the given value
- * 
+ * Time Complexity: O(1)
  * @param edge - Pointer to the edge to be set
  * @param selected - Value to set the selected state to
  */
-void Graph::setSelectedEdge(const Edge *edge, bool selected) {
+void Graph::setSelectedEdge(Edge *edge, bool selected) {
     edge->setSelected(selected);
     edge->getReverse()->setSelected(selected);
 }
@@ -118,7 +132,7 @@ void Graph::visitedDFS(Vertex *source) {
  * Time Complexity: O(|E|log|E|)
  */
 void Graph::kruskal(){
-    std::list<Edge *> edges;
+    std::list<Edge *> edges; //TODO: better generate this list (edgeSet like vertexSet?)
     for (Vertex *v : vertexSet){
         //v->setVisited(false); //TODO: Check if this is necessary
         for (Edge *e: v->getAdj()){
@@ -131,12 +145,24 @@ void Graph::kruskal(){
     edges.sort([](Edge *e1, Edge *e2) {return e1->getDist() < e2->getDist();});
 
     for (Edge *e: edges) {
-        if (!isSameSet(e->getOrig()->getId(), e->getDest()->getId())) {
+        if (!ufds.isSameSet(e->getOrig()->getId(), e->getDest()->getId())) {
             e->setSelected(true);
-            linkSets(e->getOrig);
+            ufds.linkSets(e->getOrig()->getId(), e->getDest()->getId());
         }
     }
-    return;
+}
+
+/**
+ * Checks if the last vertex on the tour attribute is adjacent to a given vertex
+ * Time Complexity: O(|E|) (worst case)
+ * @param candidate - Vertex that is going to be checked
+ * @return true if the candidate vertex is adjacent to the tour's last vertex, false otherwise
+ */
+bool Graph::isConnectable(Vertex *candidate) const {
+    for (Edge *e : (*tour.second.rend())->getAdj()){
+        if (e->getDest() == candidate) return true;
+    }
+    return false;
 }
 
 /**
@@ -145,15 +171,36 @@ void Graph::kruskal(){
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
  */
-void Graph::dfsKruskalPath(Vertex *source){
-    v->setVisited(true);
-    for (Edge *e : v->getAdj()){
-        if(!e->getDest()->isVisited() && e->isSelected()){
-            e->getDest()->setPath(e);
-            dfsKruskalPath(e->getDest());
+void Graph::preorderMSTTraversal(Vertex *source){
+    source->setVisited(true);
+    if (tour.second.size() != 0){
+        tour.first += findEdge((*(tour.second).rend())->getId(), source->getId())->getDist();
+    }
+    tour.second.push_back(source);
+    for (Edge *e : source->getAdj()){
+        bool unvisited = !(e->getDest()->isVisited());
+        bool selected = e->isSelected();
+        //bool connected_to_last = isConnectable(e->getDest());
+        if(unvisited && selected /*&& connected_to_last*/){
+            preorderMSTTraversal(e->getDest());
         }
     }
-    return;
+}
+
+/**
+ * Calculates an approximation of the TSP, using the triangular approximation heuristic
+ * Time Complexity: //TODO
+ */
+void Graph::triangularTSPTour(){
+    /*
+    -Build MST
+    -Get pre-order of the mst as vector //!DFS?
+    -Iterate that order getting total dist
+    */
+    kruskal();
+    tour = {0,{}};
+    preorderMSTTraversal(*(vertexSet.begin()));
+    return; //results are updated in tour
 }
 
 bool inSolution(unsigned int j, unsigned int *solution, unsigned int n) {

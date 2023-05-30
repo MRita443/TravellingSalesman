@@ -29,6 +29,7 @@ class DataRepository {
     Node &addNodeEntry(unsigned int id, double latitude = constants::INF, double longitude = constants::INF,
                        const std::string &name = "");
 
+    void updateEntry(unsigned int id, std::shared_ptr<Node> n);
 };
 
 

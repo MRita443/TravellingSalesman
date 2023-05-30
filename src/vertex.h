@@ -1,9 +1,5 @@
-//
-// Created by rita on 12-03-2023.
-//
-
-#ifndef RAILWAYMANAGEMENT_VERTEX_H
-#define RAILWAYMANAGEMENT_VERTEX_H
+#ifndef TRAVELLINGSALESMAN_VERTEX_H
+#define TRAVELLINGSALESMAN_VERTEX_H
 
 #include <iostream>
 #include <vector>
@@ -19,9 +15,9 @@ enum class Service: unsigned int;
 
 class Vertex {
 public:
-    explicit Vertex(std::string id);
+    explicit Vertex(unsigned int id);
 
-    [[nodiscard]] std::string getId() const;
+    [[nodiscard]] unsigned int getId() const;
 
     [[nodiscard]] std::vector<Edge *> getAdj() const;
 
@@ -31,13 +27,13 @@ public:
 
     [[nodiscard]] unsigned int getIndegree() const;
 
-    [[nodiscard]] int getCost() const;
+    [[nodiscard]] int getDist() const;
 
     [[nodiscard]] Edge *getPath() const;
 
     [[nodiscard]] std::vector<Edge *> getIncoming() const;
 
-    void setId(std::string info);
+    void setId(unsigned int info);
 
     void setVisited(bool visited);
 
@@ -45,7 +41,7 @@ public:
 
     void setIndegree(unsigned int indegree);
 
-    void setCost(int dist);
+    void setDist(int dist);
 
     void setPath(Edge *path);
 
@@ -54,18 +50,18 @@ public:
     bool removeEdge(const std::string& destID);
 
 private:
-    std::string id;                // identifier
+    unsigned int id;                // identifier
     std::vector<Edge *> adj;  // outgoing edges
 
     // auxiliary fields
     bool visited = false; // used by DFS, BFS, Prim ...
     bool processing = false; // used by isDAG (in addition to the visited attribute)
     unsigned int indegree; // used by topsort
-    int cost;
+    int dist; //TODO replace by unsorted_map to store distances between every pair of vertices
     Edge *path = nullptr;
     std::vector<Edge *> incoming; // incoming edges
 
 };
 
 
-#endif //RAILWAYMANAGEMENT_VERTEX_H
+#endif //TRAVELLINGSALESMAN_VERTEX_H

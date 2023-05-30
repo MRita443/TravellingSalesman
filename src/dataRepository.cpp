@@ -1,7 +1,3 @@
-//
-// Created by rita on 17-03-2023.
-//
-
 #include <iostream>
 #include "dataRepository.h"
 

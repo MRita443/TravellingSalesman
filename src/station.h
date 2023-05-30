@@ -1,11 +1,8 @@
-//
-// Created by rita on 28-02-2023.
-//
-
-#ifndef RAILWAYMANAGEMENT_STATION_H
-#define RAILWAYMANAGEMENT_STATION_H
+#ifndef TRAVELLINGSALESMAN_STATION_H
+#define TRAVELLINGSALESMAN_STATION_H
 
 #include <string>
+#include <utility>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -67,4 +64,4 @@ template<typename T>
 using StationMap = std::unordered_map<Station, T, StationHash, StationEquals>;
 
 
-#endif //RAILWAYMANAGEMENT_STATION_H
+#endif //TRAVELLINGSALESMAN_STATION_H

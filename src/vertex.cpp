@@ -4,7 +4,6 @@
 
 #include "vertex.h"
 
-#include <utility>
 
 Vertex::Vertex(const unsigned int &id) : id(id) {}
 
@@ -20,6 +19,7 @@ Edge *Vertex::addEdge(Vertex *d, unsigned int w) {
     auto newEdge = new Edge(this, d, w);
     adj.push_back(newEdge);
     d->incoming.push_back(newEdge);
+    d->indegree++;
     return newEdge;
 }
 
@@ -55,7 +55,7 @@ bool Vertex::removeEdge(const unsigned int &destID) {
     return removedEdge;
 }
 
-const unsigned int &Vertex::getId() const {
+unsigned int Vertex::getId() const {
     return this->id;
 }
 

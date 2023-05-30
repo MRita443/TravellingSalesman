@@ -18,7 +18,7 @@ class Vertex {
   public:
     explicit Vertex(const unsigned int &id);
 
-    [[nodiscard]] const unsigned int &getId() const;
+    [[nodiscard]] unsigned int getId() const;
 
     [[nodiscard]] std::vector<Edge *> getAdj() const;
 
@@ -57,7 +57,7 @@ class Vertex {
     // auxiliary fields
     bool visited = false; // used by DFS, BFS, Prim ...
     bool processing = false; // used by isDAG (in addition to the visited attribute)
-    unsigned int indegree; // used by topsort
+    unsigned int indegree = 0; // used by topsort
     int cost;
     Edge *path = nullptr;
     std::vector<Edge *> incoming; // incoming edges

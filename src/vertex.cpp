@@ -2,7 +2,7 @@
 
 #include <utility>
 
-Vertex::Vertex(std::string id) : id(std::move(id)) {}
+Vertex::Vertex(unsigned int id) : id(id) {}
 
 /**
  * Adds a new outgoing edge to the Vertex, with a given destination and distance
@@ -24,7 +24,7 @@ Edge *Vertex::addEdge(Vertex *d, unsigned int w) {
  * @param destID - Id of the destination Vertex of the Edge to be removed
  * @return True if successful, and false if no such Edge exists
  */
-bool Vertex::removeEdge(const std::string& destID) {
+bool Vertex::removeEdge(const unsigned int & destID) {
     bool removedEdge = false;
     auto it = adj.begin();
     while (it != adj.end()) {
@@ -50,7 +50,7 @@ bool Vertex::removeEdge(const std::string& destID) {
     return removedEdge;
 }
 
-std::string Vertex::getId() const {
+unsigned int Vertex::getId() const {
     return this->id;
 }
 
@@ -82,8 +82,8 @@ std::vector<Edge *> Vertex::getIncoming() const {
     return this->incoming;
 }
 
-void Vertex::setId(std::string id) {
-    this->id = std::move(id);
+void Vertex::setId(unsigned int id) {
+    this->id = id;
 }
 
 void Vertex::setVisited(bool visited) {

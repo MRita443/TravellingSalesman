@@ -95,12 +95,12 @@ void DataRepository::addStationToTownshipEntry(const std::string &township, cons
  * @param name - Name of the Station to be returned
  * @return optional<Station> value which will contain the Station object, or be empty if no such Station was found
  */
-std::optional<Station> DataRepository::findStation(const string &name) {
+/*std::optional<Station> DataRepository::findStation(const string &name) {
     std::optional<Station> result;
     auto it = stations.find(Station(name));
     if (it != stations.end()) result = *it;
     return result;
-}
+}*/
 
 
 /**

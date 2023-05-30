@@ -26,7 +26,7 @@ bool Edge::isSelected() const {
     return this->selected;
 }
 
-void Edge::setSelected(bool s) const {
+void Edge::setSelected(bool s){
     this->selected = s;
 }
 

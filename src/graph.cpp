@@ -1,5 +1,4 @@
 #include "graph.h"
-#include <climits>
 
 Graph::Graph() = default;
 
@@ -140,7 +139,7 @@ void Graph::kruskal(){
             e->setSelected(false);
         }
     }
-    UFDS ufds(vertexSet.size());
+    UFDS ufds((unsigned int)vertexSet.size());
 
     edges.sort([](Edge *e1, Edge *e2) {return e1->getDist() < e2->getDist();});
 

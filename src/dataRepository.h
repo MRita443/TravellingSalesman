@@ -35,7 +35,7 @@ public:
 
     void setMunicipalityToStations(const std::unordered_map<std::string, std::list<Station>> &municipalityToStations);
 
-    std::optional<Station> findStation(const std::string &name);
+    //std::optional<Station> findStation(const std::string &name);
 
     Station addStationEntry(const std::string &name, const std::string &district, const std::string &municipality,
                              const std::string &township,

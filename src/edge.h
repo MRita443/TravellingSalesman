@@ -20,7 +20,7 @@ class Edge {
 
     [[nodiscard]] Edge *getReverse() const;
 
-    void setSelected(bool s) const;
+    void setSelected(bool s);
 
     void setReverse(Edge *r);
 

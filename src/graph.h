@@ -9,6 +9,7 @@
 #include <list>
 #include <algorithm>
 #include <list>
+#include <climits>
 
 #include "UFDS.h"
 #include "vertex.h"

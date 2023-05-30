@@ -47,7 +47,7 @@ public:
 
     Edge *addEdge(Vertex *dest, unsigned int w);
 
-    bool removeEdge(const std::string& destID);
+    bool removeEdge(const unsigned int& destID);
 
 private:
     unsigned int id;                // identifier

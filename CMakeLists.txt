@@ -3,4 +3,12 @@ project(TravellingSalesman)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(TravellingSalesman src/main.cpp src/menu.h src/graph.h src/vertex.h src/vertex.cpp src/edge.cpp src/graph.cpp src/menu.cpp src/dataRepository.h src/dataRepository.cpp src/station.cpp)
+add_executable(TravellingSalesman
+        src/main.cpp
+        src/menu.h src/menu.cpp
+        src/graph.h src/graph.cpp
+        src/vertex.h src/vertex.cpp
+        src/edge.h src/edge.cpp
+        src/dataRepository.h src/dataRepository.cpp
+        src/UFDS.h src/UFDS.cpp
+        src/station.h src/station.cpp)

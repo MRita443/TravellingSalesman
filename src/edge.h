@@ -22,41 +22,19 @@ class Edge {
 
     [[nodiscard]] Vertex *getDest() const;
 
-    [[nodiscard]] unsigned int getCapacity() const;
-
     [[nodiscard]] bool isSelected() const; //isOpen
 
     [[nodiscard]] Vertex *getOrig() const;
 
     [[nodiscard]] Edge *getReverse() const;
 
-    [[nodiscard]] Service getService() const;
-
-    [[nodiscard]] unsigned int getFlow() const;
-
-    [[nodiscard]] int getCost() const;
-
-    Edge *getCorrespondingEdge() const;
-
     void setSelected(bool s);
 
     void setReverse(Edge *r);
 
-    void setService(Service s);
-
-    void setFlow(unsigned int f);
-
-    void setCapacity(unsigned int c);
-
-    void setCorrespondingEdge(Edge *correspondingEdge);
-
-    void setCost(int cost);
-
     void print() const;
 
-    void initializeCost();
-
-    int getLength() const;
+    [[nodiscard]] unsigned int getLength() const;
 
     void setLength(int length);
 
@@ -68,7 +46,7 @@ class Edge {
     bool selected = true;
     Edge *reverse = nullptr;
 
-    int length;
+    unsigned int length;
 
 };
 

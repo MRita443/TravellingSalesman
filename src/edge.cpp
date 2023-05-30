@@ -28,12 +28,12 @@ bool Edge::isSelected() const {
     return this->selected;
 }
 
-int Edge::getLength() const {
+unsigned int Edge::getLength() const {
     return length;
 }
 
 void Edge::setLength(int length) {
-    Edge::length = length;
+    this->length = length;
 }
 
 

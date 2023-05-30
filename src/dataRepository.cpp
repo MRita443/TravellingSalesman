@@ -41,18 +41,6 @@ DataRepository::addNodeEntry(unsigned int id, double latitude, double longitude,
  * @return optional<Node> value which will contain the Node object, or be empty if no such Node was found
  */
 shared_ptr<Node> DataRepository::findNode(const unsigned int &id) {
-    shared_ptr<Node> result = nullptr;
-    shared_ptr<Node> temp(new Node(id));
-    auto it = nodes.find(temp);
-    if (it != nodes.end())
-        result = *it;
-    return result;
+    auto it = nodes.find(make_shared<Node>(id));
+    return it != nodes.end() ? *it : nullptr;
 }
-
-void DataRepository::updateEntry(unsigned int id, shared_ptr<Node> n){
-    nodes.erase(n);
-    nodes.insert(n);
-}
-
-
-

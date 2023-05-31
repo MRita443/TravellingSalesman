@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 project(TravellingSalesman)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
-add_executable(TravellingSalesman src/main.cpp src/menu.h src/graph.h src/vertex.h src/vertex.cpp src/edge.cpp src/graph.cpp src/menu.cpp src/dataRepository.h src/dataRepository.cpp src/station.cpp)
+add_executable(TravellingSalesman src/main.cpp src/menu.h src/graph.h src/vertex.h src/vertex.cpp src/edge.cpp src/graph.cpp src/menu.cpp src/dataRepository.h src/dataRepository.cpp src/node.cpp src/UFDS.cpp)

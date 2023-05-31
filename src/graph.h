@@ -8,46 +8,50 @@
 #include <tuple>
 #include <list>
 #include <algorithm>
-#include <list>
-
-#include "UFDS.h"
+#include <memory>
 #include "vertex.h"
-#include "station.h"
+#include "node.h"
+#include "UFDS.h"
 
 class Graph {
   private:
     unsigned int totalEdges = 0;
-    std::vector<Vertex *> vertexSet;    // vertex set
-    std::unordered_map<std::string, Vertex *> idToVertex;
+    VertexPointerTable vertexSet;    // vertex set
 
   public:
     Graph();
 
-    [[nodiscard]] Vertex *findVertex(const std::string &id) const; //
+    [[nodiscard]] unsigned int getNumVertex() const;
 
-    bool addVertex(const std::string &id); //
+    [[nodiscard]] VertexPointerTable getVertexSet() const;
 
-    [[nodiscard]] unsigned int getNumVertex() const; //
+    [[nodiscard]] unsigned int getTotalEdges() const;
 
-    [[nodiscard]] std::vector<Vertex *> getVertexSet() const; //
+    [[nodiscard]] std::shared_ptr<Vertex> findVertex(const unsigned int &id) const;
 
-    std::pair<Edge *, Edge *>
-    addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int dist);
+    bool addVertex(const unsigned int &id);
 
-    static void setSelectedEdge(const Edge *edge, bool selected);
+    bool addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length);
 
-    static void activateEdges(const std::vector<Edge *> &Edges);
+    static void setSelectedEdge(const std::shared_ptr<Edge> &edge, bool selected);
 
-    static void deactivateEdges(const std::vector<Edge *> &edges);
+    static void deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges);
 
-    [[nodiscard]] unsigned int getTotalEdges() const; //
+    static void activateEdges(const std::vector<std::shared_ptr<Edge>> &Edges);
 
-    void visitedDFS(Vertex *source);
+    void visitedDFS(const std::shared_ptr<Vertex> &source);
 
-    void dfsKruskalPath(Vertex *source);
+    void dfsKruskalPath(const std::shared_ptr<Vertex> &source);
 
-    static void kruskal();
+    void kruskal();
 
+    unsigned int tspBT(const unsigned int **dists, unsigned int n, unsigned int *path);
+
+    void tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist, unsigned int currentNodeIdx,
+                      unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
+                      const unsigned int **dists);
+
+    bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

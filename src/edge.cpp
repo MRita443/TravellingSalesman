@@ -1,7 +1,5 @@
 #include "edge.h"
 
-#include <utility>
-
 Edge::Edge(std::shared_ptr<Vertex>orig, std::shared_ptr<Vertex> dest, unsigned int length) {
     this->orig = std::move(orig);
     this->dest = std::move(dest);

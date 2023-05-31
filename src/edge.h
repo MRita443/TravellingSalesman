@@ -8,33 +8,35 @@ class Vertex;
 
 class Edge {
   public:
-    Edge(Vertex *orig, Vertex *dest, unsigned int w);
+    Edge(std::shared_ptr<Vertex> orig, std::shared_ptr<Vertex> dest, unsigned int w);
 
-    [[nodiscard]] Vertex *getDest() const;
-
-    [[nodiscard]] unsigned int getDist() const;
+    [[nodiscard]] std::shared_ptr<Vertex> getDest() const;
 
     [[nodiscard]] bool isSelected() const; //isOpen
 
-    [[nodiscard]] Vertex *getOrig() const;
+    [[nodiscard]] std::shared_ptr<Vertex> getOrig() const;
 
-    [[nodiscard]] Edge *getReverse() const;
+    [[nodiscard]] std::shared_ptr<Edge> getReverse() const;
 
     void setSelected(bool s);
 
-    void setReverse(Edge *r);
+    void setReverse(std::shared_ptr<Edge> r);
 
     void print() const;
 
+    [[nodiscard]] double getLength() const;
+
+    void setLength(double length);
+
   private:
-    Vertex *orig;
-    Vertex *dest; // destination vertex
-    unsigned int distance;
+    std::shared_ptr<Vertex> orig;
+    std::shared_ptr<Vertex> dest; // destination vertex
 
     // auxiliary fields
     bool selected = true;
-    Edge *reverse = nullptr;
+    std::shared_ptr<Edge> reverse = nullptr;
 
+    double length;
 };
 
 #endif //TRAVELLINGSALESMAN_EDGE_H

@@ -6,10 +6,9 @@ unsigned int Graph::getNumVertex() const {
     return (unsigned int) vertexSet.size();
 }
 
-std::vector<Vertex *> Graph::getVertexSet() const {
+VertexPointerTable Graph::getVertexSet() const {
     return vertexSet;
 }
-
 
 unsigned int Graph::getTotalEdges() const {
     return totalEdges;
@@ -21,10 +20,9 @@ unsigned int Graph::getTotalEdges() const {
  * @param id - Id of the vertex to be found
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
-Vertex *Graph::findVertex(const unsigned int &id) const {
-    auto it = idToVertex.find(id);
-    if (it == idToVertex.end()) { return nullptr; }
-    return it->second;
+std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
+    auto it = vertexSet.find(std::make_shared<Vertex>(id));
+    return it != vertexSet.end() ? *it : nullptr;
 }
 
 /**
@@ -34,80 +32,77 @@ Vertex *Graph::findVertex(const unsigned int &id) const {
  * @param v2id - Id of the second vertex
  * @return Pointer to the edge that connects both vertices
  */
-Edge *Graph::findEdge(const unsigned int &v1id, const unsigned int &v2id) const{
-    for (Edge *e : findVertex(v1id)->getAdj()){
+std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned int &v2id) const{
+    for (std::shared_ptr<Edge> &e : findVertex(v1id)->getAdj()){
         if (e->getDest()->getId() == v2id) return e;
     }
     return nullptr;
 }
 
 /**
- * Adds a vertex with a given id to the Graph, representing a given station
+ * Adds a vertex with a given id to the Graph, representing a given Node
  * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param id - Id of the Vertex to add
  * @return True if successful, and false if a vertex with the given id already exists
  */
 bool Graph::addVertex(const unsigned int &id) {
-    if (findVertex(id) != nullptr)
-        return false;
-    vertexSet.push_back(new Vertex(id));
-    idToVertex[id] = vertexSet.back();
-    return true;
+    return vertexSet.insert(std::make_shared<Vertex>(id)).second;
 }
 
 /**
- * Adds and returns a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c, representing a Service s
+ * Adds a bidirectional edge to the Graph between the vertices with id source and dest, and a given length
  * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param source - Id of the source Vertex
  * @param dest - Id of the destination Vertex
- * @param dist - Distance of the Edge to be added
- * @return Pair containing a pointer to the created Edge and to its reverse
+ * @param length - Length of the Edge to be added
  */
-std::pair<Edge *, Edge *>
-Graph::addAndGetBidirectionalEdge(const unsigned int &source, const unsigned int &dest, unsigned int dist) {
+bool
+Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length) {
     auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
-        return {nullptr, nullptr};
+        return false;
 
-    auto e1 = v1->addEdge(v2, dist);
-    auto e2 = v2->addEdge(v1, dist);
+    auto e1 = v1->addEdge(v2, length);
+    auto e2 = v2->addEdge(v1, length);
+
     e1->setReverse(e2);
     e2->setReverse(e1);
 
     totalEdges++;
-    return {e1, e2};
+    return true;
 }
 
+
 /**
- * @brief Takes an edge pointer and sets the selected state of that edge and its reverse to the given value
+ * @brief Takes an Edge pointer and sets the selected state of that edge and its reverse to the given value
  * Time Complexity: O(1)
  * @param edge - Pointer to the edge to be set
  * @param selected - Value to set the selected state to
  */
-void Graph::setSelectedEdge(Edge *edge, bool selected) {
+void Graph::setSelectedEdge(const std::shared_ptr<Edge>& edge, bool selected) {
     edge->setSelected(selected);
     edge->getReverse()->setSelected(selected);
 }
 
 /**
- * Takes a vector of edge pointers and sets the selected state of those edges and their reverses to false
+ * Takes a vector of Edge pointers and sets the selected state of those edges and their reverses to false
  * Time Complexity: O(size(edges))
- * @param edges - Vector of edge pointers to be deactivated
+ * @param edges - Vector of Edge pointers to be deactivated
  */
-void Graph::deactivateEdges(const std::vector<Edge *> &edges) {
-    for (Edge *edge: edges) {
+void Graph::deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
+    for (const std::shared_ptr<Edge> &edge: edges) {
         setSelectedEdge(edge, false);
     }
 }
 
 /**
- * Takes a vector of edge pointers and sets the selected state of those edges and their reverses to true
+ * Takes a vector of Edge pointers and sets the selected state of those edges and their reverses to true
  * Time Complexity: O(size(edges))
- * @param edges - Vector of edge pointers to be activated
+ * @param edges - Vector of Edge pointers to be activated
  */
-void Graph::activateEdges(const std::vector<Edge *> &edges) {
-    for (Edge *edge: edges) {
+void Graph::activateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
+    for (const std::shared_ptr<Edge> &edge: edges) {
         setSelectedEdge(edge, true);
     }
 }
@@ -116,34 +111,37 @@ void Graph::activateEdges(const std::vector<Edge *> &edges) {
  * DFS traversal variation that sets the visited attribute to true of the nodes the DFS traverses to
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
- */
-void Graph::visitedDFS(Vertex *source) {
+*/
+void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
-    for (Edge const *e: source->getAdj()) {
+    for (const std::shared_ptr<Edge> &e: source->getAdj()) {
         if (!e->getDest()->isVisited()) {
             visitedDFS(e->getDest());
         }
     }
 }
 
+
 /**
  * @brief Builds a MST using Kruskal's algorithm
  * Time Complexity: O(|E|log|E|)
  */
 void Graph::kruskal(){
-    std::list<Edge *> edges; //TODO: better generate this list (edgeSet like vertexSet?)
-    for (Vertex *v : vertexSet){
+    std::list<std::shared_ptr<Edge>> edges; //TODO: better generate this list (edgeSet like vertexSet?)
+    for (const std::shared_ptr<Vertex>& v: vertexSet){
         v->setVisited(false); // util for DFS later on
-        for (Edge *e: v->getAdj()){
+        for (const std::shared_ptr<Edge> &e: v->getAdj()){
             edges.push_back(e);
             e->setSelected(false);
         }
     }
     UFDS ufds((unsigned int)vertexSet.size());
 
-    edges.sort([](Edge *e1, Edge *e2) {return e1->getDist() < e2->getDist();});
+    edges.sort([](const std::shared_ptr<Edge> &e1, const std::shared_ptr<Edge> &e2) {
+        return e1->getLength() < e2->getLength();
+    });
 
-    for (Edge *e: edges) {
+    for (const std::shared_ptr<Edge> &e: edges) {
         if (!ufds.isSameSet(e->getOrig()->getId(), e->getDest()->getId())) {
             e->setSelected(true);
             ufds.linkSets(e->getOrig()->getId(), e->getDest()->getId());
@@ -157,8 +155,8 @@ void Graph::kruskal(){
  * @param candidate - Vertex that is going to be checked
  * @return true if the candidate vertex is adjacent to the tour's last vertex, false otherwise
  */
-bool Graph::isConnectable(Vertex *candidate) const {
-    for (Edge *e : (*tour.course.rbegin())->getAdj()){
+bool Graph::isConnectable(std::shared_ptr<Vertex> &candidate) const {
+    for (std::shared_ptr<Edge> &e : (*tour.course.rbegin())->getAdj()){
         if (e->getDest() == candidate) return true;
     }
     return false;
@@ -169,9 +167,9 @@ bool Graph::isConnectable(Vertex *candidate) const {
   * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
   * @param stop - Vertex to add
   */
-void Graph::addToTour(Vertex *stop) {
+void Graph::addToTour(std::shared_ptr<Vertex> &stop) {
     if (!tour.course.empty()){
-        tour.distance += findEdge((*(tour.course).rbegin())->getId(), stop->getId())->getDist();
+        tour.distance += findEdge((*(tour.course).rbegin())->getId(), stop->getId())->getLength();
     }
     tour.course.push_back(stop);
 }
@@ -181,7 +179,7 @@ void Graph::addToTour(Vertex *stop) {
  * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
  */
 void Graph::tieDownTour(){
-    tour.distance += findEdge((*tour.course.begin())->getId(), (*tour.course.rbegin())->getId())->getDist();
+    tour.distance += findEdge((*tour.course.begin())->getId(), (*tour.course.rbegin())->getId())->getLength();
 }
 
 /**
@@ -189,10 +187,10 @@ void Graph::tieDownTour(){
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
  */
-void Graph::preorderMSTTraversal(Vertex *source){
+void Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
     source->setVisited(true);
     addToTour(source);
-    for (Edge *e : source->getAdj()){
+    for (std::shared_ptr<Edge> &e : source->getAdj()){
         bool unvisited = !(e->getDest()->isVisited());
         bool selected = e->isSelected();
         //bool connected_to_last = isConnectable(e->getDest());
@@ -209,7 +207,7 @@ void Graph::preorderMSTTraversal(Vertex *source){
 void Graph::triangularTSPTour(){
     /*
     -Build MST
-    -Get pre-order of the mst as vector //!DFS?
+    -Get pre-order of the mst as vector
     -Iterate that order getting total dist
     */
     kruskal();
@@ -219,7 +217,8 @@ void Graph::triangularTSPTour(){
     return; //results are updated in tour
 }
 
-bool inSolution(unsigned int j, unsigned int *solution, unsigned int n) {
+
+bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned int n) {
     for (int i = 0; i < n; i++) {
         if (solution[i] == j) {
             return true;
@@ -229,7 +228,7 @@ bool inSolution(unsigned int j, unsigned int *solution, unsigned int n) {
 }
 
 void
-tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist,
+Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist,
              unsigned int currentNodeIdx,
              unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n, const unsigned int **dists) {
     if (currentNodeIdx == n) {
@@ -257,7 +256,7 @@ tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist,
     }
 }
 
-unsigned int tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
+unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
     unsigned int currentSolution[n];
     currentSolution[0] = 0;
     unsigned int bestSolutionDist = UINT_MAX;

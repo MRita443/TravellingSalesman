@@ -1,20 +1,20 @@
 #include "vertex.h"
 
-#include <utility>
 
-Vertex::Vertex(unsigned int id) : id(id) {}
+Vertex::Vertex(const unsigned int &id) : id(id), dist(constants::INF) {}
 
 /**
- * Adds a new outgoing edge to the Vertex, with a given destination and distance
+ * Adds a new outgoing edge to the Vertex, with a given destination and length
  * Time Complexity: O(1)
  * @param d - Pointer to the destination Vertex
- * @param w - Edge distance
+ * @param length - Edge length
  * @return Pointer to the new Edge created
  */
-Edge *Vertex::addEdge(Vertex *d, unsigned int w) {
-    auto newEdge = new Edge(this, d, w);
+std::shared_ptr<Edge> Vertex::addEdge(const std::shared_ptr<Vertex>& d, double length) {
+    auto newEdge = std::make_shared<Edge>(std::make_shared<Vertex>(*this), d, length);
     adj.push_back(newEdge);
     d->incoming.push_back(newEdge);
+    d->indegree++;
     return newEdge;
 }
 
@@ -24,12 +24,12 @@ Edge *Vertex::addEdge(Vertex *d, unsigned int w) {
  * @param destID - Id of the destination Vertex of the Edge to be removed
  * @return True if successful, and false if no such Edge exists
  */
-bool Vertex::removeEdge(const unsigned int & destID) {
+bool Vertex::removeEdge(const unsigned int &destID) {
     bool removedEdge = false;
     auto it = adj.begin();
     while (it != adj.end()) {
-        Edge *edge = *it;
-        Vertex *dest = edge->getDest();
+        std::shared_ptr<Edge>edge = *it;
+        std::shared_ptr<Vertex>dest = edge->getDest();
         if (dest->getId() == destID) {
             it = adj.erase(it);
             // Also remove the corresponding edge from the incoming list
@@ -41,7 +41,6 @@ bool Vertex::removeEdge(const unsigned int & destID) {
                     it2++;
                 }
             }
-            delete edge;
             removedEdge = true; // allows for multiple edges to connect the same pair of vertices (multigraph)
         } else {
             it++;
@@ -54,7 +53,7 @@ unsigned int Vertex::getId() const {
     return this->id;
 }
 
-std::vector<Edge *> Vertex::getAdj() const {
+std::vector<std::shared_ptr<Edge>> Vertex::getAdj() const {
     return this->adj;
 }
 
@@ -70,19 +69,16 @@ unsigned int Vertex::getIndegree() const {
     return this->indegree;
 }
 
-int Vertex::getDist() const {
-    return this->dist;
-}
 
-Edge *Vertex::getPath() const {
+std::shared_ptr<Edge>Vertex::getPath() const {
     return this->path;
 }
 
-std::vector<Edge *> Vertex::getIncoming() const {
+std::vector<std::shared_ptr<Edge>> Vertex::getIncoming() const {
     return this->incoming;
 }
 
-void Vertex::setId(unsigned int id) {
+void Vertex::setId(const unsigned int &id) {
     this->id = id;
 }
 
@@ -98,10 +94,15 @@ void Vertex::setIndegree(unsigned int indegree) {
     this->indegree = indegree;
 }
 
-void Vertex::setDist(int dist) {
+void Vertex::setDist(double dist) {
     this->dist = dist;
 }
 
-void Vertex::setPath(Edge *path) {
-    this->path = path;
+void Vertex::setPath(std::shared_ptr<Edge>path) {
+    this->path = std::move(path);
 }
+
+double Vertex::getDist() const {
+    return this->dist;
+}
+

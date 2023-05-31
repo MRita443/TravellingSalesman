@@ -1,53 +1,45 @@
-//
-// Created by rita on 12-03-2023.
-//
-
 #include "edge.h"
 
-Edge::Edge(Vertex *orig, Vertex *dest, unsigned int length) {
-    this->orig = orig;
-    this->dest = dest;
+#include <utility>
+
+Edge::Edge(std::shared_ptr<Vertex>orig, std::shared_ptr<Vertex> dest, unsigned int length) {
+    this->orig = std::move(orig);
+    this->dest = std::move(dest);
     this->length = length;
 }
 
-Vertex *Edge::getDest() const {
+std::shared_ptr<Vertex>Edge::getDest() const {
     return this->dest;
 }
 
-
-Vertex *Edge::getOrig() const {
+std::shared_ptr<Vertex>Edge::getOrig() const {
     return this->orig;
 }
 
-Edge *Edge::getReverse() const {
+std::shared_ptr<Edge>Edge::getReverse() const {
     return this->reverse;
 }
-
 
 bool Edge::isSelected() const {
     return this->selected;
 }
 
-int Edge::getLength() const {
+double Edge::getLength() const {
     return length;
 }
 
-void Edge::setLength(int length) {
-    Edge::length = length;
+void Edge::setLength(double length) {
+    this->length = length;
 }
-
 
 void Edge::setSelected(bool s) {
     this->selected = s;
 }
 
-void Edge::setReverse(Edge *r) {
-    this->reverse = r;
+void Edge::setReverse(std::shared_ptr<Edge>r) {
+    this->reverse = std::move(r);
 }
 
 void Edge::print() const {
     std::cout << orig->getId() << " <-> " << dest->getId() << std::endl;
 }
-
-
-

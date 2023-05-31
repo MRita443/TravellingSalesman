@@ -1,11 +1,6 @@
-//
-// Created by rita on 17-03-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_DATAREPOSITORY_H
 #define TRAVELLINGSALESMAN_DATAREPOSITORY_H
 
-#include <list>
 #include <algorithm>
 #include <iostream>
 #include <optional>
@@ -29,7 +24,6 @@ class DataRepository {
     Node &addNodeEntry(unsigned int id, double latitude = constants::INF, double longitude = constants::INF,
                        const std::string &name = "");
 
-    void updateEntry(unsigned int id, std::shared_ptr<Node> n);
 };
 
 

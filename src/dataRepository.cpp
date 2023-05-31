@@ -1,7 +1,3 @@
-//
-// Created by rita on 17-03-2023.
-//
-
 #include "dataRepository.h"
 
 using namespace std;
@@ -17,13 +13,12 @@ void DataRepository::setNodes(const nodePointerTable &nodes) {
 }
 
 /**
- * Adds a new entry to the unordered_set of Stations, creating the corresponding Node object
+ * Adds a new entry to the unordered_set of Nodes, creating the corresponding Node object
  * Time Complexity: O(1) (average case) | O(size(stations)) (worst case)
- * @param name - Name of the station to be created
- * @param district - District of the Node to be created
- * @param municipality - Municipality of the Node to be created
- * @param township - Township of the Node to be created
- * @param line - Line of the station to be created
+ * @param id - Id of the Node to be created
+ * @param latitude - Latitude of the Node to created
+ * @param longitude - Longitude of the Node to be created
+ * @param name - Name of the Node to be created
  * @return New Node object created
  */
 Node &
@@ -33,26 +28,13 @@ DataRepository::addNodeEntry(unsigned int id, double latitude, double longitude,
     return *newNode;
 }
 
-
 /**
- * Finds the Node object with the given name
- * Time Complexity: O(1) (average case) | O(size(stations)) (worst case)
- * @param name - Name of the Node to be returned
- * @return optional<Node> value which will contain the Node object, or be empty if no such Node was found
+ * Finds the Node object with the given id
+ * Time Complexity: O(1) (average case) | O(size(nodes)) (worst case)
+ * @param id - Id of the Node to be returned
+ * @return Pointer to the Node found, or nullptr if none was found
  */
 shared_ptr<Node> DataRepository::findNode(const unsigned int &id) {
-    shared_ptr<Node> result = nullptr;
-    shared_ptr<Node> temp(new Node(id));
-    auto it = nodes.find(temp);
-    if (it != nodes.end())
-        result = *it;
-    return result;
+    auto it = nodes.find(make_shared<Node>(id));
+    return it != nodes.end() ? *it : nullptr;
 }
-
-void DataRepository::updateEntry(unsigned int id, shared_ptr<Node> n){
-    nodes.erase(n);
-    nodes.insert(n);
-}
-
-
-

@@ -1,7 +1,3 @@
-//
-// Created by rita on 12-03-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_EDGE_H
 #define TRAVELLINGSALESMAN_EDGE_H
 
@@ -10,66 +6,37 @@
 
 class Vertex;
 
-enum class Service : unsigned int {
-    STANDARD = 0,
-    ALFA_PENDULAR = 1,
-    VERY_EXPENSIVE = 2
-};
-
 class Edge {
   public:
-    Edge(Vertex *orig, Vertex *dest, unsigned int w);
+    Edge(std::shared_ptr<Vertex> orig, std::shared_ptr<Vertex> dest, unsigned int w);
 
-    [[nodiscard]] Vertex *getDest() const;
-
-    [[nodiscard]] unsigned int getCapacity() const;
+    [[nodiscard]] std::shared_ptr<Vertex> getDest() const;
 
     [[nodiscard]] bool isSelected() const; //isOpen
 
-    [[nodiscard]] Vertex *getOrig() const;
+    [[nodiscard]] std::shared_ptr<Vertex> getOrig() const;
 
-    [[nodiscard]] Edge *getReverse() const;
-
-    [[nodiscard]] Service getService() const;
-
-    [[nodiscard]] unsigned int getFlow() const;
-
-    [[nodiscard]] int getCost() const;
-
-    Edge *getCorrespondingEdge() const;
+    [[nodiscard]] std::shared_ptr<Edge> getReverse() const;
 
     void setSelected(bool s);
 
-    void setReverse(Edge *r);
-
-    void setService(Service s);
-
-    void setFlow(unsigned int f);
-
-    void setCapacity(unsigned int c);
-
-    void setCorrespondingEdge(Edge *correspondingEdge);
-
-    void setCost(int cost);
+    void setReverse(std::shared_ptr<Edge> r);
 
     void print() const;
 
-    void initializeCost();
+    [[nodiscard]] double getLength() const;
 
-    int getLength() const;
-
-    void setLength(int length);
+    void setLength(double length);
 
   private:
-    Vertex *orig;
-    Vertex *dest; // destination vertex
+    std::shared_ptr<Vertex> orig;
+    std::shared_ptr<Vertex> dest; // destination vertex
 
     // auxiliary fields
     bool selected = true;
-    Edge *reverse = nullptr;
+    std::shared_ptr<Edge> reverse = nullptr;
 
-    int length;
-
+    double length;
 };
 
 #endif //TRAVELLINGSALESMAN_EDGE_H

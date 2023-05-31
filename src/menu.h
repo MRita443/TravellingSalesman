@@ -1,10 +1,5 @@
-//
-// Created by rita on 28-02-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_MENU_H
 #define TRAVELLINGSALESMAN_MENU_H
-
 
 #include <iostream>
 #include <string>

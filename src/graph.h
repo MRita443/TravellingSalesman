@@ -1,7 +1,3 @@
-//
-// Created by rita on 19-05-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_GRAPH_H
 #define TRAVELLINGSALESMAN_GRAPH_H
 
@@ -12,83 +8,50 @@
 #include <tuple>
 #include <list>
 #include <algorithm>
-#include <list>
-
+#include <memory>
 #include "vertex.h"
 #include "node.h"
+#include "UFDS.h"
 
 class Graph {
   private:
     unsigned int totalEdges = 0;
-    std::vector<Vertex *> vertexSet;    // vertex set
-    std::unordered_map<std::string, Vertex *> idToVertex;
+    VertexPointerTable vertexSet;    // vertex set
 
   public:
     Graph();
 
-    [[nodiscard]] Vertex *findVertex(const unsigned int &id) const;
-
-    bool addVertex(const unsigned int &id);
-
     [[nodiscard]] unsigned int getNumVertex() const;
 
-    [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
-
-    std::vector<Edge *> randomlySelectEdges(unsigned int numEdges);
-
-    static void activateEdges(const std::vector<Edge *> &Edges);
-
-    std::list<std::string> superSourceCreator(const std::string &vertexId) const;
-
-    [[nodiscard]] unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
-
-    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
-
-    std::pair<std::list<std::pair<std::string, std::string>>, unsigned int>
-    calculateNetworkMaxFlow(Graph &residualGraph);
+    [[nodiscard]] VertexPointerTable getVertexSet() const;
 
     [[nodiscard]] unsigned int getTotalEdges() const;
 
-    void augmentPath(const std::string &target, const unsigned int &value) const;
+    [[nodiscard]] std::shared_ptr<Vertex> findVertex(const unsigned int &id) const;
 
-    bool path(const std::list<std::string> &source, const std::string &target) const;
+    bool addVertex(const unsigned int &id);
 
-    std::pair<unsigned int, unsigned int>
+    bool addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length);
 
-    minCostMaxFlow(const std::string &source, const std::string &target, Graph &residualGraph);
+    static void setSelectedEdge(const std::shared_ptr<Edge> &edge, bool selected);
 
-    static unsigned int findListBottleneck(const std::list<Edge *> &edges);
+    static void deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges);
 
-    void makeMinCostResidual(Graph &minCostResidual);
+    static void activateEdges(const std::vector<std::shared_ptr<Edge>> &Edges);
 
-    static void augmentMinCostPath(const std::list<Edge *> &edges, const unsigned int &value);
+    void visitedDFS(const std::shared_ptr<Vertex> &source);
 
-    std::vector<std::pair<std::string, double>>
-    topGroupings(const std::unordered_map<std::string, std::list<Node>> &group, Graph &residualGraph);
+    void dfsKruskalPath(const std::shared_ptr<Vertex> &source);
 
-    double getAverageIncomingFlux(const std::list<Node> &stations, Graph &residualGraph);
+    void kruskal();
 
-    std::list<Edge *> bellmanFord(const std::string &source);
+    unsigned int tspBT(const unsigned int **dists, unsigned int n, unsigned int *path);
 
-    void visitedDFS(Vertex *source);
+    void tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist, unsigned int currentNodeIdx,
+                      unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
+                      const unsigned int **dists);
 
-    [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
-
-    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string &stationId) const;
-
-    std::pair<unsigned int, unsigned int>
-    maxFlowDeactivatedEdges(const std::vector<Edge *> &selectedEdges, const std::list<std::string> &source,
-                            const std::string &target, Graph &residualGraph);
-
-    unsigned int
-    incomingReducedFlux(const std::vector<Edge *> &edges, const std::string &station, Graph &residualGraph);
-
-    static void deactivateEdges(const std::vector<Edge *> &edges);
-
-    std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int>>>
-    topReductions(const std::vector<Edge *> &edges, Graph &residualGraph);
-
-    bool addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, unsigned int length);
+    bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

@@ -1,7 +1,3 @@
-//
-// Created by rita on 12-03-2023.
-//
-
 #ifndef TRAVELLINGSALESMAN_VERTEX_H
 #define TRAVELLINGSALESMAN_VERTEX_H
 
@@ -10,7 +6,9 @@
 #include <queue>
 #include <limits>
 #include <algorithm>
+#include <unordered_set>
 #include "edge.h"
+#include "constants.h"
 
 class Edge;
 
@@ -18,9 +16,9 @@ class Vertex {
   public:
     explicit Vertex(const unsigned int &id);
 
-    [[nodiscard]] const unsigned int &getId() const;
+    [[nodiscard]] unsigned int getId() const;
 
-    [[nodiscard]] std::vector<Edge *> getAdj() const;
+    [[nodiscard]] std::vector<std::shared_ptr<Edge>> getAdj() const;
 
     [[nodiscard]] bool isVisited() const;
 
@@ -28,11 +26,11 @@ class Vertex {
 
     [[nodiscard]] unsigned int getIndegree() const;
 
-    [[nodiscard]] int getCost() const;
+    [[nodiscard]] double getDist() const;
 
-    [[nodiscard]] Edge *getPath() const;
+    [[nodiscard]] std::shared_ptr<Edge>getPath() const;
 
-    [[nodiscard]] std::vector<Edge *> getIncoming() const;
+    [[nodiscard]] std::vector<std::shared_ptr<Edge>> getIncoming() const;
 
     void setId(const unsigned int &id);
 
@@ -42,27 +40,43 @@ class Vertex {
 
     void setIndegree(unsigned int indegree);
 
-    void setCost(int dist);
+    void setDist(double dist);
 
-    void setPath(Edge *path);
+    void setPath(std::shared_ptr<Edge>path);
 
-    Edge *addEdge(Vertex *dest, unsigned int w);
+    std::shared_ptr<Edge>addEdge(const std::shared_ptr<Vertex>&dest, double length);
 
     bool removeEdge(const unsigned int &destID);
 
-  private:
+
+private:
     unsigned int id;                // identifier
-    std::vector<Edge *> adj;  // outgoing edges
+    std::vector<std::shared_ptr<Edge>> adj;  // outgoing edges
 
     // auxiliary fields
     bool visited = false; // used by DFS, BFS, Prim ...
     bool processing = false; // used by isDAG (in addition to the visited attribute)
-    unsigned int indegree; // used by topsort
-    int cost;
-    Edge *path = nullptr;
-    std::vector<Edge *> incoming; // incoming edges
+    unsigned int indegree = 0; // used by topsort
+
+    double dist; //TODO replace by unsorted_map to store distances between every pair of vertices
+    std::shared_ptr<Edge>path = nullptr;
+    std::vector<std::shared_ptr<Edge>> incoming; // incoming edges
 
 };
+
+struct VertexPointerHash {
+    std::size_t operator()(const std::shared_ptr<Vertex>& vertex) const {
+        return std::hash<unsigned int>()(vertex->getId());
+    }
+};
+
+struct VertexPointerEquals {
+    bool operator()(const std::shared_ptr<Vertex>& vertex1, const std::shared_ptr<Vertex>& vertex2) const {
+        return vertex1->getId() == vertex2->getId();
+    }
+};
+
+typedef std::unordered_set<std::shared_ptr<Vertex>, VertexPointerHash, VertexPointerEquals> VertexPointerTable;
 
 
 #endif //TRAVELLINGSALESMAN_VERTEX_H

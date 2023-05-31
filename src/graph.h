@@ -20,7 +20,11 @@ class Graph {
     unsigned int totalEdges = 0;
     std::vector<Vertex *> vertexSet;    // vertex set
     std::unordered_map<unsigned int, Vertex *> idToVertex;
-    std::pair<unsigned int, std::list<Vertex *>> tour;
+    struct tour_t {
+        unsigned int distance;
+        std::list<Vertex *> course;
+    };
+    tour_t tour;
 
   public:
     Graph();
@@ -49,6 +53,10 @@ class Graph {
     void visitedDFS(Vertex *source);
 
     bool isConnectable(Vertex *candidate) const;
+
+    void addToTour(Vertex *stop);
+
+    void tieDownTour();
 
     void preorderMSTTraversal(Vertex *source);
 

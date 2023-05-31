@@ -133,7 +133,7 @@ void Graph::visitedDFS(Vertex *source) {
 void Graph::kruskal(){
     std::list<Edge *> edges; //TODO: better generate this list (edgeSet like vertexSet?)
     for (Vertex *v : vertexSet){
-        //v->setVisited(false); //TODO: Check if this is necessary
+        v->setVisited(false); // util for DFS later on
         for (Edge *e: v->getAdj()){
             edges.push_back(e);
             e->setSelected(false);
@@ -158,24 +158,40 @@ void Graph::kruskal(){
  * @return true if the candidate vertex is adjacent to the tour's last vertex, false otherwise
  */
 bool Graph::isConnectable(Vertex *candidate) const {
-    for (Edge *e : (*tour.second.rend())->getAdj()){
+    for (Edge *e : (*tour.course.rbegin())->getAdj()){
         if (e->getDest() == candidate) return true;
     }
     return false;
 }
 
+ /**
+  * Adds a vertex to the tour structure and updates the total distance
+  * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
+  * @param stop - Vertex to add
+  */
+void Graph::addToTour(Vertex *stop) {
+    if (!tour.course.empty()){
+        tour.distance += findEdge((*(tour.course).rbegin())->getId(), stop->getId())->getDist();
+    }
+    tour.course.push_back(stop);
+}
+
+/**
+ * Adds the distance between the first and last nodes so the tour "closes"
+ * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
+ */
+void Graph::tieDownTour(){
+    tour.distance += findEdge((*tour.course.begin())->getId(), (*tour.course.rbegin())->getId())->getDist();
+}
+
 /**
  * @brief Iterates through the vertex set using DFS, respecting if an edge is selected or not
- * Registers the path taken in the vertex's path attribute
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
  */
 void Graph::preorderMSTTraversal(Vertex *source){
     source->setVisited(true);
-    if (tour.second.size() != 0){
-        tour.first += findEdge((*(tour.second).rend())->getId(), source->getId())->getDist();
-    }
-    tour.second.push_back(source);
+    addToTour(source);
     for (Edge *e : source->getAdj()){
         bool unvisited = !(e->getDest()->isVisited());
         bool selected = e->isSelected();
@@ -199,6 +215,7 @@ void Graph::triangularTSPTour(){
     kruskal();
     tour = {0,{}};
     preorderMSTTraversal(*(vertexSet.begin()));
+    tieDownTour();
     return; //results are updated in tour
 }
 

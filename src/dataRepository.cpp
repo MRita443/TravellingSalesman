@@ -41,10 +41,22 @@ shared_ptr<Node> DataRepository::findNode(const unsigned int &id) {
     return it != nodes.end() ? *it : nullptr;
 }
 
-long DataRepository::getAverageLatitude() {
-    return nodes.empty() ? 0 : (long) sumLatitude / (long) nodes.size();
+double DataRepository::getAverageLatitude() {
+    return nodes.empty() ? 0 : sumLatitude / (double) nodes.size();
 }
 
-long DataRepository::getAverageLongitude() {
-    return nodes.empty() ? 0 : (long) sumLongitude / (long) nodes.size();
+double DataRepository::getAverageLongitude() {
+    return nodes.empty() ? 0 : sumLongitude / (double) nodes.size();
+}
+
+Node &DataRepository::getFurthestNode() {
+    std::vector<std::shared_ptr<Node>> orderedNodes(nodes.begin(), nodes.end());
+    Coordinates averageLocation(getAverageLatitude(), getAverageLongitude());
+    std::sort(orderedNodes.begin(), orderedNodes.end(),
+              [averageLocation](const std::shared_ptr<Node> &n1, const std::shared_ptr<Node> &n2) {
+                  Coordinates c1(n1->getLatitude(), n1->getLongitude());
+                  Coordinates c2(n2->getLatitude(), n2->getLongitude());
+                  return averageLocation.distanceTo(c1) > averageLocation.distanceTo(c2);
+              });
+    return *orderedNodes[0];
 }

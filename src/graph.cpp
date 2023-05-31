@@ -192,6 +192,21 @@ Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionD
     }
 }
 
+/**
+ * Finds the edge connecting two vertices
+ * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
+ * @param v1id - Id of the first vertex
+ * @param v2id - Id of the second vertex
+ * @return Pointer to the edge that connects both vertices
+ */
+std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned int &v2id) const {
+    for (auto e: findVertex(v1id)->getAdj()) {
+        if (e->getDest()->getId() == v2id) return e;
+    }
+    return nullptr;
+}
+
+
 unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
     unsigned int currentSolution[n];
     currentSolution[0] = 0;
@@ -200,7 +215,7 @@ unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned i
     return bestSolutionDist;
 }
 
-long Graph::nearestInsertion(const std::shared_ptr<Vertex> &start) {
+long Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
     long distance = 0;
     UFDS partialTour(vertexSet.size());
     edgeSet viableEdges; //Orders edges by length
@@ -214,6 +229,8 @@ long Graph::nearestInsertion(const std::shared_ptr<Vertex> &start) {
     //Initialize the partial tour with the chosen vertex and its closest neighbour
     partialTour.linkSets(start->getId(), adjacent[0]->getDest()->getId());
     edgesInTour.push_back(*adjacent[0]);
+    adjacent[0]->getDest()->setPath(adjacent[0]);
+    distance += adjacent[0]->getLength();
 
     updateViableEdges(viableEdges, partialTour, start->getId());
 
@@ -226,28 +243,45 @@ long Graph::nearestInsertion(const std::shared_ptr<Vertex> &start) {
         newVertex = viableEdges.begin()->getOrig();
         oldVertex = viableEdges.begin()->getDest();
 
-        edgesInTour.sort(
-                [](Edge e1, Edge e2) { return }); //TODO: Ver uma maneira melhor de ter acesso às coordenadas de um nó
-        //Ver se desdobrar a edge encontrada em duas é possível com as edges existentes
+        long insertionDistance = constants::INF;
+        // long sequenceDistance = distance + viableEdges.begin()->getLength();
 
-        long insertionDistance = distance - oldVertex->getPath()->getLength(); //TODO: Somar as duas edges novas
-        long sequenceDistance = distance + viableEdges.begin()->getLength();
+        auto insertionEdges = getInsertionEdges(edgesInTour, newVertex);
+        if (insertionEdges.first && insertionEdges.second) {
+            unsigned int firstVertex = insertionEdges.first->getOrig()->getId();
+            unsigned int secondVertex = insertionEdges.second->getDest()->getId();
+            Edge oldEdge = *std::find_if(edgesInTour.begin(), edgesInTour.end(),
+                                         [firstVertex, secondVertex](const Edge &e1) {
+                                             return e1.getOrig()->getId() == firstVertex &&
+                                                    e1.getDest()->getId() == secondVertex;
+                                         });
+            insertionDistance = distance - oldEdge.getLength() + insertionEdges.first->getLength() +
+                                insertionEdges.second->getLength();
 
-        if (sequenceDistance < insertionDistance) {
-            edgesInTour.push_back(*viableEdges.begin());
+
+/*        if (sequenceDistance < insertionDistance) {
+            edgesInTour.push_back(*viableEdges.begin()->getReverse());
             distance = sequenceDistance;
-        } else {
-            edgesInTour.remove(*oldVertex->getPath());
-            //Add two new edges
+            findVertex(newVertex->getId())->setPath(viableEdges.begin()->getReverse());
+        } else {*/
+            edgesInTour.remove(oldEdge);
+            edgesInTour.push_back(*insertionEdges.first);
+            edgesInTour.push_back(*insertionEdges.second);
+
+            findVertex(oldVertex->getId())->setPath(insertionEdges.second);
+            findVertex(newVertex->getId())->setPath(insertionEdges.first);
+
             distance = insertionDistance;
+            //}
+            partialTour.linkSets(start->getId(), newVertex->getId());
+            updateViableEdges(viableEdges, partialTour, start->getId());
         }
-        partialTour.linkSets(start->getId(), newVertex->getId());
-        updateViableEdges(viableEdges, partialTour, start->getId());
     }
-    return distance;
+    //The two untied edges will always be the starting two nodes
+    return distance + adjacent[0]->getLength();
 }
 
-void Graph::updateViableEdges(edgeSet viableEdges, UFDS partialTour, unsigned int sourceId) {
+void Graph::updateViableEdges(edgeSet &viableEdges, UFDS partialTour, unsigned int sourceId) {
     for (const std::shared_ptr<Vertex> &v: vertexSet) {
         //If this vertex is not in the partial tour
         if (!partialTour.isSameSet(sourceId, v->getId())) {
@@ -260,3 +294,23 @@ void Graph::updateViableEdges(edgeSet viableEdges, UFDS partialTour, unsigned in
         }
     }
 }
+
+std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
+Graph::getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const {
+    std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>> result = {nullptr, nullptr};
+    for (const Edge &e: possibleEdges) {
+        //If there are two edges that could replace the current one, connecting its ends to the new vertex
+        auto edge1 = findEdge(e.getOrig()->getId(), newVertex->getId()); //Old vertex to new vertex
+        auto edge2 = findEdge(newVertex->getId(), e.getDest()->getId()); //New vertex to latest tour vertex
+        if (edge1 && edge2) {
+            //If the result is still empty or this set of edges is shorter
+            if (!result.first ||
+                (result.first->getLength() + result.second->getLength()) > (edge1->getLength() + edge2->getLength())) {
+                result = {edge1, edge2};
+            }
+        }
+    }
+    return result;
+}
+
+

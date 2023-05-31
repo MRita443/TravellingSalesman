@@ -13,7 +13,7 @@
 #include "vertex.h"
 #include "node.h"
 #include "UFDS.h"
-#include "dataRepository.h"
+#include "coordinates.h"
 
 class Graph {
   private:
@@ -55,9 +55,15 @@ class Graph {
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 
-    long nearestInsertion(const std::shared_ptr<Vertex>& start);
+    long nearestInsertionLoop(const std::shared_ptr<Vertex> &start);
 
-    void updateViableEdges(edgeSet viableEdges, UFDS partialTour, unsigned int sourceId);
+    void updateViableEdges(edgeSet &viableEdges, UFDS partialTour, unsigned int sourceId);
+
+    std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
+
+    std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
+    getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const;
+
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

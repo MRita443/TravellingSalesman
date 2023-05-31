@@ -62,6 +62,8 @@ private:
     std::shared_ptr<Edge>path = nullptr;
     std::vector<std::shared_ptr<Edge>> incoming; // incoming edges
 
+    unsigned int selectedCount = 0;
+
 };
 
 struct VertexPointerHash {

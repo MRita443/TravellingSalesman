@@ -6,6 +6,7 @@
 #include <optional>
 #include <memory>
 #include "node.h"
+#include "coordinates.h"
 
 class DataRepository {
 
@@ -25,9 +26,11 @@ class DataRepository {
 
     Node &addNodeEntry(unsigned int id, double latitude = constants::INF, double longitude = constants::INF,
                        const std::string &name = "");
-    long getAverageLatitude();
+    double getAverageLatitude();
 
-    long getAverageLongitude();
+    double getAverageLongitude();
+
+    Node &getFurthestNode();
 };
 
 

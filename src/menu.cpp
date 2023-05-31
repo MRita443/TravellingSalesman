@@ -24,10 +24,12 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
     }
-    if (edgesFilename == "../dataset/Toy-Graphs/tourism.csv") extractEdgesFile(edgesFilename, true, true);
-    if (edgesFilename.find("Extra_Fully_Connected_Graphs") != std::string::npos) {
+    if (edgesFilename.contains("tourism")) extractEdgesFile(edgesFilename, true, true);
+    else if (edgesFilename.contains("Extra_Fully_Connected_Graphs")) {
         extractEdgesFile(edgesFilename, false);
     } else extractEdgesFile(edgesFilename);
+    auto start = graph.findVertex(dataRepository.getFurthestNode().getId());
+    auto result = graph.nearestInsertionLoop(start);
 }
 
 /**
@@ -177,7 +179,6 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
                     if (!graph.addVertex(originId)) break;
                     if (hasLabels) originNode = dataRepository.addNodeEntry(originId, 0, 0, originName);
                     else originNode = dataRepository.addNodeEntry(originId);
-                    originNode.addDistToNodeEntry(destinationId, distance);
                     if (!originNode.addDistToNodeEntry(destinationId, distance)) break;
                 } else if (!origin->addDistToNodeEntry(destinationId, distance)) break;
 

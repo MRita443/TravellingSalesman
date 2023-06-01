@@ -141,7 +141,7 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
 
     int counter = 0;
 
-    getline(nodes, currentParam); //Ignore first line with just descriptors
+    if (hasDescriptors) getline(nodes, currentParam); //Ignore first line with just descriptors
 
     while (getline(nodes, currentLine)) {
         currentLine.erase(currentLine.end() - 1); //Remove \r
@@ -177,7 +177,8 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
 
                 if (!origin) {
                     Node originNode;*/
-                auto origin = graph.addVertex(originId);
+                auto origin = graph.findVertex(originId);
+                if (!origin) origin = graph.addVertex(originId);
 /*                    if (hasLabels) originNode = dataRepository.addNodeEntry(originId, 0, 0, originName);
                     else originNode = dataRepository.addNodeEntry(originId);*/
                 //                if (!originNode.addDistToNodeEntry(destinationId, distance)) break;
@@ -185,7 +186,9 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
 
 /*                if (!destination) {
                     Node destinationNode;*/
-                auto destination = graph.addVertex(destinationId);
+                auto destination = graph.findVertex(destinationId);
+                if (!destination) destination = graph.addVertex(destinationId);
+
 /*                    if (hasLabels)
                         destinationNode = dataRepository.addNodeEntry(destinationId, 0, 0, destinationName);
                     else destinationNode = dataRepository.addNodeEntry(destinationId);*/

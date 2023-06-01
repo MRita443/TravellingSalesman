@@ -132,7 +132,7 @@ void Menu::nodeDoesntExist() {
  */
 void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bool hasLabels) {
 
-    ifstream nodes(filename);
+    ifstream edges(filename);
 
     string currentParam, currentLine;
     string originName, destinationName;
@@ -141,9 +141,9 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
 
     int counter = 0;
 
-    if (hasDescriptors) getline(nodes, currentParam); //Ignore first line with just descriptors
+    if (hasDescriptors) getline(edges, currentParam); //Ignore first line with just descriptors
 
-    while (getline(nodes, currentLine)) {
+    while (getline(edges, currentLine, '\n')) {
         currentLine.erase(currentLine.end() - 1); //Remove \r
         istringstream iss(currentLine);
         while (getline(iss, currentParam, ',')) {

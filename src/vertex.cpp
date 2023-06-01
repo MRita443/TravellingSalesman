@@ -1,7 +1,7 @@
 #include "vertex.h"
 
 
-Vertex::Vertex(const unsigned int &id) : id(id), dist(constants::INF) {}
+Vertex::Vertex(const unsigned int &id, Coordinates c) : id(id), dist(constants::INF), coordinates(c) {}
 
 /**
  * Adds a new outgoing edge to the Vertex, with a given destination and length
@@ -10,7 +10,7 @@ Vertex::Vertex(const unsigned int &id) : id(id), dist(constants::INF) {}
  * @param length - Edge length
  * @return Pointer to the new Edge created
  */
-std::shared_ptr<Edge> Vertex::addEdge(const std::shared_ptr<Vertex>& d, double length) {
+std::shared_ptr<Edge> Vertex::addEdge(const std::shared_ptr<Vertex> &d, double length) {
     auto newEdge = std::make_shared<Edge>(std::make_shared<Vertex>(*this), d, length);
     adj.push_back(newEdge);
     d->incoming.push_back(newEdge);
@@ -28,8 +28,8 @@ bool Vertex::removeEdge(const unsigned int &destID) {
     bool removedEdge = false;
     auto it = adj.begin();
     while (it != adj.end()) {
-        std::shared_ptr<Edge>edge = *it;
-        std::shared_ptr<Vertex>dest = edge->getDest();
+        std::shared_ptr<Edge> edge = *it;
+        std::shared_ptr<Vertex> dest = edge->getDest();
         if (dest->getId() == destID) {
             it = adj.erase(it);
             // Also remove the corresponding edge from the incoming list
@@ -70,7 +70,7 @@ unsigned int Vertex::getIndegree() const {
 }
 
 
-std::shared_ptr<Edge>Vertex::getPath() const {
+std::shared_ptr<Edge> Vertex::getPath() const {
     return this->path;
 }
 
@@ -98,7 +98,7 @@ void Vertex::setDist(double dist) {
     this->dist = dist;
 }
 
-void Vertex::setPath(std::shared_ptr<Edge>path) {
+void Vertex::setPath(std::shared_ptr<Edge> path) {
     this->path = std::move(path);
 }
 
@@ -109,4 +109,12 @@ double Vertex::getDist() const {
 double Vertex::haversineDistance(const std::shared_ptr<Vertex> &other) {
     return 0;
     //return coordinates->distanceTo(other->getCoordinates()); //TODO haversineDistance
+}
+
+const Coordinates &Vertex::getCoordinates() const {
+    return coordinates;
+}
+
+void Vertex::setCoordinates(const Coordinates &coordinates) {
+    Vertex::coordinates = coordinates;
 }

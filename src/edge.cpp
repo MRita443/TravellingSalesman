@@ -38,10 +38,22 @@ void Edge::setReverse(std::shared_ptr<Edge>r) {
     this->reverse = std::move(r);
 }
 
-bool Edge::operator<(const Edge &other) const{
-    return this->length < other.getLength();
+bool Edge::operator<(const Edge &rhs) const{
+    return this->length < rhs.getLength();
 }
 
 void Edge::print() const {
     std::cout << orig->getId() << " <-> " << dest->getId() << std::endl;
+}
+
+bool Edge::operator==(const Edge &rhs) const {
+    return orig == rhs.orig &&
+           dest == rhs.dest &&
+           selected == rhs.selected &&
+           reverse == rhs.reverse &&
+           length == rhs.length;
+}
+
+bool Edge::operator!=(const Edge &rhs) const {
+    return !(rhs == *this);
 }

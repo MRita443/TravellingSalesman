@@ -9,20 +9,23 @@
 #include <list>
 #include <algorithm>
 #include <memory>
+#include <set>
 #include "vertex.h"
-#include "node.h"
 #include "UFDS.h"
+#include "coordinates.h"
 
 class Graph {
   private:
-    unsigned int totalEdges = 0;
-//?    std::unordered_map<unsigned int, std::shared_ptr<Vertex>> idToVertex;
     struct tour_t {
         double distance;
         std::list<std::shared_ptr<Vertex>> course;
     };
+
+    unsigned int totalEdges = 0;
+//?    std::unordered_map<unsigned int, std::shared_ptr<Vertex>> idToVertex;
     tour_t tour;
     VertexPointerTable vertexSet;
+    std::vector<std::vector<double>> distanceMatrix;
 
   public:
     Graph();
@@ -37,7 +40,7 @@ class Graph {
 
     [[nodiscard]] std::shared_ptr<Vertex> findVertex(const unsigned int &id) const;
 
-    bool addVertex(const unsigned int &id);
+    std::shared_ptr<Vertex> addVertex(const unsigned int &id, Coordinates c = {0, 0});
 
     bool addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length);
 
@@ -66,6 +69,20 @@ class Graph {
                       const unsigned int **dists);
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
+
+    long nearestInsertionLoop(const std::shared_ptr<Vertex> &start);
+
+    void updateViableEdges(edgeSet &viableEdges, UFDS partialTour, unsigned int sourceId);
+
+    std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
+
+    std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
+    getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const;
+
+    void initDistanceMatrix();
+
+    bool
+    addBidirectionalEdge(const std::shared_ptr<Vertex> &source, const std::shared_ptr<Vertex> &dest, double length);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

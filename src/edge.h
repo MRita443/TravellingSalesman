@@ -2,6 +2,7 @@
 #define TRAVELLINGSALESMAN_EDGE_H
 
 #include <memory>
+#include <set>
 #include "vertex.h"
 
 class Vertex;
@@ -28,7 +29,11 @@ class Edge {
 
     void setLength(double length);
 
-    bool operator<(const Edge &other) const;
+    bool operator<(const Edge &rhs) const;
+
+    bool operator==(const Edge &rhs) const;
+
+    bool operator!=(const Edge &rhs) const;
 
   private:
     std::shared_ptr<Vertex> orig;
@@ -40,5 +45,14 @@ class Edge {
 
     double length;
 };
+
+
+struct EdgeLowestLength {
+    bool operator()(const Edge &edge1, const Edge &edge2) const {
+        return edge1.getLength() < edge2.getLength();
+    }
+};
+
+typedef std::set<Edge, EdgeLowestLength> edgeSet;
 
 #endif //TRAVELLINGSALESMAN_EDGE_H

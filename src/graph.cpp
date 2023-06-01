@@ -3,6 +3,12 @@
 
 Graph::Graph() = default;
 
+
+/**
+ * Creates a matrix for the distance between 2 nodes,
+ * the distance is infinite if an edge between them doesn't exist
+ * Time Complexity: O(V.sqrt(V)) (average case) | O(n^2) (worst case)
+ */
 void Graph::initDistanceMatrix() {
     std::vector<double> temp(vertexSet.size(), constants::INF);
     this->distanceMatrix = std::vector<std::vector<double>>(vertexSet.size(), temp);
@@ -73,6 +79,13 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
     return true;
 }
 
+/**
+ * Adds a bidirectional edge to the Graph between the vertices with id source and dest, and a given length
+ * Time Complexity: O(1) (average case) | O(|V|) (worst case)
+ * @param source - Pointer of the source Vertex
+ * @param dest - Pointer of the destination Vertex
+ * @param length - Length of the Edge to be added
+ */
 bool
 Graph::addBidirectionalEdge(const std::shared_ptr<Vertex>& source, const std::shared_ptr<Vertex>& dest, double length) {
     if (source == nullptr || dest == nullptr)
@@ -190,6 +203,17 @@ bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned in
     return false;
 }
 
+/**
+ * Recursive function for the backtracking function
+ * Time Complexity: O(2^N) (worst case)
+ * @param currentSolution - Array of the path taken so far
+ * @param currentSolutionDist - Weight of the path taken so far
+ * @param currentNodeIdx - Id of the node the algorithm is currently on
+ * @param bestSolutionDist - Weight of the best path obtained so far
+ * @param bestSolution - Array of the best path obtained so far
+ * @param n - Number of nodes in the graph
+ * @param dists - Distance Matrix for the graph
+ */
 void
 Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist,
                     unsigned int currentNodeIdx,
@@ -234,7 +258,14 @@ std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned i
     return nullptr;
 }
 
-
+/**
+ * A backtracking function for getting the value of the smallest weighted path for the given graph
+ * Time Complexity: O(2^N) (worst case)
+ * @param dists - Distance map for the graph used
+ * @param n - Number of nodes
+ * @param path - A vector to store the path taken
+ * @return The weight of the smallest path obtainable
+ */
 unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
     unsigned int currentSolution[n];
     currentSolution[0] = 0;

@@ -29,8 +29,9 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
         extractEdgesFile(edgesFilename, false);
     } else extractEdgesFile(edgesFilename);
     graph.initDistanceMatrix();
-    //auto start = graph.findVertex(dataRepository.getFurthestNode().getId());
-    // auto result = graph.nearestInsertionLoop(start);
+    //auto start = graph.findVertex(dataRepository.getFurthestVertex().getId());
+    //auto result = graph.nearestInsertionLoop(start);
+
 }
 
 /**

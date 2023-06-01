@@ -5,25 +5,32 @@
 #include <iostream>
 #include <optional>
 #include <memory>
-#include "node.h"
+#include "vertex.h"
+#include "coordinates.h"
 
 class DataRepository {
 
   private:
-    nodePointerTable nodes;
+    VertexPointerTable vertices;
+    double sumLatitude = 0;
+    double sumLongitude = 0;
 
   public:
     DataRepository();
 
-    const nodePointerTable &getNodes() const;
+    const VertexPointerTable &getVertices() const;
 
-    void setNodes(const nodePointerTable &nodes);
+    void setVertices(const VertexPointerTable &vertices);
 
-    std::shared_ptr<Node> findNode(const unsigned int &id);
+    std::shared_ptr<Vertex> findVertex(const unsigned int &id);
 
-    Node &addNodeEntry(unsigned int id, double latitude = constants::INF, double longitude = constants::INF,
-                       const std::string &name = "");
+    double getAverageLatitude();
 
+    double getAverageLongitude();
+
+    Vertex &getFurthestVertex();
+
+    std::shared_ptr<Vertex> addVertexEntry(unsigned int id, double latitude, double longitude);
 };
 
 

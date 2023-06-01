@@ -196,7 +196,7 @@ Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
                     double &bestSolutionDist, unsigned int *bestSolution, unsigned int n) {
     if (currentNodeIdx == n) {
         //Could need to verify here if last node connects to first
-        if(this->distanceMatrix[currentNodeIdx][0] != constants::INF) {
+        if(this->distanceMatrix[currentNodeIdx-1][0] != constants::INF) {
             //Add dist from last node back to zero and check if it's an improvement
             if (currentSolutionDist + this->distanceMatrix[currentSolution[currentNodeIdx - 1]][0] < bestSolutionDist) {
                 bestSolutionDist = currentSolutionDist + this->distanceMatrix[currentSolution[currentNodeIdx - 1]][0];

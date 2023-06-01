@@ -24,7 +24,7 @@ class Menu {
 
     void extractNodesFile(const std::string &filename);
 
-    void extractEdgesFile(const std::string &filename, bool hasDescriptors = true, bool hasLabels = true);
+    void extractEdgesFile(const std::string &filename, bool hasDescriptors = true, bool hasLabels = false);
 
     void extractFileInfo(const std::string &edgesFilename, const std::string &nodesFilename = "");
 

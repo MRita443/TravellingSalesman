@@ -11,7 +11,6 @@ add_executable(TravellingSalesman
         src/edge.h src/edge.cpp
         src/dataRepository.h src/dataRepository.cpp
         src/UFDS.h src/UFDS.cpp
-        src/node.h src/node.cpp
         src/coordinates.h src/coordinates.cpp
         src/constants.h
         )

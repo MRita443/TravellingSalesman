@@ -74,8 +74,6 @@ class Graph {
 
     void updateViableEdges(edgeSet &viableEdges, UFDS partialTour, unsigned int sourceId);
 
-    std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
-
     std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
     getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const;
 

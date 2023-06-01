@@ -165,8 +165,9 @@ void Graph::kruskal(){
     for (const std::shared_ptr<Vertex>& v: vertexSet){
         v->setVisited(false); // util for DFS later on
         for (const std::shared_ptr<Edge> &e: v->getAdj()){
-            edges.insert(e);
-            e->setSelected(false);
+            edges.insert(e); // TODO: doesnt this make it |E|^2 log|E|?
+            //e->setSelected(false);
+            setSelectedEdge(e,false);
         }
     }
     UFDS ufds((unsigned int)vertexSet.size());
@@ -175,7 +176,8 @@ void Graph::kruskal(){
     for (const std::shared_ptr<Edge> &e: edges) {
         if (activatedEdges == vertexSet.size()-1) break; //Number of edges on MST will always be no more than #V-1
         if (!ufds.isSameSet(e->getOrig()->getId(), e->getDest()->getId())) {
-            e->setSelected(true);
+            //e->setSelected(true);
+            setSelectedEdge(e,true);
             activatedEdges++;
             ufds.linkSets(e->getOrig()->getId(), e->getDest()->getId());
         }
@@ -208,6 +210,8 @@ void Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
             preorderMSTTraversal(e->getDest());
         }
     }
+
+    if (source->getId() == 0) addToTour(source);
 }
 
 /**
@@ -220,12 +224,10 @@ void Graph::triangularTSPTour(){
     -Get pre-order of the mst as vector
     -Iterate that order getting total dist
     */
+    tour = {0,{}};
 
     kruskal();
-    tour = {0,{}};
-    preorderMSTTraversal(*(vertexSet.begin()));
-    addToTour(*(vertexSet.begin()));
-
+    preorderMSTTraversal(findVertex(0));
 
     return; //results are updated in tour
 }
@@ -281,21 +283,6 @@ Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionD
         }
     }
 }
-
-/**
- * Finds the edge connecting two vertices
- * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
- * @param v1id - Id of the first vertex
- * @param v2id - Id of the second vertex
- * @return Pointer to the edge that connects both vertices
- */
-std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned int &v2id) const {
-    for (auto e: findVertex(v1id)->getAdj()) {
-        if (e->getDest()->getId() == v2id) return e;
-    }
-    return nullptr;
-}
-
 
 unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
     unsigned int currentSolution[n];

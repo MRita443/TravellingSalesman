@@ -49,6 +49,8 @@ class Vertex {
 
     bool removeEdge(const unsigned int &destID);
 
+    double haversineDistance(const std::shared_ptr<Vertex> &other);
+
 
 private:
     unsigned int id;                // identifier

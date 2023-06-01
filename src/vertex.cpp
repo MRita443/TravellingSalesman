@@ -106,3 +106,7 @@ double Vertex::getDist() const {
     return this->dist;
 }
 
+double Vertex::haversineDistance(const std::shared_ptr<Vertex> &other) {
+    return 0;
+    //return coordinates->distanceTo(other->getCoordinates()); //TODO haversineDistance
+}

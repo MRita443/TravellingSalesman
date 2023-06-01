@@ -18,11 +18,11 @@ class Graph {
     unsigned int totalEdges = 0;
 //?    std::unordered_map<unsigned int, std::shared_ptr<Vertex>> idToVertex;
     struct tour_t {
-        unsigned int distance;
+        double distance;
         std::list<std::shared_ptr<Vertex>> course;
     };
     tour_t tour;
-    VertexPointerTable vertexSet;    // vertex set
+    VertexPointerTable vertexSet;
 
   public:
     Graph();
@@ -49,17 +49,15 @@ class Graph {
 
     void visitedDFS(const std::shared_ptr<Vertex> &source);
 
-    bool isConnectable(std::shared_ptr<Vertex> &candidate) const;
-
-    void addToTour(std::shared_ptr<Vertex> &stop);
-
-    void tieDownTour();
+    void addToTour(std::shared_ptr<Vertex> stop);
 
     void preorderMSTTraversal(std::shared_ptr<Vertex> source);
 
     void kruskal();
 
     void triangularTSPTour();
+
+    void printTour();
 
     unsigned int tspBT(const unsigned int **dists, unsigned int n, unsigned int *path);
 

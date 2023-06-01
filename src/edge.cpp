@@ -1,6 +1,6 @@
 #include "edge.h"
 
-Edge::Edge(std::shared_ptr<Vertex>orig, std::shared_ptr<Vertex> dest, unsigned int length) {
+Edge::Edge(std::shared_ptr<Vertex>orig, std::shared_ptr<Vertex> dest, double length) {
     this->orig = std::move(orig);
     this->dest = std::move(dest);
     this->length = length;
@@ -36,6 +36,10 @@ void Edge::setSelected(bool s) {
 
 void Edge::setReverse(std::shared_ptr<Edge>r) {
     this->reverse = std::move(r);
+}
+
+bool Edge::operator<(const Edge &other) const{
+    return this->length < other.getLength();
 }
 
 void Edge::print() const {

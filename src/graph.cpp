@@ -1,3 +1,4 @@
+#include <set>
 #include "graph.h"
 
 Graph::Graph() = default;
@@ -121,45 +122,36 @@ void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
     }
 }
 
+struct edgePtrComparator {
+    bool operator()(const std::shared_ptr<Edge> &e1, const std::shared_ptr<Edge> &e2) const {
+        return *e1 < *e2;
+    }
+};
 
 /**
  * @brief Builds a MST using Kruskal's algorithm
  * Time Complexity: O(|E|log|E|)
  */
 void Graph::kruskal(){
-    std::list<std::shared_ptr<Edge>> edges; //TODO: better generate this list (edgeSet like vertexSet?)
+    std::set<std::shared_ptr<Edge>, edgePtrComparator> edges; //TODO: better generate this list (edgeSet like vertexSet?)
     for (const std::shared_ptr<Vertex>& v: vertexSet){
         v->setVisited(false); // util for DFS later on
         for (const std::shared_ptr<Edge> &e: v->getAdj()){
-            edges.push_back(e);
+            edges.insert(e);
             e->setSelected(false);
         }
     }
     UFDS ufds((unsigned int)vertexSet.size());
 
-    edges.sort([](const std::shared_ptr<Edge> &e1, const std::shared_ptr<Edge> &e2) {
-        return e1->getLength() < e2->getLength();
-    });
-
+    unsigned long activatedEdges = 0;
     for (const std::shared_ptr<Edge> &e: edges) {
+        if (activatedEdges == vertexSet.size()-1) break; //Number of edges on MST will always be no more than #V-1
         if (!ufds.isSameSet(e->getOrig()->getId(), e->getDest()->getId())) {
             e->setSelected(true);
+            activatedEdges++;
             ufds.linkSets(e->getOrig()->getId(), e->getDest()->getId());
         }
     }
-}
-
-/**
- * Checks if the last vertex on the tour attribute is adjacent to a given vertex
- * Time Complexity: O(|E|) (worst case)
- * @param candidate - Vertex that is going to be checked
- * @return true if the candidate vertex is adjacent to the tour's last vertex, false otherwise
- */
-bool Graph::isConnectable(std::shared_ptr<Vertex> &candidate) const {
-    for (std::shared_ptr<Edge> &e : (*tour.course.rbegin())->getAdj()){
-        if (e->getDest() == candidate) return true;
-    }
-    return false;
 }
 
  /**
@@ -167,19 +159,12 @@ bool Graph::isConnectable(std::shared_ptr<Vertex> &candidate) const {
   * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
   * @param stop - Vertex to add
   */
-void Graph::addToTour(std::shared_ptr<Vertex> &stop) {
+void Graph::addToTour(std::shared_ptr<Vertex> stop) {
     if (!tour.course.empty()){
-        tour.distance += findEdge((*(tour.course).rbegin())->getId(), stop->getId())->getLength();
+        std::shared_ptr<Edge> aresta = findEdge((*(tour.course).rbegin())->getId(), stop->getId());
+        tour.distance += aresta == nullptr ? (*(tour.course).rbegin())->haversineDistance(stop) : aresta->getLength();
     }
     tour.course.push_back(stop);
-}
-
-/**
- * Adds the distance between the first and last nodes so the tour "closes"
- * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
- */
-void Graph::tieDownTour(){
-    tour.distance += findEdge((*tour.course.begin())->getId(), (*tour.course.rbegin())->getId())->getLength();
 }
 
 /**
@@ -191,10 +176,7 @@ void Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
     source->setVisited(true);
     addToTour(source);
     for (std::shared_ptr<Edge> &e : source->getAdj()){
-        bool unvisited = !(e->getDest()->isVisited());
-        bool selected = e->isSelected();
-        //bool connected_to_last = isConnectable(e->getDest());
-        if(unvisited && selected /*&& connected_to_last*/){
+        if(!(e->getDest()->isVisited()) && e->isSelected()){
             preorderMSTTraversal(e->getDest());
         }
     }
@@ -202,7 +184,7 @@ void Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
 
 /**
  * Calculates an approximation of the TSP, using the triangular approximation heuristic
- * Time Complexity: //TODO
+ * Time Complexity: O(|E|log|E|)//TODO
  */
 void Graph::triangularTSPTour(){
     /*
@@ -210,13 +192,28 @@ void Graph::triangularTSPTour(){
     -Get pre-order of the mst as vector
     -Iterate that order getting total dist
     */
+
     kruskal();
     tour = {0,{}};
     preorderMSTTraversal(*(vertexSet.begin()));
-    tieDownTour();
+    addToTour(*(vertexSet.begin()));
+
+
     return; //results are updated in tour
 }
 
+/**
+ * Displays Tour's Vertices by order and its total distance
+ * Time Complexity: O(|V|)
+ */
+void Graph::printTour(){
+    printf("Tour's total Distance: %f\n", tour.distance);
+    printf("Path taken: ");
+    for (std::shared_ptr<Vertex> v : tour.course){
+        printf(" %d", v->getId());
+    }
+    printf("\n");
+}
 
 bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned int n) {
     for (int i = 0; i < n; i++) {

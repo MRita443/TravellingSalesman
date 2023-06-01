@@ -28,6 +28,8 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (edgesFilename.find("Extra_Fully_Connected_Graphs") != std::string::npos) {
         extractEdgesFile(edgesFilename, false);
     } else extractEdgesFile(edgesFilename);
+    graph.triangularTSPTour(); //TODO remove this later
+    graph.printTour();
 }
 
 /**

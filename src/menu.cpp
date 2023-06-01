@@ -23,7 +23,9 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
     }
-    if (edgesFilename.contains("Extra_Fully_Connected_Graphs")) {
+    if (edgesFilename.contains("tourism")) {
+        extractEdgesFile(edgesFilename, true, true);
+    } else if (edgesFilename.contains("Extra_Fully_Connected_Graphs")) {
         extractEdgesFile(edgesFilename, false);
     } else extractEdgesFile(edgesFilename);
     graph.initDistanceMatrix();
@@ -128,7 +130,7 @@ void Menu::nodeDoesntExist() {
  * Extracts and stores the information of an edges file
  * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of the file
  */
-void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors) {
+void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bool hasLabels) {
 
     ifstream nodes(filename);
 
@@ -156,6 +158,15 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors) {
                 }
                 case 2: {
                     distance = stod(currentParam);
+                    if (!hasLabels) counter = 0;
+                    break;
+                }
+                case 3: {
+                    originName = currentParam;
+                    break;
+                }
+                case 4: {
+                    destinationName = currentParam;
                     counter = 0;
                     break;
                 }

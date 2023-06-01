@@ -9,7 +9,7 @@ class Vertex;
 
 class Edge {
   public:
-    Edge(std::shared_ptr<Vertex> orig, std::shared_ptr<Vertex> dest, unsigned int w);
+    Edge(std::shared_ptr<Vertex> orig, std::shared_ptr<Vertex> dest, double w);
 
     [[nodiscard]] std::shared_ptr<Vertex> getDest() const;
 

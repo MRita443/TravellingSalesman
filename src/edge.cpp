@@ -1,6 +1,6 @@
 #include "edge.h"
 
-Edge::Edge(std::shared_ptr<Vertex>orig, std::shared_ptr<Vertex> dest, unsigned int length) {
+Edge::Edge(std::shared_ptr<Vertex>orig, std::shared_ptr<Vertex> dest, double length) {
     this->orig = std::move(orig);
     this->dest = std::move(dest);
     this->length = length;

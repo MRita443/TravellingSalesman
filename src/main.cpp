@@ -2,7 +2,7 @@
 
 int main() {
     std::string const nodesFilePath = "../dataset/Real-world-Graphs/graph1/vertices.csv";
-    std::string const edgesFilePath = "../dataset/Toy-Graphs/stadiums.csv";
+    std::string const edgesFilePath = "../dataset/Toy-Graphs/shipping.csv";
 
     Menu menu;
     menu.extractFileInfo(edgesFilePath);

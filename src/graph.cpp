@@ -3,6 +3,17 @@
 
 Graph::Graph() = default;
 
+void Graph::initDistanceMatrix() {
+    std::vector<double> temp(vertexSet.size(), constants::INF);
+    this->distanceMatrix = std::vector<std::vector<double>>(vertexSet.size(), temp);
+
+    for (const auto &v: vertexSet) {
+        for (const auto &e: v->getAdj()) {
+            distanceMatrix[v->getId()][e->getDest()->getId()] = e->getLength();
+        }
+    }
+}
+
 unsigned int Graph::getNumVertex() const {
     return (unsigned int) vertexSet.size();
 }
@@ -32,8 +43,10 @@ std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
  * @param id - Id of the Vertex to add
  * @return True if successful, and false if a vertex with the given id already exists
  */
-bool Graph::addVertex(const unsigned int &id) {
-    return vertexSet.insert(std::make_shared<Vertex>(id)).second;
+std::shared_ptr<Vertex> Graph::addVertex(const unsigned int &id, Coordinates c) {
+    std::shared_ptr<Vertex> newVertex = std::make_shared<Vertex>(id, c);
+    vertexSet.insert(newVertex);
+    return newVertex;
 }
 
 /**
@@ -52,6 +65,21 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
 
     auto e1 = v1->addEdge(v2, length);
     auto e2 = v2->addEdge(v1, length);
+
+    e1->setReverse(e2);
+    e2->setReverse(e1);
+
+    totalEdges++;
+    return true;
+}
+
+bool
+Graph::addBidirectionalEdge(const std::shared_ptr<Vertex>& source, const std::shared_ptr<Vertex>& dest, double length) {
+    if (source == nullptr || dest == nullptr)
+        return false;
+
+    auto e1 = source->addEdge(dest, length);
+    auto e2 = dest->addEdge(source, length);
 
     e1->setReverse(e2);
     e2->setReverse(e1);
@@ -95,7 +123,7 @@ void Graph::activateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
 }
 
 /**
- * DFS traversal variation that sets the visited attribute to true of the nodes the DFS traverses to
+ * DFS traversal variation that sets the visited attribute to true of the vertices the DFS traverses to
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
 */
@@ -243,7 +271,7 @@ long Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
         newVertex = viableEdges.begin()->getOrig();
         oldVertex = viableEdges.begin()->getDest();
 
-        long insertionDistance = constants::INF;
+        double insertionDistance = constants::INF;
         // long sequenceDistance = distance + viableEdges.begin()->getLength();
 
         auto insertionEdges = getInsertionEdges(edgesInTour, newVertex);
@@ -277,7 +305,7 @@ long Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
             updateViableEdges(viableEdges, partialTour, start->getId());
         }
     }
-    //The two untied edges will always be the starting two nodes
+    //The two untied edges will always be the starting two vertices
     return distance + adjacent[0]->getLength();
 }
 

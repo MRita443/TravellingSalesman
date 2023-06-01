@@ -1,5 +1,4 @@
 #include "menu.h"
-#include "node.h"
 
 using namespace std;
 
@@ -24,12 +23,12 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
     }
-    if (edgesFilename.contains("tourism")) extractEdgesFile(edgesFilename, true, true);
-    else if (edgesFilename.contains("Extra_Fully_Connected_Graphs")) {
+    if (edgesFilename.contains("Extra_Fully_Connected_Graphs")) {
         extractEdgesFile(edgesFilename, false);
     } else extractEdgesFile(edgesFilename);
-    auto start = graph.findVertex(dataRepository.getFurthestNode().getId());
-    auto result = graph.nearestInsertionLoop(start);
+    graph.initDistanceMatrix();
+    //auto start = graph.findVertex(dataRepository.getFurthestNode().getId());
+    // auto result = graph.nearestInsertionLoop(start);
 }
 
 /**
@@ -129,7 +128,7 @@ void Menu::nodeDoesntExist() {
  * Extracts and stores the information of an edges file
  * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of the file
  */
-void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bool hasLabels) {
+void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors) {
 
     ifstream nodes(filename);
 
@@ -157,41 +156,32 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
                 }
                 case 2: {
                     distance = stod(currentParam);
-                    if (!hasLabels) counter = 0;
-                    break;
-                }
-                case 3: {
-                    originName = currentParam;
-                    break;
-                }
-                case 4: {
-                    destinationName = currentParam;
                     counter = 0;
                     break;
                 }
             }
             if (counter == 0) {
-                shared_ptr<Node> origin = dataRepository.findNode(originId);
+/*                shared_ptr<Node> origin = dataRepository.findNode(originId);
                 shared_ptr<Node> destination = dataRepository.findNode(destinationId);
 
                 if (!origin) {
-                    Node originNode;
-                    if (!graph.addVertex(originId)) break;
-                    if (hasLabels) originNode = dataRepository.addNodeEntry(originId, 0, 0, originName);
-                    else originNode = dataRepository.addNodeEntry(originId);
-                    if (!originNode.addDistToNodeEntry(destinationId, distance)) break;
-                } else if (!origin->addDistToNodeEntry(destinationId, distance)) break;
+                    Node originNode;*/
+                auto origin = graph.addVertex(originId);
+/*                    if (hasLabels) originNode = dataRepository.addNodeEntry(originId, 0, 0, originName);
+                    else originNode = dataRepository.addNodeEntry(originId);*/
+                //                if (!originNode.addDistToNodeEntry(destinationId, distance)) break;
+                //  } else if (!origin->addDistToNodeEntry(destinationId, distance)) break;
 
-                if (!destination) {
-                    Node destinationNode;
-                    if (!graph.addVertex(destinationId)) break;
-                    if (hasLabels)
+/*                if (!destination) {
+                    Node destinationNode;*/
+                auto destination = graph.addVertex(destinationId);
+/*                    if (hasLabels)
                         destinationNode = dataRepository.addNodeEntry(destinationId, 0, 0, destinationName);
-                    else destinationNode = dataRepository.addNodeEntry(destinationId);
-                    if (!destinationNode.addDistToNodeEntry(originId, distance)) break;
-                } else if (!destination->addDistToNodeEntry(originId, distance)) break;
+                    else destinationNode = dataRepository.addNodeEntry(destinationId);*/
+                //      if (!destinationNode.addDistToNodeEntry(originId, distance)) break;
+                // } else if (!destination->addDistToNodeEntry(originId, distance)) break;
 
-                if (!graph.addBidirectionalEdge(originId, destinationId, distance)) break;
+                if (!graph.addBidirectionalEdge(origin, destination, distance)) break;
 
             }
         }
@@ -200,7 +190,7 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
 
 
 /**
- * Extracts and stores the information of a nodes file
+ * Extracts and stores the information of a vertices file
  * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of the file
  */
 void Menu::extractNodesFile(const std::string &filename) {
@@ -235,8 +225,7 @@ void Menu::extractNodesFile(const std::string &filename) {
                     }
                 }
                 if (counter == 0) {
-                    if (!graph.addVertex(id)) break;
-                    dataRepository.addNodeEntry(id, latitude, longitude);
+                    dataRepository.addVertexEntry(id, latitude, longitude);
                 }
             }
         }

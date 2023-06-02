@@ -11,6 +11,7 @@
 #include <memory>
 #include "constants.h"
 #include "coordinates.h"
+#include "MutablePriorityQueue.h"
 
 class Vertex {
   public:
@@ -22,8 +23,11 @@ class Vertex {
 
     [[nodiscard]] unsigned int getIndegree() const;
 
+    [[nodiscard]] std::shared_ptr<Vertex> getPath() const;
 
-    [[nodiscard]] unsigned int getPath() const;
+    [[nodiscard]] double getDist() const;
+
+    void setDist(const double newDist);
 
     void setId(const unsigned int &id);
 
@@ -32,23 +36,28 @@ class Vertex {
     void setIndegree(unsigned int indegree);
 
 
-    void setPath(unsigned int path);
+    void setPath(std::shared_ptr<Vertex> path);
 
     [[nodiscard]] const Coordinates &getCoordinates() const;
 
     void setCoordinates(const Coordinates &coordinates);
 
-    //TODO haversineFunction
+    double haversineDistance(const std::shared_ptr<Vertex> &other) const;
 
-  private:
+    bool operator<(const Vertex &rhs) const;
+
+    friend class MutablePriorityQueue<Vertex>;
+  protected:
     unsigned int id;                // identifier
     Coordinates coordinates;
 
     // auxiliary fields
     bool visited = false; // used by DFS, BFS, Prim ...
     unsigned int indegree = 0; // used by topsort
+    double dist;
 
-    unsigned int path = -1; //Id of the preceding vertex
+    std::shared_ptr<Vertex> path = nullptr; //Pointer to the preceding vertex
+    int queueIndex = 0; 		// required by MutablePriorityQueue and UFDS
 };
 
 struct VertexPointerHash {

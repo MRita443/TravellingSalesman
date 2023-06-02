@@ -26,18 +26,21 @@ std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
 }
 
 /**
- * Finds the edge connecting two vertices
- * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
- * @param v1id - Id of the first vertex
- * @param v2id - Id of the second vertex
- * @return Pointer to the edge that connects both vertices
+ * Finds length of the edge connecting two vertices (if it doesn't explicitly exist, it returns the haversine distance)
+ * Time Complexity: O(1)
+ * @param v1id - Pointer to the first vertex
+ * @param v2id - Pointer to the second vertex
  */
-std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned int &v2id) const{
-    for (std::shared_ptr<Edge> &e : findVertex(v1id)->getAdj()){
-        if (e->getDest()->getId() == v2id) return e;
+double Graph::findEdge(const std::shared_ptr<Vertex> &v1, const std::shared_ptr<Vertex> &v2) const{
+    unsigned int v1id = v1->getId();
+    unsigned int v2id = v2->getId();
+
+    if (v1id == v2id) return -2;
+    if (distanceMatrix[v1id][v2id] != constants::INF) return distanceMatrix[v1id][v2id];
+    else { //haversine function
+        return v1->haversineDistance(v2);
     }
-    return nullptr;
-} //TODO remove
+}
 
 /**
  * Adds a vertex with a given id to the Graph, representing a given Node
@@ -78,9 +81,9 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
 */
-/*void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
+void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
-    for (size_t i = 0; i<vertexSet.size(); i++)
+    for (size_t i = 0; i<vertexSet.size(); i++){
         if (distanceMatrix[source->getId()][i] != constants::INF && source->getId() != i) { //edge existe e não é para si mesma
             std::shared_ptr<Vertex> v = findVertex(i);
             if (!v->isVisited()) {
@@ -88,48 +91,71 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
             }
         }
     }
-}*/
+}
 
 
 /**
- * @brief Builds a MST using Kruskal's algorithm
+ * @brief Builds a MST using Prim's algorithm
  * Time Complexity: O(|E|log|E|)
+ * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if contains self-loop)
  */
-void Graph::kruskal(){
-    std::set<std::shared_ptr<Edge>, edgePtrComparator> edges; //TODO: better generate this list (edgeSet like vertexSet?)
-    for (const std::shared_ptr<Vertex>& v: vertexSet){
-        v->setVisited(false); // util for DFS later on
-        for (const std::shared_ptr<Edge> &e: v->getAdj()){
-            edges.insert(e); // TODO: doesnt this make it |E|^2 log|E|?
-            //e->setSelected(false);
-            setSelectedEdge(e,false);
-        }
-    }
-    UFDS ufds((unsigned int)vertexSet.size());
+int Graph::prim(){
+    MutablePriorityQueue<Vertex> q;
+    std::shared_ptr<Vertex> start = findVertex(0);
 
-    unsigned long activatedEdges = 0;
-    for (const std::shared_ptr<Edge> &e: edges) {
-        if (activatedEdges == vertexSet.size()-1) break; //Number of edges on MST will always be no more than #V-1
-        if (!ufds.isSameSet(e->getOrig()->getId(), e->getDest()->getId())) {
-            //e->setSelected(true);
-            setSelectedEdge(e,true);
-            activatedEdges++;
-            ufds.linkSets(e->getOrig()->getId(), e->getDest()->getId());
+    for (std::shared_ptr<Vertex> &v : vertexSet) {
+        v->setDist(constants::INF);
+        v->setVisited(false);
+        v->setPath(nullptr);
+    }
+    start->setDist(0);
+    q.insert(start);
+
+    while (!q.empty()){
+        std::shared_ptr<Vertex> currentVertex = q.extractMin();
+        int exec_val = addToTour(currentVertex);
+        if (exec_val != 0) return exec_val;
+        currentVertex->setVisited(true);
+
+        for (size_t i = 0; i<vertexSet.size(); i++){
+            if (distanceMatrix[currentVertex->getId()][i] == constants::INF || i == currentVertex->getId()) continue;
+            std::shared_ptr<Vertex> dest = findVertex(i);
+            if (!dest->isVisited()){
+                double oldDist = dest->getDist();
+                if (distanceMatrix[currentVertex->getId()][i] < oldDist){
+                    dest->setPath(currentVertex);
+                    dest->setDist(distanceMatrix[currentVertex->getId()][i]);
+                    oldDist == constants::INF ? q.insert(dest) : q.decreaseKey(dest);
+                }
+            }
         }
     }
+    int exec_val = addToTour(start);
+    if (exec_val != 0) return exec_val;
+    return 0;
 }
 
  /**
   * Adds a vertex to the tour structure and updates the total distance
-  * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
+  * Time Complexity: O(1)
   * @param stop - Vertex to add
+  * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if self-loop)
   */
-void Graph::addToTour(std::shared_ptr<Vertex> stop) {
+int Graph::addToTour(std::shared_ptr<Vertex> stop) {
     if (!tour.course.empty()){
-        std::shared_ptr<Edge> aresta = findEdge((*(tour.course).rbegin())->getId(), stop->getId());
-        tour.distance += aresta == nullptr ? (*(tour.course).rbegin())->haversineDistance(stop) : aresta->getLength();
+        if ((*(tour.course).rbegin())->getId() == stop->getId()){
+            //selfloop
+            return -2;
+        }
+        double aresta = findEdge((*(tour.course).rbegin()), stop);
+        if (aresta == -1){
+            //rejeitar tour
+            return aresta;
+        }
+        tour.distance += aresta;
     }
     tour.course.push_back(stop);
+    return 0;
 }
 
 /**
@@ -138,7 +164,7 @@ void Graph::addToTour(std::shared_ptr<Vertex> stop) {
  * @param source - Vertex where the DFS starts
  */
 void Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
-    source->setVisited(true);
+/*    source->setVisited(true);
     addToTour(source);
     for (std::shared_ptr<Edge> &e : source->getAdj()){
         if(!(e->getDest()->isVisited()) && e->isSelected()){
@@ -147,11 +173,11 @@ void Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
     }
 
     if (source->getId() == 0) addToTour(source);
-}
+*/}
 
 /**
  * Calculates an approximation of the TSP, using the triangular approximation heuristic
- * Time Complexity: O(|E|log|E|)//TODO
+ * Time Complexity: O(|E|log|E|)
  */
 void Graph::triangularTSPTour(){
     /*
@@ -161,8 +187,19 @@ void Graph::triangularTSPTour(){
     */
     tour = {0,{}};
 
-    kruskal();
-    preorderMSTTraversal(findVertex(0));
+    int exec_val = prim();
+    switch (exec_val){
+        case 0:
+            printTour();
+            break;
+        case -1:
+            printf("Couldn't calculate approximation of TSP for this graph!\n");
+            break;
+        case -2:
+            printf("Course would contain self-loop!\n");
+            break;
+    }
+    //preorderMSTTraversal(findVertex(0));
 
     return; //results are updated in tour
 }

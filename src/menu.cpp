@@ -35,7 +35,6 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     auto result = graph.nearestInsertionLoop(start);*/
     
     graph.triangularTSPTour(); //TODO remove this later
-    graph.printTour();
 }
 
 /**

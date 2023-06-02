@@ -10,6 +10,7 @@
 #define DA_TP_CLASSES_MUTABLEPRIORITYQUEUE
 
 #include <vector>
+#include <memory>
 
 
 
@@ -19,15 +20,15 @@
 
 template <class T>
 class MutablePriorityQueue {
-	std::vector<T *> H;
+	std::vector<std::shared_ptr<T>> H;
 	void heapifyUp(unsigned i);
 	void heapifyDown(unsigned i);
-	inline void set(unsigned i, T * x);
+	inline void set(unsigned i, std::shared_ptr<T>);
 public:
 	MutablePriorityQueue();
-	void insert(T * x);
-	T * extractMin();
-	void decreaseKey(T * x);
+	void insert(std::shared_ptr<T> x);
+    std::shared_ptr<T> extractMin();
+	void decreaseKey(std::shared_ptr<T> x);
 	bool empty();
 };
 
@@ -48,7 +49,7 @@ bool MutablePriorityQueue<T>::empty() {
 }
 
 template <class T>
-T* MutablePriorityQueue<T>::extractMin() {
+std::shared_ptr<T> MutablePriorityQueue<T>::extractMin() {
 	auto x = H[1];
 	H[1] = H.back();
 	H.pop_back();
@@ -58,13 +59,13 @@ T* MutablePriorityQueue<T>::extractMin() {
 }
 
 template <class T>
-void MutablePriorityQueue<T>::insert(T *x) {
+void MutablePriorityQueue<T>::insert(std::shared_ptr<T> x) {
 	H.push_back(x);
 	heapifyUp(H.size()-1);
 }
 
 template <class T>
-void MutablePriorityQueue<T>::decreaseKey(T *x) {
+void MutablePriorityQueue<T>::decreaseKey(std::shared_ptr<T> x) {
 	heapifyUp(x->queueIndex);
 }
 
@@ -96,7 +97,7 @@ void MutablePriorityQueue<T>::heapifyDown(unsigned i) {
 }
 
 template <class T>
-void MutablePriorityQueue<T>::set(unsigned i, T * x) {
+void MutablePriorityQueue<T>::set(unsigned i, std::shared_ptr<T> x) {
 	H[i] = x;
 	x->queueIndex = i;
 }

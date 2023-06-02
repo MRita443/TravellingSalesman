@@ -52,6 +52,10 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
     if (distanceMatrix.size() <= source) distanceMatrix.resize(source + 1, {constants::INF});
     if (distanceMatrix[source].size() <= dest) distanceMatrix[source].resize(dest + 1, constants::INF);
     distanceMatrix[source][dest] = length;
+
+    if (distanceMatrix.size() <= dest) distanceMatrix.resize(dest + 1, {constants::INF});
+    if (distanceMatrix[dest].size() <= source) distanceMatrix[dest].resize(source + 1, constants::INF);
+    distanceMatrix[dest][source] = length;
     totalEdges++;
 }
 
@@ -210,20 +214,20 @@ unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned i
     return bestSolutionDist;
 }
 
-double Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
+double Graph::nearestInsertionLoop(unsigned int &start) {
     double distance = 0;
     std::vector<unsigned int> tour;
 
     //Get shortest adjacent edge
-    std::vector<double> adjacent = distanceMatrix[start->getId()];
+    std::vector<double> adjacent = distanceMatrix[start];
     auto it = std::min_element(adjacent.begin(), adjacent.end());
     unsigned int minEdgeIndex = std::distance(adjacent.begin(), it);
 
     //Initialize the partial tour with the chosen vertex and its closest neighbour
-    tour.push_back(start->getId());
+    tour.push_back(start);
     tour.push_back(minEdgeIndex);
     // TODO(?): Set path of adjacent edge to be the start vertex
-    distance += distanceMatrix[start->getId()][minEdgeIndex];
+    distance += distanceMatrix[start][minEdgeIndex];
 
     //Two cities are already in the tour, repeat for the leftover cities
     for (int i = 2; i < vertexSet.size(); i++) {
@@ -241,7 +245,7 @@ double Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
                 distance - distanceMatrix[insertionEdges.first[0]][insertionEdges.first.back()] + insertionEdges.second;
     }
     //The two untied edges will always be the starting two vertices
-    return distance + distanceMatrix[minEdgeIndex][start->getId()];
+    return distance + distanceMatrix[minEdgeIndex][start];
 }
 
 std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<unsigned int> tour) {
@@ -251,7 +255,7 @@ std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<un
     for (auto id: tour) {
         for (int i = 0; i < distanceMatrix[id].size(); i++) {
             //If it's an edge to a vertex not yet in the tour
-            if (std::find(tour.begin(), tour.end(), id) == tour.end()) {
+            if (std::find(tour.begin(), tour.end(), i) == tour.end()) {
                 if (distanceMatrix[id][i] < smallestLength) {
                     smallestLength = distanceMatrix[id][i];
                     edgeExtremities = {id, i};

@@ -29,9 +29,10 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
     }
-//    graph.initDistanceMatrix();
-    //auto start = graph.findVertex(dataRepository.getFurthestNode().getId());
-    // auto result = graph.nearestInsertionLoop(start);
+    unsigned int start = 0;
+    if (edgesFilename.contains("Real-world-Graphs"))
+        start = dataRepository.getFurthestVertex().getId();
+    auto result = graph.nearestInsertionLoop(start);
 }
 
 /**
@@ -171,10 +172,8 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
             }
             if (counter == 0) {
                 graph.addVertex(originId);
-
                 graph.addVertex(destinationId);
-
-                if (!graph.addBidirectionalEdge(originId, destinationId, distance)) break;
+                graph.addBidirectionalEdge(originId, destinationId, distance);
             }
         }
     }

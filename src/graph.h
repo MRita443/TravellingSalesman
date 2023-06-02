@@ -55,14 +55,14 @@ class Graph {
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 
-    double nearestInsertionLoop(const std::shared_ptr<Vertex> &start);
-
     [[nodiscard]] std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
 
     std::pair<unsigned int, unsigned int> getNextHeuristicEdge(std::vector<unsigned int> tour);
 
     [[nodiscard]] std::pair<std::vector<unsigned int>, double>
     getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
+
+    double nearestInsertionLoop(unsigned int &start);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

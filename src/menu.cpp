@@ -29,10 +29,6 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
     }
-/*    unsigned int start = 0;
-    if (edgesFilename.contains("Real-world-Graphs"))
-        start = dataRepository.getFurthestVertex().getId();
-    auto result = graph.nearestInsertionLoop(start);*/
 }
 
 /**
@@ -429,8 +425,8 @@ unsigned int Menu::triangularApproximationMenu() {
             graph.clearGraph();
             dataRepository.clearData();
             extractFileInfo(edgesFilePath, nodesFilePath);
-            cout << "Done\n";
-            //TODO: 4.2 Triangular Approximation
+
+           //TODO: 4.2 Triangular Approximation
         }
     }
 }
@@ -445,8 +441,8 @@ unsigned int Menu::heuristicMenu() {
 
     while (commandIn != 'q') {
         //Header
-        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "TRIANGULAR APPRO";
-        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "XIMATION HEURISTIC" << endl;
+        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "CUSTOM H";
+        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "EURISTIC" << endl;
 
         cout << setw(COLUMN_WIDTH) << setfill(' ') << "Stadiums: [1]" << setw(COLUMN_WIDTH) << "Tourism: [2]" << endl;
 
@@ -465,7 +461,7 @@ unsigned int Menu::heuristicMenu() {
         cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
 
         cout << endl
-             << "Please select the problem for which you'd like to execute the triangular approximation algorithm: ";
+             << "Please select the problem for which you'd like to execute the nearest insertion algorithm: ";
         cin >> commandIn;
 
         if (commandIn != 'q' && commandIn != 'b') commandIn = toupper(commandIn);
@@ -548,106 +544,13 @@ unsigned int Menu::heuristicMenu() {
             graph.clearGraph();
             dataRepository.clearData();
             extractFileInfo(edgesFilePath, nodesFilePath);
-            cout << "Done\n";
-            //TODO: 4.3 Heuristic
+
+            auto start = random<unsigned int>(0, graph.getNumVertex() - 1);
+            if (edgesFilePath.contains("Real-world-Graphs"))
+                start = dataRepository.getFurthestVertex().getId();
+            cout << endl << "Calculating..." << endl;
+            auto result = graph.nearestInsertionLoop(start);
+            cout << "TOUR LENGTH: " << result << endl;
         }
     }
 }
-
-
-/**
- * Outputs edge failure selection menu screen and returns a vector containing all the select edges for the given inputs
- * @return - vector<Edge*> containing all the Edges to be deactivated
- *
- */
-/*vector<Edge *> Menu::edgeFailureMenu() {
-    unsigned char commandIn;
-    vector<Edge *> edges;
-
-    cout << setw(COLUMN_WIDTH) << setfill(' ') << "Random rails: [1]" << setw(COLUMN_WIDTH)
-         << "Specific rails: [2]" << endl;
-
-    while (true) {
-        cout << "Please select the rails you'd like to deactivate: ";
-        cin >> commandIn;
-
-        if (!checkInput(1)) {
-            continue;
-        }
-        switch (commandIn) {
-            case '1': {
-                unsigned int numEdges;
-                cout << "Please enter how many rails you'd like to deactivate: ";
-                cin >> numEdges;
-                if (!checkInput()) break;
-                if (numEdges > graph.getTotalEdges()) {
-                    cout << "The network only contains " << graph.getTotalEdges() << " rails!" << endl;
-                    break;
-                }
-                vector<Edge *> deactivatedEdges = graph.randomlySelectEdges(numEdges);
-
-                if (!deactivatedEdges.empty()) {
-                    cout << "Deactivating the following rails: " << endl;
-                    for (Edge *e: deactivatedEdges) {
-                        e->print();
-                    }
-                } else cout << "Please provide edges for deactivation!" << endl;
-                return deactivatedEdges;
-            }
-            case '2': {
-                vector<Edge *> deactivatedEdges;
-
-                while (true) {
-                    string departureName;
-                    cout << "Enter the name of the departure station, or q to finish: ";
-                    getline(cin, departureName);
-                    if (!checkInput()) break;
-
-                    if (departureName == "q") break;
-
-                    optional<Station> departureStation = dataRepository.findStation(departureName);
-                    if (!departureStation.has_value()) {
-                        stationDoesntExist();
-                        break;
-                    }
-
-                    string arrivalName;
-                    cout << "Enter the name of the arrival station, or q to finish: ";
-                    getline(cin, arrivalName);
-                    if (!checkInput()) break;
-
-                    if (arrivalName == "q") break;
-
-                    optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
-                    if (!arrivalStation.has_value()) {
-                        stationDoesntExist();
-                        break;
-                    }
-
-                    Vertex *departureVertex = graph.findVertex(departureName);
-                    vector<Edge *> adjacentEdges = departureVertex->getAdj();
-                    auto currentEdge = std::find_if(adjacentEdges.begin(),
-                                                    adjacentEdges.end(),
-                                                    [arrivalName](Edge *e) {
-                                                        return e->getDest()->getId() == arrivalName;
-                                                    });
-
-                    if (currentEdge == adjacentEdges.end()) {
-                        cout << "The two stations specified are not directly connected!" << endl;
-                        continue;
-                    } else deactivatedEdges.push_back(*currentEdge);
-                }
-                if (!deactivatedEdges.empty()) {
-                    cout << "Deactivating the following rails: " << endl;
-                    for (Edge *e: deactivatedEdges) {
-                        e->print();
-                    }
-                } else cout << "Please provide edges for deactivation!" << endl;
-                return deactivatedEdges;
-            }
-            default:
-                cout << "Please press one of listed keys." << endl;
-                break;
-        }
-    }
-}*/

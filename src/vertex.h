@@ -7,6 +7,7 @@
 #include <limits>
 #include <algorithm>
 #include <unordered_set>
+#include <random>
 #include "edge.h"
 #include "constants.h"
 #include "coordinates.h"

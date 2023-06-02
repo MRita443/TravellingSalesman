@@ -217,6 +217,7 @@ unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned i
 double Graph::nearestInsertionLoop(unsigned int &start) {
     double distance = 0;
     std::vector<unsigned int> tour;
+    UFDS tourSets(vertexSet.size());
 
     //Get shortest adjacent edge
     std::vector<double> adjacent = distanceMatrix[start];
@@ -226,12 +227,12 @@ double Graph::nearestInsertionLoop(unsigned int &start) {
     //Initialize the partial tour with the chosen vertex and its closest neighbour
     tour.push_back(start);
     tour.push_back(minEdgeIndex);
-    // TODO(?): Set path of adjacent edge to be the start vertex
+    tourSets.linkSets(start, minEdgeIndex);
     distance += distanceMatrix[start][minEdgeIndex];
 
     //Two cities are already in the tour, repeat for the leftover cities
     for (int i = 2; i < vertexSet.size(); i++) {
-        std::pair<unsigned int, unsigned int> nextEdge = getNextHeuristicEdge(tour);
+        std::pair<unsigned int, unsigned int> nextEdge = getNextHeuristicEdge(tour, tourSets);
         unsigned int newVertexId = nextEdge.second;
 
         auto insertionEdges = getInsertionEdges(tour, newVertexId);
@@ -239,6 +240,8 @@ double Graph::nearestInsertionLoop(unsigned int &start) {
         unsigned int closingVertex = insertionEdges.first.back();
         auto closingVertexIt = std::find(tour.begin(), tour.end(), closingVertex);
         tour.insert(closingVertexIt, newVertexId); //Insert new vertex in between the two old vertices
+
+        tourSets.linkSets(start, newVertexId);
 
         //Remove the length of the edge that was replaced, and add the length of the two new edges
         distance =
@@ -248,14 +251,14 @@ double Graph::nearestInsertionLoop(unsigned int &start) {
     return distance + distanceMatrix[minEdgeIndex][start];
 }
 
-std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<unsigned int> tour) {
+std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<unsigned int> tour, UFDS tourSets) {
     double smallestLength = constants::INF;
     std::pair<unsigned int, unsigned int> edgeExtremities;
 
     for (auto id: tour) {
         for (int i = 0; i < distanceMatrix[id].size(); i++) {
             //If it's an edge to a vertex not yet in the tour
-            if (std::find(tour.begin(), tour.end(), i) == tour.end()) {
+            if (!tourSets.isSameSet(tour[0], i)) {
                 if (distanceMatrix[id][i] < smallestLength) {
                     smallestLength = distanceMatrix[id][i];
                     edgeExtremities = {id, i};

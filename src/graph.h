@@ -21,10 +21,9 @@ class Graph {
         std::list<std::shared_ptr<Vertex>> course;
     };
 
+    tour_t tour = {0, {}}};
     unsigned int totalEdges = 0;
-//?    std::unordered_map<unsigned int, std::shared_ptr<Vertex>> idToVertex;
-    tour_t tour;
-    VertexPointerTable vertexSet;
+    std::vector<std::shared_ptr<Vertex>> vertexSet;    // vertex set
     std::vector<std::vector<double>> distanceMatrix;
 
   public:
@@ -34,7 +33,7 @@ class Graph {
 
     [[nodiscard]] unsigned int getNumVertex() const;
 
-    [[nodiscard]] VertexPointerTable getVertexSet() const;
+    [[nodiscard]] std::vector<std::shared_ptr<Vertex>> getVertexSet() const;
 
     [[nodiscard]] unsigned int getTotalEdges() const;
 
@@ -42,13 +41,7 @@ class Graph {
 
     std::shared_ptr<Vertex> addVertex(const unsigned int &id, Coordinates c = {0, 0});
 
-    bool addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length);
-
-    static void setSelectedEdge(const std::shared_ptr<Edge> &edge, bool selected);
-
-    static void deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges);
-
-    static void activateEdges(const std::vector<std::shared_ptr<Edge>> &Edges);
+    void addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length);
 
     void visitedDFS(const std::shared_ptr<Vertex> &source);
 
@@ -70,17 +63,12 @@ class Graph {
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 
-    long nearestInsertionLoop(const std::shared_ptr<Vertex> &start);
+    std::pair<unsigned int, unsigned int> getNextHeuristicEdge(std::vector<unsigned int> tour);
 
-    void updateViableEdges(edgeSet &viableEdges, UFDS partialTour, unsigned int sourceId);
+    [[nodiscard]] std::pair<std::vector<unsigned int>, double>
+    getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
 
-    std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
-    getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const;
-
-    void initDistanceMatrix();
-
-    bool
-    addBidirectionalEdge(const std::shared_ptr<Vertex> &source, const std::shared_ptr<Vertex> &dest, double length);
+    double nearestInsertionLoop(unsigned int &start);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

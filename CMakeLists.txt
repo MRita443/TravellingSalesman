@@ -8,7 +8,6 @@ add_executable(TravellingSalesman
         src/menu.h src/menu.cpp
         src/graph.h src/graph.cpp
         src/vertex.h src/vertex.cpp
-        src/edge.h src/edge.cpp
         src/dataRepository.h src/dataRepository.cpp
         src/MutablePriorityQueue.h
         src/coordinates.h src/coordinates.cpp

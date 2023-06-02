@@ -50,8 +50,7 @@ class Graph {
     std::pair<double, unsigned int*> tspBT(std::vector<std::vector<double>> dists);
 
     void tspRecursion(unsigned int *currentSolution, double currentSolutionDist, unsigned int currentNodeIdx,
-                      double &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
-                      std::vector<std::vector<double>> dists);
+                      double &bestSolutionDist, unsigned int *bestSolution, unsigned int n);
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 

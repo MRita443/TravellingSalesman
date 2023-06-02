@@ -10,7 +10,7 @@ add_executable(TravellingSalesman
         src/vertex.h src/vertex.cpp
         src/edge.h src/edge.cpp
         src/dataRepository.h src/dataRepository.cpp
-        src/UFDS.h src/UFDS.cpp
+        src/MutablePriorityQueue.h
         src/coordinates.h src/coordinates.cpp
         src/constants.h
         )

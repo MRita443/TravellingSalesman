@@ -143,11 +143,13 @@ void Graph::activateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
 */
 void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
-    for (const std::shared_ptr<Edge> &e: source->getAdj()) {
-        if (!e->getDest()->isVisited()) {
-            visitedDFS(e->getDest());
+    for (size_t i = 0; i<vertexSet.size(); i++)
+        if (distanceMatrix[source->getId()][i] != constants::INF && source->getId() != i) { //edge existe e não é para si mesma
+            std::shared_ptr<Vertex> v = findVertex(i);
+            if (!v->isVisited()) {
+                visitedDFS(v);
+            }
         }
-    }
 }
 
 struct edgePtrComparator {

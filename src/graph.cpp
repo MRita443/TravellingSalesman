@@ -3,22 +3,11 @@
 
 Graph::Graph() = default;
 
-void Graph::initDistanceMatrix() {
-    std::vector<double> temp(vertexSet.size(), constants::INF);
-    this->distanceMatrix = std::vector<std::vector<double>>(vertexSet.size(), temp);
-
-    for (const auto &v: vertexSet) {
-        for (const auto &e: v->getAdj()) {
-            distanceMatrix[v->getId()][e->getDest()->getId()] = e->getLength();
-        }
-    }
-}
-
 unsigned int Graph::getNumVertex() const {
     return (unsigned int) vertexSet.size();
 }
 
-VertexPointerTable Graph::getVertexSet() const {
+std::vector<std::shared_ptr<Vertex>> Graph::getVertexSet() const {
     return vertexSet;
 }
 
@@ -33,8 +22,7 @@ unsigned int Graph::getTotalEdges() const {
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
 std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
-    auto it = vertexSet.find(std::make_shared<Vertex>(id));
-    return it != vertexSet.end() ? *it : nullptr;
+    return vertexSet.size() <= id ? nullptr : vertexSet[id];
 }
 
 /**
@@ -44,8 +32,11 @@ std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
  * @return True if successful, and false if a vertex with the given id already exists
  */
 std::shared_ptr<Vertex> Graph::addVertex(const unsigned int &id, Coordinates c) {
-    std::shared_ptr<Vertex> newVertex = std::make_shared<Vertex>(id, c);
-    vertexSet.insert(newVertex);
+    std::shared_ptr<Vertex> newVertex = nullptr;
+    if (vertexSet.size() <= id) {
+        newVertex = std::make_shared<Vertex>(id, c);
+        vertexSet.push_back(newVertex);
+    }
     return newVertex;
 }
 
@@ -58,23 +49,15 @@ std::shared_ptr<Vertex> Graph::addVertex(const unsigned int &id, Coordinates c) 
  */
 bool
 Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length) {
-    auto v1 = findVertex(source);
-    auto v2 = findVertex(dest);
-    if (v1 == nullptr || v2 == nullptr)
-        return false;
-
-    auto e1 = v1->addEdge(v2, length);
-    auto e2 = v2->addEdge(v1, length);
-
-    e1->setReverse(e2);
-    e2->setReverse(e1);
-
+    if (distanceMatrix.size() <= source) distanceMatrix.resize(source + 1, {constants::INF});
+    if (distanceMatrix[source].size() <= dest) distanceMatrix[source].resize(dest + 1, constants::INF);
+    distanceMatrix[source][dest] = length;
     totalEdges++;
     return true;
 }
 
-bool
-Graph::addBidirectionalEdge(const std::shared_ptr<Vertex>& source, const std::shared_ptr<Vertex>& dest, double length) {
+/*bool
+Graph::addBidirectionalEdge(const std::shared_ptr<Vertex> &source, const std::shared_ptr<Vertex> &dest, double length) {
     if (source == nullptr || dest == nullptr)
         return false;
 
@@ -86,7 +69,7 @@ Graph::addBidirectionalEdge(const std::shared_ptr<Vertex>& source, const std::sh
 
     totalEdges++;
     return true;
-}
+}*/
 
 
 /**
@@ -127,14 +110,14 @@ void Graph::activateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
 */
-void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
+/*void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
     for (const std::shared_ptr<Edge> &e: source->getAdj()) {
         if (!e->getDest()->isVisited()) {
             visitedDFS(e->getDest());
         }
     }
-}
+}*/
 
 
 /**
@@ -170,7 +153,7 @@ void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
  */
-void Graph::dfsKruskalPath(const std::shared_ptr<Vertex> &source) {
+/*void Graph::dfsKruskalPath(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
     for (const std::shared_ptr<Edge> &e: source->getAdj()) {
         if (!e->getDest()->isVisited() && e->isSelected()) {
@@ -178,7 +161,7 @@ void Graph::dfsKruskalPath(const std::shared_ptr<Vertex> &source) {
             dfsKruskalPath(e->getDest());
         }
     }
-}
+}*/
 
 
 bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned int n) {
@@ -227,12 +210,12 @@ Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionD
  * @param v2id - Id of the second vertex
  * @return Pointer to the edge that connects both vertices
  */
-std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned int &v2id) const {
+/*std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned int &v2id) const {
     for (auto e: findVertex(v1id)->getAdj()) {
         if (e->getDest()->getId() == v2id) return e;
     }
     return nullptr;
-}
+}*/
 
 
 unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
@@ -243,7 +226,7 @@ unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned i
     return bestSolutionDist;
 }
 
-long Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
+/*long Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
     long distance = 0;
     UFDS partialTour(vertexSet.size());
     edgeSet viableEdges; //Orders edges by length
@@ -287,11 +270,11 @@ long Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
                                 insertionEdges.second->getLength();
 
 
-/*        if (sequenceDistance < insertionDistance) {
+*//*        if (sequenceDistance < insertionDistance) {
             edgesInTour.push_back(*viableEdges.begin()->getReverse());
             distance = sequenceDistance;
             findVertex(newVertex->getId())->setPath(viableEdges.begin()->getReverse());
-        } else {*/
+        } else {*//*
             edgesInTour.remove(oldEdge);
             edgesInTour.push_back(*insertionEdges.first);
             edgesInTour.push_back(*insertionEdges.second);
@@ -307,9 +290,9 @@ long Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
     }
     //The two untied edges will always be the starting two vertices
     return distance + adjacent[0]->getLength();
-}
+}*/
 
-void Graph::updateViableEdges(edgeSet &viableEdges, UFDS partialTour, unsigned int sourceId) {
+/*void Graph::updateViableEdges(edgeSet &viableEdges, UFDS partialTour, unsigned int sourceId) {
     for (const std::shared_ptr<Vertex> &v: vertexSet) {
         //If this vertex is not in the partial tour
         if (!partialTour.isSameSet(sourceId, v->getId())) {
@@ -321,8 +304,9 @@ void Graph::updateViableEdges(edgeSet &viableEdges, UFDS partialTour, unsigned i
             }
         }
     }
-}
+}*/
 
+/*
 std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
 Graph::getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const {
     std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>> result = {nullptr, nullptr};
@@ -340,5 +324,6 @@ Graph::getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared
     }
     return result;
 }
+*/
 
 

@@ -12,13 +12,12 @@ Vertex::Vertex(const unsigned int &id, Coordinates c) : id(id), dist(constants::
  * @param length - Edge length
  * @return Pointer to the new Edge created
  */
-std::shared_ptr<Edge> Vertex::addEdge(const std::shared_ptr<Vertex> &d, double length) {
+/*std::shared_ptr<Edge> Vertex::addEdge(const std::shared_ptr<Vertex> &d, double length) {
     auto newEdge = std::make_shared<Edge>(std::make_shared<Vertex>(*this), d, length);
     adj.push_back(newEdge);
-    d->incoming.push_back(newEdge);
     d->indegree++;
     return newEdge;
-}
+}*/
 
 /**
  * Removes an outgoing edge, with a given destination, from the Vertex
@@ -26,6 +25,7 @@ std::shared_ptr<Edge> Vertex::addEdge(const std::shared_ptr<Vertex> &d, double l
  * @param destID - Id of the destination Vertex of the Edge to be removed
  * @return True if successful, and false if no such Edge exists
  */
+/*
 bool Vertex::removeEdge(const unsigned int &destID) {
     bool removedEdge = false;
     auto it = adj.begin();
@@ -35,14 +35,6 @@ bool Vertex::removeEdge(const unsigned int &destID) {
         if (dest->getId() == destID) {
             it = adj.erase(it);
             // Also remove the corresponding edge from the incoming list
-            auto it2 = dest->incoming.begin();
-            while (it2 != dest->incoming.end()) {
-                if ((*it2)->getOrig()->getId() == id) {
-                    it2 = dest->incoming.erase(it2);
-                } else {
-                    it2++;
-                }
-            }
             removedEdge = true; // allows for multiple edges to connect the same pair of vertices (multigraph)
         } else {
             it++;
@@ -50,21 +42,18 @@ bool Vertex::removeEdge(const unsigned int &destID) {
     }
     return removedEdge;
 }
+*/
 
 unsigned int Vertex::getId() const {
     return this->id;
 }
 
-std::vector<std::shared_ptr<Edge>> Vertex::getAdj() const {
+/*std::vector<std::shared_ptr<Edge>> Vertex::getAdj() const {
     return this->adj;
-}
+}*/
 
 bool Vertex::isVisited() const {
     return this->visited;
-}
-
-bool Vertex::isProcessing() const {
-    return this->processing;
 }
 
 unsigned int Vertex::getIndegree() const {
@@ -76,20 +65,12 @@ std::shared_ptr<Edge> Vertex::getPath() const {
     return this->path;
 }
 
-std::vector<std::shared_ptr<Edge>> Vertex::getIncoming() const {
-    return this->incoming;
-}
-
 void Vertex::setId(const unsigned int &id) {
     this->id = id;
 }
 
 void Vertex::setVisited(bool visited) {
     this->visited = visited;
-}
-
-void Vertex::setProcesssing(bool processing) {
-    this->processing = processing;
 }
 
 void Vertex::setIndegree(unsigned int indegree) {

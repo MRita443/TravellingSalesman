@@ -56,20 +56,15 @@ class Vertex {
 
   private:
     unsigned int id;                // identifier
-    std::vector<std::shared_ptr<Edge>> adj;  // outgoing edges
+    //std::vector<std::shared_ptr<Edge>> adj;  // outgoing edges
     Coordinates coordinates;
 
     // auxiliary fields
     bool visited = false; // used by DFS, BFS, Prim ...
-    bool processing = false; // used by isDAG (in addition to the visited attribute)
     unsigned int indegree = 0; // used by topsort
 
     double dist; //TODO replace by unsorted_map to store distances between every pair of vertices
     std::shared_ptr<Edge> path = nullptr;
-    std::vector<std::shared_ptr<Edge>> incoming; // incoming edges
-
-    unsigned int selectedCount = 0;
-
 };
 
 struct VertexPointerHash {

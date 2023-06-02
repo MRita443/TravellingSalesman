@@ -17,7 +17,7 @@
 class Graph {
   private:
     unsigned int totalEdges = 0;
-    VertexPointerTable vertexSet;    // vertex set
+    std::vector<std::shared_ptr<Vertex>> vertexSet;    // vertex set
     std::vector<std::vector<double>> distanceMatrix;
 
   public:
@@ -25,7 +25,7 @@ class Graph {
 
     [[nodiscard]] unsigned int getNumVertex() const;
 
-    [[nodiscard]] VertexPointerTable getVertexSet() const;
+    [[nodiscard]] std::vector<std::shared_ptr<Vertex>> getVertexSet() const;
 
     [[nodiscard]] unsigned int getTotalEdges() const;
 
@@ -64,7 +64,6 @@ class Graph {
     std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
     getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const;
 
-    void initDistanceMatrix();
 
     bool
     addBidirectionalEdge(const std::shared_ptr<Vertex> &source, const std::shared_ptr<Vertex> &dest, double length);

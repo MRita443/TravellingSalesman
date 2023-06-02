@@ -47,11 +47,11 @@ class Graph {
 
     void kruskal();
 
-    unsigned int tspBT(const unsigned int **dists, unsigned int n, unsigned int *path);
+    std::pair<double, unsigned int*> tspBT(std::vector<std::vector<double>> dists);
 
-    void tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist, unsigned int currentNodeIdx,
-                      unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
-                      const unsigned int **dists);
+    void tspRecursion(unsigned int *currentSolution, double currentSolutionDist, unsigned int currentNodeIdx,
+                      double &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
+                      std::vector<std::vector<double>> dists);
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 
@@ -65,6 +65,8 @@ class Graph {
     getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const;
 
     void initDistanceMatrix();
+
+    std::vector<std::vector<double>> getDistanceMatrix();
 
     bool
     addBidirectionalEdge(const std::shared_ptr<Vertex> &source, const std::shared_ptr<Vertex> &dest, double length);

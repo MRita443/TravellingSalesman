@@ -31,7 +31,9 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     graph.initDistanceMatrix();
     //auto start = graph.findVertex(dataRepository.getFurthestVertex().getId());
     //auto result = graph.nearestInsertionLoop(start);
-
+    auto results = graph.tspBT(graph.getDistanceMatrix());
+    unsigned int* path = results.second;
+    std::cout << results.first << endl; 
 }
 
 /**

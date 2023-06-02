@@ -215,18 +215,19 @@ bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned in
  * @param dists - Distance Matrix for the graph
  */
 void
-Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist,
+Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
                     unsigned int currentNodeIdx,
-                    unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
-                    const unsigned int **dists) {
+                    double &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
+                    std::vector<std::vector<double>> dists) {
     if (currentNodeIdx == n) {
         //Could need to verify here if last node connects to first
-
-        //Add dist from last node back to zero and check if it's an improvement
-        if (currentSolutionDist + dists[currentSolution[currentNodeIdx - 1]][0] < bestSolutionDist) {
-            bestSolutionDist = currentSolutionDist + dists[currentSolution[currentNodeIdx - 1]][0];
-            for (int i = 0; i < n; i++) {
-                bestSolution[i] = currentSolution[i];
+        if(this->distanceMatrix[currentSolution[currentNodeIdx-1]][0] != constants::INF) {
+            //Add dist from last node back to zero and check if it's an improvement
+            if (currentSolutionDist + dists[currentSolution[currentNodeIdx - 1]][0] < bestSolutionDist) {
+                bestSolutionDist = currentSolutionDist + dists[currentSolution[currentNodeIdx - 1]][0];
+                for (int i = 0; i < n; i++) {
+                    bestSolution[i] = currentSolution[i];
+                }
             }
         }
         return;
@@ -266,12 +267,14 @@ std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned i
  * @param path - A vector to store the path taken
  * @return The weight of the smallest path obtainable
  */
-unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
+std::pair<double, unsigned int*> Graph::tspBT(std::vector<std::vector<double>> dists) {
+    unsigned int n = this->vertexSet.size();
     unsigned int currentSolution[n];
+    unsigned int path[n];
     currentSolution[0] = 0;
-    unsigned int bestSolutionDist = UINT_MAX;
+    double bestSolutionDist = constants::INF;
     tspRecursion(currentSolution, 0, 1, bestSolutionDist, path, n, dists);
-    return bestSolutionDist;
+    return {bestSolutionDist, path};
 }
 
 long Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
@@ -370,6 +373,10 @@ Graph::getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared
         }
     }
     return result;
+}
+
+std::vector<std::vector<double>> Graph::getDistanceMatrix() {
+    return distanceMatrix;
 }
 
 

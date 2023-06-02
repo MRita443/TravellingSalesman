@@ -20,17 +20,19 @@ Menu::Menu() = default;
  * Time Complexity: O(n*v), where n is the number of lines of edgesFilename and v is the number of lines in nodesFilename
  */
 void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &nodesFilename) {
-    if (!nodesFilename.empty()) {
-        extractNodesFile(nodesFilename);
-    }
     if (edgesFilename.contains("tourism")) {
         extractEdgesFile(edgesFilename, true, true);
     } else if (edgesFilename.contains("Extra_Fully_Connected_Graphs")) {
         extractEdgesFile(edgesFilename, false);
     } else extractEdgesFile(edgesFilename);
-    graph.initDistanceMatrix();
-    //auto start = graph.findVertex(dataRepository.getFurthestNode().getId());
-    // auto result = graph.nearestInsertionLoop(start);
+
+    if (!nodesFilename.empty()) {
+        extractNodesFile(nodesFilename);
+    }
+/*    unsigned int start = 0;
+    if (edgesFilename.contains("Real-world-Graphs"))
+        start = dataRepository.getFurthestVertex().getId();
+    auto result = graph.nearestInsertionLoop(start);*/
 }
 
 /**
@@ -141,6 +143,8 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
 
     int counter = 0;
 
+    vector<vector<double>> distances;
+
     if (hasDescriptors) getline(edges, currentParam); //Ignore first line with just descriptors
 
     while (getline(edges, currentLine, '\n')) {
@@ -161,42 +165,15 @@ void Menu::extractEdgesFile(const std::string &filename, bool hasDescriptors, bo
                     if (!hasLabels) counter = 0;
                     break;
                 }
-                case 3: {
-                    originName = currentParam;
-                    break;
-                }
                 case 4: {
-                    destinationName = currentParam;
                     counter = 0;
                     break;
                 }
             }
             if (counter == 0) {
-/*                shared_ptr<Node> origin = dataRepository.findNode(originId);
-                shared_ptr<Node> destination = dataRepository.findNode(destinationId);
-
-                if (!origin) {
-                    Node originNode;*/
-                auto origin = graph.findVertex(originId);
-                if (!origin) origin = graph.addVertex(originId);
-/*                    if (hasLabels) originNode = dataRepository.addNodeEntry(originId, 0, 0, originName);
-                    else originNode = dataRepository.addNodeEntry(originId);*/
-                //                if (!originNode.addDistToNodeEntry(destinationId, distance)) break;
-                //  } else if (!origin->addDistToNodeEntry(destinationId, distance)) break;
-
-/*                if (!destination) {
-                    Node destinationNode;*/
-                auto destination = graph.findVertex(destinationId);
-                if (!destination) destination = graph.addVertex(destinationId);
-
-/*                    if (hasLabels)
-                        destinationNode = dataRepository.addNodeEntry(destinationId, 0, 0, destinationName);
-                    else destinationNode = dataRepository.addNodeEntry(destinationId);*/
-                //      if (!destinationNode.addDistToNodeEntry(originId, distance)) break;
-                // } else if (!destination->addDistToNodeEntry(originId, distance)) break;
-
-                if (!graph.addBidirectionalEdge(origin, destination, distance)) break;
-
+                graph.addVertex(originId);
+                graph.addVertex(destinationId);
+                graph.addBidirectionalEdge(originId, destinationId, distance);
             }
         }
     }
@@ -239,6 +216,8 @@ void Menu::extractNodesFile(const std::string &filename) {
                     }
                 }
                 if (counter == 0) {
+                    auto vertex = graph.findVertex(id);
+                    vertex->setCoordinates({latitude, longitude});
                     dataRepository.addVertexEntry(id, latitude, longitude);
                 }
             }

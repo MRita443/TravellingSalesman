@@ -1,9 +1,6 @@
 #include "vertex.h"
 
-#include <utility>
-
-
-Vertex::Vertex(const unsigned int &id, Coordinates c) : id(id), dist(constants::INF), coordinates(c) {}
+Vertex::Vertex(const unsigned int &id, Coordinates c) : id(id), coordinates(c) {}
 
 /**
  * Adds a new outgoing edge to the Vertex, with a given destination and length
@@ -48,9 +45,6 @@ unsigned int Vertex::getId() const {
     return this->id;
 }
 
-/*std::vector<std::shared_ptr<Edge>> Vertex::getAdj() const {
-    return this->adj;
-}*/
 
 bool Vertex::isVisited() const {
     return this->visited;
@@ -61,7 +55,7 @@ unsigned int Vertex::getIndegree() const {
 }
 
 
-std::shared_ptr<Edge> Vertex::getPath() const {
+unsigned int Vertex::getPath() const {
     return this->path;
 }
 
@@ -77,17 +71,11 @@ void Vertex::setIndegree(unsigned int indegree) {
     this->indegree = indegree;
 }
 
-void Vertex::setDist(double dist) {
-    this->dist = dist;
+
+void Vertex::setPath(unsigned int path) {
+    this->path = path;
 }
 
-void Vertex::setPath(std::shared_ptr<Edge> path) {
-    this->path = std::move(path);
-}
-
-double Vertex::getDist() const {
-    return this->dist;
-}
 
 const Coordinates &Vertex::getCoordinates() const {
     return coordinates;

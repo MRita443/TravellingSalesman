@@ -33,7 +33,7 @@ class Graph {
 
     std::shared_ptr<Vertex> addVertex(const unsigned int &id, Coordinates c = {0, 0});
 
-    bool addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length);
+    void addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length);
 
     static void setSelectedEdge(const std::shared_ptr<Edge> &edge, bool selected);
 
@@ -55,18 +55,14 @@ class Graph {
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 
-    long nearestInsertionLoop(const std::shared_ptr<Vertex> &start);
+    double nearestInsertionLoop(const std::shared_ptr<Vertex> &start);
 
-    void updateViableEdges(edgeSet &viableEdges, UFDS partialTour, unsigned int sourceId);
+    [[nodiscard]] std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
 
-    std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
+    std::pair<unsigned int, unsigned int> getNextHeuristicEdge(std::vector<unsigned int> tour);
 
-    std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
-    getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const;
-
-
-    bool
-    addBidirectionalEdge(const std::shared_ptr<Vertex> &source, const std::shared_ptr<Vertex> &dest, double length);
+    [[nodiscard]] std::pair<std::vector<unsigned int>, double>
+    getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

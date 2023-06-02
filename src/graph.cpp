@@ -47,29 +47,13 @@ std::shared_ptr<Vertex> Graph::addVertex(const unsigned int &id, Coordinates c) 
  * @param dest - Id of the destination Vertex
  * @param length - Length of the Edge to be added
  */
-bool
+void
 Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length) {
     if (distanceMatrix.size() <= source) distanceMatrix.resize(source + 1, {constants::INF});
     if (distanceMatrix[source].size() <= dest) distanceMatrix[source].resize(dest + 1, constants::INF);
     distanceMatrix[source][dest] = length;
     totalEdges++;
-    return true;
 }
-
-/*bool
-Graph::addBidirectionalEdge(const std::shared_ptr<Vertex> &source, const std::shared_ptr<Vertex> &dest, double length) {
-    if (source == nullptr || dest == nullptr)
-        return false;
-
-    auto e1 = source->addEdge(dest, length);
-    auto e2 = dest->addEdge(source, length);
-
-    e1->setReverse(e2);
-    e2->setReverse(e1);
-
-    totalEdges++;
-    return true;
-}*/
 
 
 /**
@@ -226,104 +210,73 @@ unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned i
     return bestSolutionDist;
 }
 
-/*long Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
-    long distance = 0;
-    UFDS partialTour(vertexSet.size());
-    edgeSet viableEdges; //Orders edges by length
-    std::list<Edge> edgesInTour;
+double Graph::nearestInsertionLoop(const std::shared_ptr<Vertex> &start) {
+    double distance = 0;
+    std::vector<unsigned int> tour;
 
-    auto adjacent = start->getAdj();
-    std::sort(adjacent.begin(), adjacent.end(), [](const std::shared_ptr<Edge> &e1, const std::shared_ptr<Edge> &e2) {
-        return e1->getLength() < e2->getLength();
-    });
+    //Get shortest adjacent edge
+    std::vector<double> adjacent = distanceMatrix[start->getId()];
+    auto it = std::min_element(adjacent.begin(), adjacent.end());
+    unsigned int minEdgeIndex = std::distance(adjacent.begin(), it);
 
     //Initialize the partial tour with the chosen vertex and its closest neighbour
-    partialTour.linkSets(start->getId(), adjacent[0]->getDest()->getId());
-    edgesInTour.push_back(*adjacent[0]);
-    adjacent[0]->getDest()->setPath(adjacent[0]);
-    distance += adjacent[0]->getLength();
-
-    updateViableEdges(viableEdges, partialTour, start->getId());
-
-    std::shared_ptr<Vertex> newVertex;
-    std::shared_ptr<Vertex> oldVertex;
+    tour.push_back(start->getId());
+    tour.push_back(minEdgeIndex);
+    // TODO(?): Set path of adjacent edge to be the start vertex
+    distance += distanceMatrix[start->getId()][minEdgeIndex];
 
     //Two cities are already in the tour, repeat for the leftover cities
     for (int i = 2; i < vertexSet.size(); i++) {
-        //Edges in viableEdges come from outside vertexes to inside the tour vertexes, and are ordered from smallest to biggest length
-        newVertex = viableEdges.begin()->getOrig();
-        oldVertex = viableEdges.begin()->getDest();
+        std::pair<unsigned int, unsigned int> nextEdge = getNextHeuristicEdge(tour);
+        unsigned int newVertexId = nextEdge.second;
 
-        double insertionDistance = constants::INF;
-        // long sequenceDistance = distance + viableEdges.begin()->getLength();
+        auto insertionEdges = getInsertionEdges(tour, newVertexId);
 
-        auto insertionEdges = getInsertionEdges(edgesInTour, newVertex);
-        if (insertionEdges.first && insertionEdges.second) {
-            unsigned int firstVertex = insertionEdges.first->getOrig()->getId();
-            unsigned int secondVertex = insertionEdges.second->getDest()->getId();
-            Edge oldEdge = *std::find_if(edgesInTour.begin(), edgesInTour.end(),
-                                         [firstVertex, secondVertex](const Edge &e1) {
-                                             return e1.getOrig()->getId() == firstVertex &&
-                                                    e1.getDest()->getId() == secondVertex;
-                                         });
-            insertionDistance = distance - oldEdge.getLength() + insertionEdges.first->getLength() +
-                                insertionEdges.second->getLength();
+        unsigned int closingVertex = insertionEdges.first.back();
+        auto closingVertexIt = std::find(tour.begin(), tour.end(), closingVertex);
+        tour.insert(closingVertexIt, newVertexId); //Insert new vertex in between the two old vertices
 
-
-*//*        if (sequenceDistance < insertionDistance) {
-            edgesInTour.push_back(*viableEdges.begin()->getReverse());
-            distance = sequenceDistance;
-            findVertex(newVertex->getId())->setPath(viableEdges.begin()->getReverse());
-        } else {*//*
-            edgesInTour.remove(oldEdge);
-            edgesInTour.push_back(*insertionEdges.first);
-            edgesInTour.push_back(*insertionEdges.second);
-
-            findVertex(oldVertex->getId())->setPath(insertionEdges.second);
-            findVertex(newVertex->getId())->setPath(insertionEdges.first);
-
-            distance = insertionDistance;
-            //}
-            partialTour.linkSets(start->getId(), newVertex->getId());
-            updateViableEdges(viableEdges, partialTour, start->getId());
-        }
+        //Remove the length of the edge that was replaced, and add the length of the two new edges
+        distance =
+                distance - distanceMatrix[insertionEdges.first[0]][insertionEdges.first.back()] + insertionEdges.second;
     }
     //The two untied edges will always be the starting two vertices
-    return distance + adjacent[0]->getLength();
-}*/
+    return distance + distanceMatrix[minEdgeIndex][start->getId()];
+}
 
-/*void Graph::updateViableEdges(edgeSet &viableEdges, UFDS partialTour, unsigned int sourceId) {
-    for (const std::shared_ptr<Vertex> &v: vertexSet) {
-        //If this vertex is not in the partial tour
-        if (!partialTour.isSameSet(sourceId, v->getId())) {
-            for (const std::shared_ptr<Edge> &e: v->getAdj()) {
-                //If the other end of the edge is in the partial tour
-                if (partialTour.isSameSet(sourceId, e->getDest()->getId())) {
-                    viableEdges.insert(*e);
-                } else viableEdges.erase(*e); //Remove it because it might have been there from before
+std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<unsigned int> tour) {
+    double smallestLength = constants::INF;
+    std::pair<unsigned int, unsigned int> edgeExtremities;
+
+    for (auto id: tour) {
+        for (int i = 0; i < distanceMatrix[id].size(); i++) {
+            //If it's an edge to a vertex not yet in the tour
+            if (std::find(tour.begin(), tour.end(), id) == tour.end()) {
+                if (distanceMatrix[id][i] < smallestLength) {
+                    smallestLength = distanceMatrix[id][i];
+                    edgeExtremities = {id, i};
+                }
             }
         }
     }
-}*/
+    return edgeExtremities;
+}
 
-/*
-std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
-Graph::getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const {
-    std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>> result = {nullptr, nullptr};
-    for (const Edge &e: possibleEdges) {
+
+std::pair<std::vector<unsigned int>, double>
+Graph::getInsertionEdges(std::vector<unsigned int> tour, const unsigned int newVertexId) const {
+    std::pair<std::vector<unsigned int>, double> result = {{}, constants::INF};
+
+    for (int i = 0; i < tour.size() - 1; i++) {
         //If there are two edges that could replace the current one, connecting its ends to the new vertex
-        auto edge1 = findEdge(e.getOrig()->getId(), newVertex->getId()); //Old vertex to new vertex
-        auto edge2 = findEdge(newVertex->getId(), e.getDest()->getId()); //New vertex to latest tour vertex
-        if (edge1 && edge2) {
-            //If the result is still empty or this set of edges is shorter
-            if (!result.first ||
-                (result.first->getLength() + result.second->getLength()) > (edge1->getLength() + edge2->getLength())) {
-                result = {edge1, edge2};
-            }
+        double currentDistance = distanceMatrix[tour[i]][newVertexId] + distanceMatrix[newVertexId][tour[i + 1]];
+        if (currentDistance < result.second) {
+            result.second = currentDistance;
+            result.first = {tour[i], newVertexId, tour[i + 1]};
         }
     }
     return result;
 }
-*/
+
 
 

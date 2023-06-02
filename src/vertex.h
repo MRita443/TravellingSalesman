@@ -19,31 +19,23 @@ class Vertex {
 
     [[nodiscard]] unsigned int getId() const;
 
-    [[nodiscard]] std::vector<std::shared_ptr<Edge>> getAdj() const;
-
     [[nodiscard]] bool isVisited() const;
-
-    [[nodiscard]] bool isProcessing() const;
 
     [[nodiscard]] unsigned int getIndegree() const;
 
     [[nodiscard]] double getDist() const;
 
-    [[nodiscard]] std::shared_ptr<Edge> getPath() const;
-
-    [[nodiscard]] std::vector<std::shared_ptr<Edge>> getIncoming() const;
+    [[nodiscard]] unsigned int getPath() const;
 
     void setId(const unsigned int &id);
 
     void setVisited(bool visited);
 
-    void setProcesssing(bool processing);
-
     void setIndegree(unsigned int indegree);
 
     void setDist(double dist);
 
-    void setPath(std::shared_ptr<Edge> path);
+    void setPath(unsigned int path);
 
     [[nodiscard]] const Coordinates &getCoordinates() const;
 
@@ -63,8 +55,7 @@ class Vertex {
     bool visited = false; // used by DFS, BFS, Prim ...
     unsigned int indegree = 0; // used by topsort
 
-    double dist; //TODO replace by unsorted_map to store distances between every pair of vertices
-    std::shared_ptr<Edge> path = nullptr;
+    unsigned int path = -1; //Id of the preceding vertex
 };
 
 struct VertexPointerHash {

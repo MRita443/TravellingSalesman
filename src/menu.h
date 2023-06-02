@@ -9,6 +9,7 @@
 #include <sstream>
 #include <cmath>
 #include <unordered_set>
+#include <chrono>
 #include "graph.h"
 #include "dataRepository.h"
 

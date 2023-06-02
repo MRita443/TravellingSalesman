@@ -282,5 +282,11 @@ Graph::getInsertionEdges(std::vector<unsigned int> tour, const unsigned int newV
     return result;
 }
 
+void Graph::clearGraph() {
+    distanceMatrix = {};
+    vertexSet = {};
+    totalEdges = 0;
+}
+
 
 

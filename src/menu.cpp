@@ -29,10 +29,10 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
     }
-    unsigned int start = 0;
+/*    unsigned int start = 0;
     if (edgesFilename.contains("Real-world-Graphs"))
         start = dataRepository.getFurthestVertex().getId();
-    auto result = graph.nearestInsertionLoop(start);
+    auto result = graph.nearestInsertionLoop(start);*/
 }
 
 /**
@@ -117,7 +117,7 @@ void Menu::nodeDoesntExist() {
                 break;
             }
             case 'q': {
-                cout << "Thank you for using our Railway Network Management System!";
+                cout << "Thank you for using our Routing for Ocean Shipping and Urban Deliveries System!";
                 break;
             }
             default: {
@@ -226,377 +226,333 @@ void Menu::extractNodesFile(const std::string &filename) {
 }
 
 
-
 /**
- * Outputs basic service metrics menu screen and decides graph function calls according to user input
+ * Outputs backtracking algorithm menu screen and decides graph function calls according to user input
  * @return - Last inputted command, or '\0' for previous menu command
  */
-/*unsigned int Menu::serviceMetricsMenu() {
+unsigned int Menu::backtrackingMenu() {
     unsigned char commandIn = '\0';
 
     while (commandIn != 'q') {
-        if (commandIn == '\0') {
-            //Header
-            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "BASIC SERVI";
-            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "CE METRICS" << endl;
-            cout << setw(COLUMN_WIDTH) << setfill(' ') << "Two specific stations: [1]" << setw(COLUMN_WIDTH)
-                 << "All valid pairs of stations: [2]" << setw(COLUMN_WIDTH) << "Reaching a specific station: [3]"
-                 << endl;
-            cout << setw(COLUMN_WIDTH) << setfill(' ') << "Top districts: [4]" << setw(COLUMN_WIDTH)
-                 << "Top townships: [5]" << setw(COLUMN_WIDTH) << "Top municipalities: [6]" << endl;
-            cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
+        //Header
+        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "BACKTRACKIN";
+        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "G ALGORITHM" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Shipping: [1]" << setw(COLUMN_WIDTH)
+             << "Stadiums: [2]" << setw(COLUMN_WIDTH) << "Tourism: [3]"
+             << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 25: [4]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 50: [5]" << endl;
+        cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
+
+        cout << endl << "Please select the problem for which you'd like to execute the backtracking algorithm: ";
+        cin >> commandIn;
+
+        std::string nodesFilePath, edgesFilePath;
+
+        if (!checkInput(1)) {
+            commandIn = '\0';
+            continue;
+        }
+        switch (commandIn) {
+            case '1': {
+                edgesFilePath = "../dataset/Toy-Graphs/shipping.csv";
+                break;
+            }
+            case '2': {
+                edgesFilePath = "../dataset/Toy-Graphs/stadiums.csv";
+                break;
+            }
+            case '3': {
+                edgesFilePath = "../dataset/Toy-Graphs/tourism.csv";
+                break;
+            }
+            case '4': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_25.csv";
+                break;
+            }
+            case '5': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_50.csv";
+                break;
+
+            }
+            case 'b': {
+                return '\0';
+            }
+            case 'q': {
+                cout << "Thank you for using our Routing for Ocean Shipping and Urban Deliveries System!" << endl;
+                break;
+            }
+            default:
+                cout << "Please press one of listed keys." << endl;
+                break;
         }
 
-        while (commandIn != 'q') {
-            cout << endl << "Please select how to input the location whose max number of trains you'd like to check: ";
-            cin >> commandIn;
-
-            if (!checkInput(1)) {
-                commandIn = '\0';
-                continue;
-            }
-            switch (commandIn) {
-                case '1': {
-                    string departureName;
-                    cout << "Enter the name of the departure station: ";
-                    getline(cin, departureName);
-                    if (!checkInput()) break;
-                    optional<Station> departureStation = dataRepository.findStation(departureName);
-                    if (!departureStation.has_value()) {
-                        stationDoesntExist();
-                        break;
-                    }
-
-                    string arrivalName;
-                    cout << "Enter the name of the arrival station: ";
-                    getline(cin, arrivalName);
-                    if (!checkInput()) break;
-                    optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
-                    if (!arrivalStation.has_value()) {
-                        stationDoesntExist();
-                        break;
-                    }
-                    cout << graph.edmondsKarp({departureName}, arrivalName, residualGraph)
-                         << " trains can simultaneously travel between "
-                         << departureName
-                         << " and " << arrivalName << "." << endl;
-                    break;
-                }
-                case '2': {
-                    pair<list<pair<string, string>>, unsigned int> result = graph.calculateNetworkMaxFlow(
-                            residualGraph);
-                    for (const pair<string, string> &p: result.first) {
-                        cout << result.second << " trains can simultaneously travel between "
-                             << p.first << " and " << p.second << "." << endl;
-                    }
-                    break;
-                }
-                case '3': {
-                    string arrivalName;
-                    cout << "Enter the name of the arrival station: ";
-                    getline(cin, arrivalName);
-                    if (!checkInput()) break;
-                    optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
-                    if (!arrivalStation.has_value()) {
-                        stationDoesntExist();
-                        break;
-                    }
-                    cout
-                            << graph.incomingFlux(arrivalName, residualGraph) << " trains can simultaneously arrive at "
-                            << arrivalName << "." << endl;
-                    break;
-                }
-                case '4': {
-                    unsigned int numDistricts;
-                    cout << "Enter the number of districts you'd like to see: ";
-                    cin >> numDistricts;
-                    if (!checkInput()) break;
-                    if (numDistricts > dataRepository.getDistrictToStations().size()) {
-                        cout << "The network only has " << dataRepository.getDistrictToStations().size()
-                             << " districts!" << endl;
-                        break;
-                    }
-                    std::vector<std::pair<std::string, double>> result = graph.topGroupings(
-                            dataRepository.getDistrictToStations(), residualGraph);
-
-                    cout << endl << setw(COLUMN_WIDTH) << setfill(' ')
-                         << "List of districts by average number of incoming trains capacity" << endl;
-
-                    for (int i = 0; i < numDistricts; i++) {
-                        stringstream value;
-                        value << fixed << setprecision(2) << result[i].second;
-
-                        if (result[i].first.empty()) result[i].first = "NO DISTRICT";
-                        cout << setw(4) << to_string(i + 1) << setw(COLUMN_WIDTH / 2) << left
-                             << " | " + value.str() + " trains" << result[i].first << endl;
-                    }
-
-                    break;
-                }
-                case '5': {
-                    unsigned int numTownships;
-                    cout << "Enter the number of townships you'd like to see: ";
-                    cin >> numTownships;
-                    if (!checkInput()) break;
-                    if (numTownships > dataRepository.getTownshipToStations().size()) {
-                        cout << "The network only has " << dataRepository.getTownshipToStations().size()
-                             << " townships!" << endl;
-                        break;
-                    }
-                    std::vector<std::pair<std::string, double>> result = graph.topGroupings(
-                            dataRepository.getTownshipToStations(), residualGraph);
-
-                    cout << endl << setw(COLUMN_WIDTH) << setfill(' ')
-                         << "List of townships by average number of incoming trains capacity" << endl;
-
-                    for (int i = 0; i < numTownships; i++) {
-                        stringstream value;
-                        value << fixed << setprecision(2) << result[i].second;
-
-                        if (result[i].first.empty()) result[i].first = "NO TOWNSHIP";
-                        cout << setw(4) << to_string(i + 1) << setw(COLUMN_WIDTH / 2) << left
-                             << " | " + value.str() + " trains" << result[i].first << endl;
-                    }
-
-                    break;
-                }
-                case '6': {
-                    unsigned int numMunicipalities;
-                    cout << "Enter the number of municipalities you'd like to see: ";
-                    cin >> numMunicipalities;
-                    if (!checkInput()) break;
-                    if (numMunicipalities > dataRepository.getMunicipalityToStations().size()) {
-                        cout << "The network only has " << dataRepository.getMunicipalityToStations().size()
-                             << " municipalities!" << endl;
-                        break;
-                    }
-                    std::vector<std::pair<std::string, double>> result = graph.topGroupings(
-                            dataRepository.getMunicipalityToStations(), residualGraph);
-
-                    cout << endl << setw(COLUMN_WIDTH) << setfill(' ')
-                         << "List of municipalities by average number of incoming trains capacity" << endl;
-
-                    for (int i = 0; i < numMunicipalities; i++) {
-                        stringstream value;
-                        value << fixed << setprecision(2) << result[i].second;
-
-                        if (result[i].first.empty()) result[i].first = "NO MUNICIPALITY";
-                        cout << setw(4) << to_string(i + 1) << setw(COLUMN_WIDTH / 2) << left
-                             << " | " + value.str() + " trains" << result[i].first << endl;
-                    }
-
-                    break;
-                }
-                case 'b': {
-                    return '\0';
-                }
-                case 'q': {
-                    cout << "Thank you for using our Railway Network Management System!" << endl;
-                    break;
-                }
-                default:
-                    cout << "Please press one of listed keys." << endl;
-                    break;
-            }
-        }
-    }
-    return commandIn;
-}*/
-
-
-/**
- * Outputs cost optimization menu screen and decides graph function calls according to user input
- * @return - Last inputted command, or '\0' for previous menu command
- */
-/*
-unsigned int Menu::costOptMenu() {
-    unsigned char commandIn = '\0';
-
-    while (commandIn != 'q') {
-        if (commandIn == '\0') {
-            //Header
-            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "OPERATION COST";
-            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << " OPTIMIZATION" << endl;
-            cout << setw(COLUMN_WIDTH) << setfill(' ') << "Two specific stations: [1]" << setw(COLUMN_WIDTH) << endl;
-            cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
-        }
-
-        while (commandIn != 'q') {
-            cout << endl << "Please select how to input the location whose max number of trains you'd like to check: ";
-            cin >> commandIn;
-
-            if (!checkInput(1)) {
-                commandIn = '\0';
-                continue;
-            }
-            switch (commandIn) {
-                case '1': {
-                    string departureName;
-                    cout << "Enter the name of the departure station: ";
-                    getline(cin, departureName);
-                    if (!checkInput()) break;
-                    optional<Station> departureStation = dataRepository.findStation(departureName);
-                    if (!departureStation.has_value()) {
-                        stationDoesntExist();
-                        break;
-                    }
-
-                    string arrivalName;
-                    cout << "Enter the name of the arrival station: ";
-                    getline(cin, arrivalName);
-                    if (!checkInput()) break;
-                    optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
-                    if (!arrivalStation.has_value()) {
-                        stationDoesntExist();
-                        break;
-                    }
-                    pair<unsigned int, unsigned int> result = graph.minCostMaxFlow(departureName, arrivalName,
-                                                                                   residualGraph);
-
-                    cout << "Maintaining the network active at its maximum, " << result.first
-                         << " trains can travel simultaneously between " << departureName << " and " << arrivalName
-                         << ", at a minimum cost of " << result.second << "€." << endl;
-                    break;
-                }
-                case 'b': {
-                    return '\0';
-                }
-                case 'q': {
-                    cout << "Thank you for using our Railway Network Management System!" << endl;
-                    break;
-                }
-                default:
-                    cout << "Please press one of listed keys." << endl;
-                    break;
-            }
+        if (!edgesFilePath.empty()) {
+            graph.clearGraph();
+            dataRepository.clearData();
+            extractFileInfo(edgesFilePath, nodesFilePath);
+            //TODO: 4.1 Backtracking
         }
     }
     return commandIn;
 }
-*/
+
 
 /**
- * Outputs cost optimization menu screen and decides graph function calls according to user input
+ * Outputs triangular approximation heuristic menu screen and decides graph function calls according to user input
  * @return - Last inputted command, or '\0' for previous menu command
  */
-/*unsigned int Menu::failuresMenu() {
+
+unsigned int Menu::triangularApproximationMenu() {
     unsigned char commandIn = '\0';
 
     while (commandIn != 'q') {
-        if (commandIn == '\0') {
-            //Header
-            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "LINE FA";
-            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "ILURES" << endl;
-            cout << setw(COLUMN_WIDTH) << setfill(' ') << "Two specific stations: [1]" << setw(COLUMN_WIDTH)
-                 << "Top affected stations: [2]" << endl;
-            cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
+        //Header
+        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "TRIANGULAR APPRO";
+        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "XIMATION HEURISTIC" << endl;
+
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Stadiums: [1]" << setw(COLUMN_WIDTH) << "Tourism: [2]" << endl;
+
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 25: [3]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 50: [4]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 75: [5]" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 100: [6]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 200: [7]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 300: [8]" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 400: [9]" << setw(COLUMN_WIDTH) << setfill(' ')
+             << "Connected Graph 500: [A]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 600: [B]" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 700: [C]" << setw(COLUMN_WIDTH) << setfill(' ')
+             << "Connected Graph 800: [D]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 900: [E]" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Real World Graph 1: [F]" << setw(COLUMN_WIDTH) << setfill(' ')
+             << "Real World Graph 2: [G]" << setw(COLUMN_WIDTH)
+             << "Real World Graph 3: [H]" << endl;
+        cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
+
+        cout << endl
+             << "Please select the problem for which you'd like to execute the triangular approximation algorithm: ";
+        cin >> commandIn;
+
+        if (commandIn != 'q' && commandIn != 'b') commandIn = toupper(commandIn);
+        std::string nodesFilePath, edgesFilePath;
+
+        if (!checkInput(1)) {
+            commandIn = '\0';
+            continue;
+        }
+        switch (commandIn) {
+            case '1': {
+                edgesFilePath = "../dataset/Toy-Graphs/stadiums.csv";
+                break;
+            }
+            case '2': {
+                edgesFilePath = "../dataset/Toy-Graphs/tourism.csv";
+                break;
+            }
+            case '3': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_25.csv";
+                break;
+            }
+            case '4': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_50.csv";
+                break;
+            }
+            case '5': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_75.csv";
+                break;
+            }
+            case '6': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_100.csv";
+                break;
+            }
+            case '7': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_200.csv";
+                break;
+            }
+            case '8': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_300.csv";
+                break;
+            }
+            case '9': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_400.csv";
+                break;
+            }
+            case 'A': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_500.csv";
+                break;
+            }
+            case 'B': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_600.csv";
+                break;
+            }
+            case 'C': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_700.csv";
+                break;
+            }
+            case 'D': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_800.csv";
+                break;
+            }
+            case 'E': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_900.csv";
+                break;
+            }
+            case 'F': {
+                edgesFilePath = "../dataset/Real-world-Graphs/graph1/edges.csv";
+                nodesFilePath = "../dataset/Real-world-Graphs/graph1/nodes.csv";
+                break;
+            }
+            case 'G': {
+                edgesFilePath = "../dataset/Real-world-Graphs/graph2/edges.csv";
+                nodesFilePath = "../dataset/Real-world-Graphs/graph2/nodes.csv";
+                break;
+            }
+            case 'H': {
+                edgesFilePath = "../dataset/Real-world-Graphs/graph3/edges.csv";
+                nodesFilePath = "../dataset/Real-world-Graphs/graph3/nodes.csv";
+                break;
+            }
+            case 'b': {
+                return '\0';
+            }
+            case 'q': {
+                cout << "Thank you for using our Routing for Ocean Shipping and Urban Deliveries System!" << endl;
+                break;
+            }
+            default:
+                cout << "Please press one of listed keys." << endl;
+                break;
         }
 
-        while (commandIn != 'q') {
-            cout << endl
-                 << "Please select how to input the location whose reduced connectivity max number of trains you'd like to check: ";
-            cin >> commandIn;
-
-            if (!checkInput(1)) {
-                commandIn = '\0';
-                continue;
-            }
-            switch (commandIn) {
-                case '1': {
-                    string departureName;
-                    cout << "Enter the name of the departure station: ";
-                    getline(cin, departureName);
-                    if (!checkInput()) break;
-                    optional<Station> departureStation = dataRepository.findStation(departureName);
-                    if (!departureStation.has_value()) {
-                        stationDoesntExist();
-                        break;
-                    }
-
-                    string arrivalName;
-                    cout << "Enter the name of the arrival station: ";
-                    getline(cin, arrivalName);
-                    if (!checkInput()) break;
-                    optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
-                    if (!arrivalStation.has_value()) {
-                        stationDoesntExist();
-                        break;
-                    }
-
-                    vector<Edge *> deactivatedEdges = edgeFailureMenu();
-                    if (deactivatedEdges.empty()) break;
-
-                    pair<unsigned int, unsigned int> result =
-                            graph.maxFlowDeactivatedEdges(deactivatedEdges, {departureName}, arrivalName,
-                                                          residualGraph);
-                    double reductionValue = result.first == 0 ? 0 : 100 - ((result.second * 1.0) / result.first) * 100;
-                    cout << "The maximum number of trains travelling between "
-                         << departureName
-                         << " and " << arrivalName << " was altered from " << result.first << " to " << result.second
-                         << ", in a " << fixed << setprecision(2) << reductionValue << "% reduction." << endl;
-                    break;
-                }
-                case '2': {
-                    unsigned int numStations;
-                    cout << "Enter the number of stations you'd like to see: ";
-                    cin >> numStations;
-                    if (!checkInput()) break;
-                    if (numStations > graph.getNumVertex()) {
-                        cout << "The network only has " << graph.getNumVertex()
-                             << " stations!" << endl;
-                        break;
-                    }
-
-                    vector<Edge *> deactivatedEdges = edgeFailureMenu();
-                    if (deactivatedEdges.empty()) break;
-
-                    std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int>>> result = graph.topReductions(
-                            deactivatedEdges, residualGraph);
-
-                    cout << setw(COLUMN_WIDTH) << setfill(' ')
-                         << "List of stations by reduction number of incoming trains capacity" << endl << endl;
-
-
-                    cout << setw(4) << "NUM" << setw(COLUMN_WIDTH / 2 + 10) << left << " | REDUCTION";
-                    cout << setw(COLUMN_WIDTH / 2) << "REGULAR" << setw(COLUMN_WIDTH / 2) << left
-                         << "REDUCED";
-                    cout << "STATION" << endl;
-
-                    for (int i = 0; i < numStations; i++) {
-                        stringstream original;
-                        original << fixed << setprecision(2) << result[i].second.first;
-                        stringstream reduced;
-                        reduced << fixed << setprecision(2) << result[i].second.second;
-                        stringstream reduction;
-                        double reductionValue = result[i].second.first == 0 ? 0 : 100 -
-                                                                                  ((result[i].second.second * 1.0) /
-                                                                                   result[i].second.first) * 100;
-                        reduction << fixed << setprecision(2)
-                                  << reductionValue;
-
-                        cout << setw(4) << to_string(i + 1) << setw(10)
-                             << " | " + reduction.str() << setw(COLUMN_WIDTH / 2) << left << " %";
-                        cout << setw(COLUMN_WIDTH / 2) << result[i].second.first << setw(COLUMN_WIDTH / 2) << left
-                             << result[i].second.second;
-                        cout << result[i].first << endl;
-                    }
-                    break;
-                }
-                case 'b': {
-                    return '\0';
-                }
-                case 'q': {
-                    cout << "Thank you for using our Railway Network Management System!" << endl;
-                    break;
-                }
-                default:
-                    cout << "Please press one of listed keys." << endl;
-                    break;
-            }
+        if (!edgesFilePath.empty()) {
+            graph.clearGraph();
+            dataRepository.clearData();
+            extractFileInfo(edgesFilePath, nodesFilePath);
+            cout << "Done\n";
+            //TODO: 4.2 Triangular Approximation
         }
     }
-    return commandIn;
-}*/
+}
+
+
+/**
+ * Outputs custom heuristic menu screen and decides graph function calls according to user input
+ * @return - Last inputted command, or '\0' for previous menu command
+ */
+unsigned int Menu::heuristicMenu() {
+    unsigned char commandIn = '\0';
+
+    while (commandIn != 'q') {
+        //Header
+        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "TRIANGULAR APPRO";
+        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "XIMATION HEURISTIC" << endl;
+
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Stadiums: [1]" << setw(COLUMN_WIDTH) << "Tourism: [2]" << endl;
+
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 25: [3]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 50: [4]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 75: [5]" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 100: [6]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 200: [7]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 300: [8]" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 400: [9]" << setw(COLUMN_WIDTH) << setfill(' ')
+             << "Connected Graph 500: [A]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 600: [B]" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 700: [C]" << setw(COLUMN_WIDTH) << setfill(' ')
+             << "Connected Graph 800: [D]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 900: [E]" << endl;
+        cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
+
+        cout << endl
+             << "Please select the problem for which you'd like to execute the triangular approximation algorithm: ";
+        cin >> commandIn;
+
+        if (commandIn != 'q' && commandIn != 'b') commandIn = toupper(commandIn);
+        std::string nodesFilePath, edgesFilePath;
+
+        if (!checkInput(1)) {
+            commandIn = '\0';
+            continue;
+        }
+        switch (commandIn) {
+            case '1': {
+                edgesFilePath = "../dataset/Toy-Graphs/stadiums.csv";
+                break;
+            }
+            case '2': {
+                edgesFilePath = "../dataset/Toy-Graphs/tourism.csv";
+                break;
+            }
+            case '3': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_25.csv";
+                break;
+            }
+            case '4': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_50.csv";
+                break;
+            }
+            case '5': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_75.csv";
+                break;
+            }
+            case '6': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_100.csv";
+                break;
+            }
+            case '7': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_200.csv";
+                break;
+            }
+            case '8': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_300.csv";
+                break;
+            }
+            case '9': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_400.csv";
+                break;
+            }
+            case 'A': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_500.csv";
+                break;
+            }
+            case 'B': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_600.csv";
+                break;
+            }
+            case 'C': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_700.csv";
+                break;
+            }
+            case 'D': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_800.csv";
+                break;
+            }
+            case 'E': {
+                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_900.csv";
+                break;
+            }
+            case 'b': {
+                return '\0';
+            }
+            case 'q': {
+                cout << "Thank you for using our Routing for Ocean Shipping and Urban Deliveries System!" << endl;
+                break;
+            }
+            default:
+                cout << "Please press one of listed keys." << endl;
+                break;
+        }
+
+        if (!edgesFilePath.empty()) {
+            graph.clearGraph();
+            dataRepository.clearData();
+            extractFileInfo(edgesFilePath, nodesFilePath);
+            cout << "Done\n";
+            //TODO: 4.3 Heuristic
+        }
+    }
+}
 
 
 /**

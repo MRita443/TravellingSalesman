@@ -63,6 +63,8 @@ class Graph {
     getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
 
     double nearestInsertionLoop(unsigned int &start);
+
+    void clearGraph();
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

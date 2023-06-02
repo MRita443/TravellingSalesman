@@ -44,6 +44,11 @@ class Menu {
 
     static void nodeDoesntExist();
 
+    unsigned int backtrackingMenu();
+
+    unsigned int triangularApproximationMenu();
+
+    unsigned int heuristicMenu();
 };
 
 

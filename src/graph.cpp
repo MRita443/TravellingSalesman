@@ -266,7 +266,7 @@ std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned i
  * @param path - A vector to store the path taken
  * @return The weight of the smallest path obtainable
  */
-std::pair<double, unsigned int*> Graph::tspBT(std::vector<std::vector<double>> dists) {
+std::pair<double, unsigned int*> Graph::tspBT() {
     unsigned int n = this->vertexSet.size();
     unsigned int currentSolution[n];
     unsigned int path[n];

@@ -47,7 +47,7 @@ class Graph {
 
     void kruskal();
 
-    std::pair<double, unsigned int*> tspBT(std::vector<std::vector<double>> dists);
+    std::pair<double, unsigned int*> tspBT();
 
     void tspRecursion(unsigned int *currentSolution, double currentSolutionDist, unsigned int currentNodeIdx,
                       double &bestSolutionDist, unsigned int *bestSolution, unsigned int n);

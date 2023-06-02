@@ -38,8 +38,6 @@ class Menu {
 
     void mainMenu();
 
-    std::vector<Edge *> edgeFailureMenu();
-
     static bool checkInput(unsigned int checkLength = 0);
 
     static void nodeDoesntExist();

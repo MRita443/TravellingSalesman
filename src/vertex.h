@@ -7,11 +7,9 @@
 #include <limits>
 #include <algorithm>
 #include <unordered_set>
-#include "edge.h"
+#include <memory>
 #include "constants.h"
 #include "coordinates.h"
-
-class Edge;
 
 class Vertex {
   public:
@@ -23,7 +21,6 @@ class Vertex {
 
     [[nodiscard]] unsigned int getIndegree() const;
 
-    [[nodiscard]] double getDist() const;
 
     [[nodiscard]] unsigned int getPath() const;
 
@@ -33,7 +30,6 @@ class Vertex {
 
     void setIndegree(unsigned int indegree);
 
-    void setDist(double dist);
 
     void setPath(unsigned int path);
 
@@ -41,14 +37,8 @@ class Vertex {
 
     void setCoordinates(const Coordinates &coordinates);
 
-    std::shared_ptr<Edge> addEdge(const std::shared_ptr<Vertex> &dest, double length);
-
-    bool removeEdge(const unsigned int &destID);
-
-
   private:
     unsigned int id;                // identifier
-    //std::vector<std::shared_ptr<Edge>> adj;  // outgoing edges
     Coordinates coordinates;
 
     // auxiliary fields

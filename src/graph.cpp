@@ -59,40 +59,6 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
     totalEdges++;
 }
 
-
-/**
- * @brief Takes an Edge pointer and sets the selected state of that edge and its reverse to the given value
- * 
- * @param edge - Pointer to the edge to be set
- * @param selected - Value to set the selected state to
- */
-void Graph::setSelectedEdge(const std::shared_ptr<Edge> &edge, bool selected) {
-    edge->setSelected(selected);
-    edge->getReverse()->setSelected(selected);
-}
-
-/**
- * Takes a vector of Edge pointers and sets the selected state of those edges and their reverses to false
- * Time Complexity: O(size(edges))
- * @param edges - Vector of Edge pointers to be deactivated
- */
-void Graph::deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
-    for (const std::shared_ptr<Edge> &edge: edges) {
-        setSelectedEdge(edge, false);
-    }
-}
-
-/**
- * Takes a vector of Edge pointers and sets the selected state of those edges and their reverses to true
- * Time Complexity: O(size(edges))
- * @param edges - Vector of Edge pointers to be activated
- */
-void Graph::activateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
-    for (const std::shared_ptr<Edge> &edge: edges) {
-        setSelectedEdge(edge, true);
-    }
-}
-
 /**
  * DFS traversal variation that sets the visited attribute to true of the vertices the DFS traverses to
  * Time Complexity: O(|V|+|E|)

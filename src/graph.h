@@ -35,12 +35,6 @@ class Graph {
 
     void addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length);
 
-    static void setSelectedEdge(const std::shared_ptr<Edge> &edge, bool selected);
-
-    static void deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges);
-
-    static void activateEdges(const std::vector<std::shared_ptr<Edge>> &Edges);
-
     void visitedDFS(const std::shared_ptr<Vertex> &source);
 
     void dfsKruskalPath(const std::shared_ptr<Vertex> &source);
@@ -54,8 +48,6 @@ class Graph {
                       const unsigned int **dists);
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
-
-    [[nodiscard]] std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
 
     std::pair<unsigned int, unsigned int> getNextHeuristicEdge(std::vector<unsigned int> tour);
 

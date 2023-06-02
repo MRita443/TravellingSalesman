@@ -33,10 +33,10 @@ std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
  */
 std::shared_ptr<Vertex> Graph::addVertex(const unsigned int &id, Coordinates c) {
     std::shared_ptr<Vertex> newVertex = nullptr;
-    if (vertexSet.size() <= id) {
-        newVertex = std::make_shared<Vertex>(id, c);
-        vertexSet.push_back(newVertex);
-    }
+    if (vertexSet.size() <= id) { vertexSet.resize(id + 1); }
+    newVertex = std::make_shared<Vertex>(id, c);
+    vertexSet[id] = newVertex;
+
     return newVertex;
 }
 

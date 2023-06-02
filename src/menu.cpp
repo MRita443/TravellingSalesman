@@ -29,10 +29,10 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
     }
-    unsigned int start = 0;
+/*    unsigned int start = 0;
     if (edgesFilename.contains("Real-world-Graphs"))
         start = dataRepository.getFurthestVertex().getId();
-    auto result = graph.nearestInsertionLoop(start);
+    auto result = graph.nearestInsertionLoop(start);*/
 }
 
 /**

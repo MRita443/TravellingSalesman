@@ -65,18 +65,11 @@ bool Menu::checkInput(unsigned int checkLength) {
     return true;
 }
 
-/**
- * Outputs to the screen a message indicating that the given Node doesn't exist
- * Time Complexity: O(1)
- */
-void Menu::nodeDoesntExist() {
-    cout << "A node with this id doesn't exist!" << endl;
-}
 
 /**
  * Outputs main menu screen and calls other menu screens according to user input
  */
-/*void Menu::mainMenu() {
+void Menu::mainMenu() {
 
     unsigned char commandIn = '\0';
     string line;
@@ -85,12 +78,12 @@ void Menu::nodeDoesntExist() {
         if (commandIn == '\0') { //If program just started or returned from a different menu, print header
 
             //Header
-            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "RAILWAY NETWO";
-            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "RK MANAGEMENT" << endl;
+            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "ROUTING OPTIMI";
+            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "ZATION SYSTEM" << endl;
 
-            cout << setw(COLUMN_WIDTH) << setfill(' ') << "Basic Service Metrics: [1]" << setw(COLUMN_WIDTH)
-                 << "Operation Cost Optimization: [2]" << setw(COLUMN_WIDTH)
-                 << "Reliability and Sensitivity to Line Failures: [3]" << endl;
+            cout << setw(COLUMN_WIDTH) << setfill(' ') << "Backtracking Algorithm: [1]" << setw(COLUMN_WIDTH)
+                 << "Triangular Approximation Algorithm: [2]" << setw(COLUMN_WIDTH)
+                 << "Nearest Insertion Heuristic: [3]" << endl;
             cout << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
         }
         cout << endl << "Press the appropriate key to the function you'd like to access: ";
@@ -101,15 +94,15 @@ void Menu::nodeDoesntExist() {
         }
         switch (commandIn) {
             case '1': {
-                commandIn = serviceMetricsMenu();
+                commandIn = backtrackingMenu();
                 break;
             }
             case '2': {
-                commandIn = costOptMenu();
+                commandIn = triangularApproximationMenu();
                 break;
             }
             case '3': {
-                commandIn = failuresMenu();
+                commandIn = heuristicMenu();
                 break;
             }
             case 'q': {
@@ -122,7 +115,7 @@ void Menu::nodeDoesntExist() {
             }
         }
     }
-}*/
+}
 
 /**
  * Extracts and stores the information of an edges file
@@ -429,11 +422,12 @@ unsigned int Menu::triangularApproximationMenu() {
            //TODO: 4.2 Triangular Approximation
         }
     }
+    return commandIn;
 }
 
 
 /**
- * Outputs custom heuristic menu screen and decides graph function calls according to user input
+ * Outputs nearest insertion heuristic menu screen and decides graph function calls according to user input
  * @return - Last inputted command, or '\0' for previous menu command
  */
 unsigned int Menu::heuristicMenu() {
@@ -441,8 +435,8 @@ unsigned int Menu::heuristicMenu() {
 
     while (commandIn != 'q') {
         //Header
-        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "CUSTOM H";
-        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "EURISTIC" << endl;
+        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "NEAREST IN";
+        cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "SERTION" << endl;
 
         cout << setw(COLUMN_WIDTH) << setfill(' ') << "Stadiums: [1]" << setw(COLUMN_WIDTH) << "Tourism: [2]" << endl;
 
@@ -553,4 +547,5 @@ unsigned int Menu::heuristicMenu() {
             cout << "TOUR LENGTH: " << result << endl;
         }
     }
+    return commandIn;
 }

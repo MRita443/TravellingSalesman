@@ -37,19 +37,9 @@ class Menu {
 
     void extractFileInfo(const std::string &edgesFilename, const std::string &nodesFilename = "");
 
-    void initializeMenu();
-
-    unsigned int serviceMetricsMenu();
-
-    unsigned int costOptMenu();
-
-    unsigned int failuresMenu();
-
     void mainMenu();
 
     static bool checkInput(unsigned int checkLength = 0);
-
-    static void nodeDoesntExist();
 
     unsigned int backtrackingMenu();
 

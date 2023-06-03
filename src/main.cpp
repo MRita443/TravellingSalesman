@@ -2,6 +2,6 @@
 
 int main() {
     Menu menu;
-    menu.heuristicMenu();
+    menu.mainMenu();
     return 0;
 }

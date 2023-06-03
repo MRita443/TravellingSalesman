@@ -20,11 +20,19 @@ Menu::Menu() = default;
  * Time Complexity: O(n*v), where n is the number of lines of edgesFilename and v is the number of lines in nodesFilename
  */
 void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &nodesFilename) {
+<<<<<<< HEAD
+=======
+
+    if (!nodesFilename.empty()) {
+        extractNodesFile(nodesFilename);
+    }
+>>>>>>> backtracking-commented
     if (edgesFilename.contains("tourism")) {
         extractEdgesFile(edgesFilename, true, true);
     } else if (edgesFilename.contains("Extra_Fully_Connected_Graphs")) {
         extractEdgesFile(edgesFilename, false);
     } else extractEdgesFile(edgesFilename);
+<<<<<<< HEAD
 
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
@@ -33,6 +41,17 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (edgesFilename.contains("Real-world-Graphs"))
         start = dataRepository.getFurthestVertex().getId();
     auto result = graph.nearestInsertionLoop(start);*/
+=======
+    auto start = std::chrono::high_resolution_clock::now();
+    graph.initDistanceMatrix();
+    //auto start = graph.findVertex(dataRepository.getFurthestVertex().getId());
+    //auto result = graph.nearestInsertionLoop(start);
+    auto results = graph.tspBT(graph.getDistanceMatrix());
+    //unsigned int* path = results.second;
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop-start);
+    std::cout << results.first << endl << duration.count() << endl;
+>>>>>>> backtracking-commented
 }
 
 /**

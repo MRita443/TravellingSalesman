@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include "vertex.h"
+#include "edge.h"
 #include "UFDS.h"
 #include "coordinates.h"
 
@@ -41,11 +42,10 @@ class Graph {
 
     void kruskal();
 
-    unsigned int tspBT(const unsigned int **dists, unsigned int n, unsigned int *path);
+    std::pair<double, unsigned int*> tspBT();
 
-    void tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist, unsigned int currentNodeIdx,
-                      unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
-                      const unsigned int **dists);
+    void tspRecursion(unsigned int *currentSolution, double currentSolutionDist, unsigned int currentNodeIdx,
+                      double &bestSolutionDist, unsigned int *bestSolution, unsigned int n);
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 
@@ -54,7 +54,20 @@ class Graph {
     [[nodiscard]] std::pair<std::vector<unsigned int>, double>
     getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
 
+
     double nearestInsertionLoop(unsigned int &start);
+
+    std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
+
+    std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
+    getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const;
+
+    void initDistanceMatrix();
+
+    std::vector<std::vector<double>> getDistanceMatrix();
+
+    bool
+    addBidirectionalEdge(const std::shared_ptr<Vertex> &source, const std::shared_ptr<Vertex> &dest, double length);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

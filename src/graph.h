@@ -23,6 +23,7 @@ class Graph {
     tour_t tour = {0, {}};
     unsigned int totalEdges = 0;
     std::vector<std::shared_ptr<Vertex>> vertexSet;    // vertex set
+    std::vector<std::vector<bool>> selectedEdges;
     std::vector<std::vector<double>> distanceMatrix;
 
   public:
@@ -46,9 +47,9 @@ class Graph {
 
     int addToTour(std::shared_ptr<Vertex> stop);
 
-    void preorderMSTTraversal(std::shared_ptr<Vertex> source);
+    int preorderMSTTraversal(std::shared_ptr<Vertex> source);
 
-    int prim();
+    void prim();
 
     void triangularTSPTour();
 

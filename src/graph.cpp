@@ -97,10 +97,12 @@ void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
 /**
  * @brief Builds a MST using Prim's algorithm
  * Time Complexity: O(|E|log|E|)
- * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if contains self-loop)
  */
-int Graph::prim(){
+void Graph::prim(){
     MutablePriorityQueue<Vertex> q;
+    std::vector<std::vector<bool>> newMatrix(vertexSet.size(), std::vector<bool>(vertexSet.size(), false));
+    this->selectedEdges = newMatrix;
+
     std::shared_ptr<Vertex> start = findVertex(0);
 
     for (std::shared_ptr<Vertex> &v : vertexSet) {
@@ -112,15 +114,20 @@ int Graph::prim(){
     q.insert(start);
 
     while (!q.empty()){
+        //extrai no mais perto da mst, marca-o como visitado e guarda a edge
         std::shared_ptr<Vertex> currentVertex = q.extractMin();
-        int exec_val = addToTour(currentVertex);
-        if (exec_val != 0) return exec_val;
+        if (currentVertex->getPath() != nullptr) {
+            selectedEdges[currentVertex->getId()][currentVertex->getPath()->getId()] = true;
+            selectedEdges[currentVertex->getPath()->getId()][currentVertex->getId()] = true;
+        }
         currentVertex->setVisited(true);
 
+        //procura vizinho por visitar
         for (size_t i = 0; i<vertexSet.size(); i++){
             if (distanceMatrix[currentVertex->getId()][i] == constants::INF || i == currentVertex->getId()) continue;
             std::shared_ptr<Vertex> dest = findVertex(i);
             if (!dest->isVisited()){
+                //atualiza dados
                 double oldDist = dest->getDist();
                 if (distanceMatrix[currentVertex->getId()][i] < oldDist){
                     dest->setPath(currentVertex);
@@ -130,9 +137,6 @@ int Graph::prim(){
             }
         }
     }
-    int exec_val = addToTour(start);
-    if (exec_val != 0) return exec_val;
-    return 0;
 }
 
  /**
@@ -162,18 +166,24 @@ int Graph::addToTour(std::shared_ptr<Vertex> stop) {
  * @brief Iterates through the vertex set using DFS, respecting if an edge is selected or not
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
+ * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if self-loop)
  */
-void Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
-/*    source->setVisited(true);
-    addToTour(source);
-    for (std::shared_ptr<Edge> &e : source->getAdj()){
-        if(!(e->getDest()->isVisited()) && e->isSelected()){
-            preorderMSTTraversal(e->getDest());
+int Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
+    source->setVisited(true);
+    int exec_val = addToTour(source);
+    if (exec_val != 0) return exec_val;
+
+    for (size_t i = 0; i<vertexSet.size(); i++){
+        std::shared_ptr<Vertex> dest = findVertex(i);
+
+        if(!(dest->isVisited()) && selectedEdges[source->getId()][i]){
+            preorderMSTTraversal(dest);
         }
     }
 
-    if (source->getId() == 0) addToTour(source);
-*/}
+    if (source->getId() == 0) return addToTour(source);
+    return 0;
+}
 
 /**
  * Calculates an approximation of the TSP, using the triangular approximation heuristic
@@ -186,8 +196,11 @@ void Graph::triangularTSPTour(){
     -Iterate that order getting total dist
     */
     tour = {0,{}};
+    prim();
 
-    int exec_val = prim();
+    for (std::shared_ptr<Vertex> &v : vertexSet) v->setVisited(false);
+
+    int exec_val = preorderMSTTraversal(findVertex(0));
     switch (exec_val){
         case 0:
             printTour();
@@ -199,7 +212,6 @@ void Graph::triangularTSPTour(){
             printf("Course would contain self-loop!\n");
             break;
     }
-    //preorderMSTTraversal(findVertex(0));
 
     return; //results are updated in tour
 }

@@ -9,9 +9,9 @@
 #include <list>
 #include <algorithm>
 #include <memory>
+#include <climits>
 #include <set>
 #include "vertex.h"
-#include "edge.h"
 #include "UFDS.h"
 #include "coordinates.h"
 

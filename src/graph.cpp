@@ -1,23 +1,7 @@
 #include "graph.h"
-#include <climits>
 
 Graph::Graph() = default;
 
-/**
- * Creates a matrix for the distance between 2 nodes,
- * the distance is infinite if an edge between them doesn't exist
- * Time Complexity: O(V.sqrt(V)) (average case) | O(n^2) (worst case)
- */
-void Graph::initDistanceMatrix() {
-    std::vector<double> temp(vertexSet.size(), constants::INF);
-    this->distanceMatrix = std::vector<std::vector<double>>(vertexSet.size(), temp);
-
-    for (const auto &v: vertexSet) {
-        for (const auto &e: v->getAdj()) {
-            distanceMatrix[v->getId()][e->getDest()->getId()] = e->getLength();
-        }
-    }
-}
 
 unsigned int Graph::getNumVertex() const {
     return (unsigned int) vertexSet.size();
@@ -73,63 +57,6 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
     if (distanceMatrix[dest].size() <= source) distanceMatrix[dest].resize(source + 1, constants::INF);
     distanceMatrix[dest][source] = length;
     totalEdges++;
-    return true;
-}
-
-/**
- * Adds a bidirectional edge to the Graph between the vertices with id source and dest, and a given length
- * Time Complexity: O(1) (average case) | O(|V|) (worst case)
- * @param source - Pointer of the source Vertex
- * @param dest - Pointer of the destination Vertex
- * @param length - Length of the Edge to be added
- */
-bool
-Graph::addBidirectionalEdge(const std::shared_ptr<Vertex>& source, const std::shared_ptr<Vertex>& dest, double length) {
-    if (source == nullptr || dest == nullptr)
-        return false;
-
-    auto e1 = source->addEdge(dest, length);
-    auto e2 = dest->addEdge(source, length);
-
-    e1->setReverse(e2);
-    e2->setReverse(e1);
-
-    totalEdges++;
-    return true;
-}
-
-
-/**
- * @brief Takes an Edge pointer and sets the selected state of that edge and its reverse to the given value
- * 
- * @param edge - Pointer to the edge to be set
- * @param selected - Value to set the selected state to
- */
-void Graph::setSelectedEdge(const std::shared_ptr<Edge> &edge, bool selected) {
-    edge->setSelected(selected);
-    edge->getReverse()->setSelected(selected);
-}
-
-/**
- * Takes a vector of Edge pointers and sets the selected state of those edges and their reverses to false
- * Time Complexity: O(size(edges))
- * @param edges - Vector of Edge pointers to be deactivated
- */
-void Graph::deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
-    for (const std::shared_ptr<Edge> &edge: edges) {
-        setSelectedEdge(edge, false);
-    }
-}
-
-/**
- * Takes a vector of Edge pointers and sets the selected state of those edges and their reverses to true
- * Time Complexity: O(size(edges))
- * @param edges - Vector of Edge pointers to be activated
- */
-void Graph::activateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
-    for (const std::shared_ptr<Edge> &edge: edges) {
-        setSelectedEdge(edge, true);
-    }
 }
 
 /**
@@ -201,7 +128,7 @@ bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned in
 }
 
 /**
- * Recursive function for the backtracking function
+ * Recursive function for tspBT
  * Time Complexity: O(N!) (worst case)
  * @param currentSolution - Array of the path taken so far
  * @param currentSolutionDist - Weight of the path taken so far
@@ -256,7 +183,7 @@ Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
 }*/
 
 /**
- * A backtracking function for getting the value of the smallest weighted path for the given graph
+ * A backtracking function for the Travelling Salesperson Problem, which looks for the hamiltonian cycle with the smallest length possible
  * Time Complexity: O(N!) (worst case)
  * @param dists - Distance map for the graph used
  * @param n - Number of nodes

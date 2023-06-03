@@ -1,22 +1,15 @@
 #ifndef TRAVELLINGSALESMAN_VERTEX_H
 #define TRAVELLINGSALESMAN_VERTEX_H
 
-#include <iostream>
-#include <vector>
-#include <queue>
 #include <limits>
-#include <algorithm>
 #include <unordered_set>
-#include <random>
-#include "edge.h"
+#include <memory>
 #include "constants.h"
 #include "coordinates.h"
 
-class Edge;
-
 class Vertex {
   public:
-    Vertex(const unsigned int &id, Coordinates c = {0, 0});
+    explicit Vertex(const unsigned int &id, Coordinates c = {0, 0});
 
     [[nodiscard]] unsigned int getId() const;
 
@@ -24,7 +17,6 @@ class Vertex {
 
     [[nodiscard]] unsigned int getIndegree() const;
 
-    [[nodiscard]] double getDist() const;
 
     [[nodiscard]] unsigned int getPath() const;
 
@@ -34,7 +26,6 @@ class Vertex {
 
     void setIndegree(unsigned int indegree);
 
-    void setDist(double dist);
 
     void setPath(unsigned int path);
 
@@ -42,21 +33,15 @@ class Vertex {
 
     void setCoordinates(const Coordinates &coordinates);
 
-    std::shared_ptr<Edge> addEdge(const std::shared_ptr<Vertex> &dest, double length);
-
-    bool removeEdge(const unsigned int &destID);
-
-
   private:
     unsigned int id;                // identifier
-    //std::vector<std::shared_ptr<Edge>> adj;  // outgoing edges
     Coordinates coordinates;
 
     // auxiliary fields
     bool visited = false; // used by DFS, BFS, Prim ...
     unsigned int indegree = 0; // used by topsort
 
-    unsigned int path = -1; //Id of the preceding vertex
+    unsigned int path = -1; //ID of the preceding vertex
 };
 
 struct VertexPointerHash {

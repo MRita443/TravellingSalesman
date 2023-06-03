@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <random>
 #include <unordered_set>
 #include "graph.h"
 #include "dataRepository.h"
@@ -45,8 +46,6 @@ class Menu {
     unsigned int failuresMenu();
 
     void mainMenu();
-
-    std::vector<Edge *> edgeFailureMenu();
 
     static bool checkInput(unsigned int checkLength = 0);
 

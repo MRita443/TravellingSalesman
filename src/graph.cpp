@@ -1,5 +1,4 @@
 #include "graph.h"
-#include <climits>
 
 Graph::Graph() = default;
 
@@ -33,10 +32,10 @@ std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
  */
 std::shared_ptr<Vertex> Graph::addVertex(const unsigned int &id, Coordinates c) {
     std::shared_ptr<Vertex> newVertex = nullptr;
-    if (vertexSet.size() <= id) {
-        newVertex = std::make_shared<Vertex>(id, c);
-        vertexSet.push_back(newVertex);
-    }
+    if (vertexSet.size() <= id) { vertexSet.resize(id + 1); }
+    newVertex = std::make_shared<Vertex>(id, c);
+    vertexSet[id] = newVertex;
+
     return newVertex;
 }
 
@@ -57,40 +56,6 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
     if (distanceMatrix[dest].size() <= source) distanceMatrix[dest].resize(source + 1, constants::INF);
     distanceMatrix[dest][source] = length;
     totalEdges++;
-}
-
-
-/**
- * @brief Takes an Edge pointer and sets the selected state of that edge and its reverse to the given value
- * 
- * @param edge - Pointer to the edge to be set
- * @param selected - Value to set the selected state to
- */
-void Graph::setSelectedEdge(const std::shared_ptr<Edge> &edge, bool selected) {
-    edge->setSelected(selected);
-    edge->getReverse()->setSelected(selected);
-}
-
-/**
- * Takes a vector of Edge pointers and sets the selected state of those edges and their reverses to false
- * Time Complexity: O(size(edges))
- * @param edges - Vector of Edge pointers to be deactivated
- */
-void Graph::deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
-    for (const std::shared_ptr<Edge> &edge: edges) {
-        setSelectedEdge(edge, false);
-    }
-}
-
-/**
- * Takes a vector of Edge pointers and sets the selected state of those edges and their reverses to true
- * Time Complexity: O(size(edges))
- * @param edges - Vector of Edge pointers to be activated
- */
-void Graph::activateEdges(const std::vector<std::shared_ptr<Edge>> &edges) {
-    for (const std::shared_ptr<Edge> &edge: edges) {
-        setSelectedEdge(edge, true);
-    }
 }
 
 /**

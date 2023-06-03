@@ -1,15 +1,8 @@
 #ifndef TRAVELLINGSALESMAN_GRAPH_H
 #define TRAVELLINGSALESMAN_GRAPH_H
 
-#include <iostream>
 #include <vector>
-#include <queue>
-#include <limits>
-#include <tuple>
-#include <list>
-#include <algorithm>
 #include <memory>
-#include <set>
 #include "vertex.h"
 #include "UFDS.h"
 #include "coordinates.h"
@@ -35,12 +28,6 @@ class Graph {
 
     void addBidirectionalEdge(const unsigned int &source, const unsigned int &dest, double length);
 
-    static void setSelectedEdge(const std::shared_ptr<Edge> &edge, bool selected);
-
-    static void deactivateEdges(const std::vector<std::shared_ptr<Edge>> &edges);
-
-    static void activateEdges(const std::vector<std::shared_ptr<Edge>> &Edges);
-
     void visitedDFS(const std::shared_ptr<Vertex> &source);
 
     void dfsKruskalPath(const std::shared_ptr<Vertex> &source);
@@ -54,8 +41,6 @@ class Graph {
                       const unsigned int **dists);
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
-
-    [[nodiscard]] std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
 
     [[nodiscard]] std::pair<std::vector<unsigned int>, double>
     getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;

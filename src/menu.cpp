@@ -555,11 +555,12 @@ unsigned int Menu::heuristicMenu() {
             auto start = random<unsigned int>(0, graph.getNumVertex() - 1);
             if (edgesFilePath.contains("Real-world-Graphs"))
                 start = dataRepository.getFurthestVertex().getId();
+
             cout << "Calculating..." << endl;
 
             std::chrono::time_point<std::chrono::high_resolution_clock> startTime = std::chrono::high_resolution_clock::now();
 
-            auto result = graph.nearestInsertionLoop(start);
+            auto result = graph.nearestInsertionHeuristic(start);
 
             std::chrono::time_point<std::chrono::high_resolution_clock> endTime = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> duration = endTime - startTime;

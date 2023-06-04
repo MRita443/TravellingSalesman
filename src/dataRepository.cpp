@@ -14,7 +14,7 @@ void DataRepository::setVertices(const VertexPointerTable &vertices) {
 
 /**
  * Adds a new entry to the unordered_set of vertices, creating the corresponding Vertex object
- * Time Complexity: O(1) (average case) | O(size(stations)) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(vertices)) (worst case)
  * @param id - Id of the Vertex to be created
  * @param latitude - Latitude of the Vertex to created
  * @param longitude - Longitude of the Vertex to be created
@@ -49,6 +49,11 @@ double DataRepository::getAverageLongitude() {
     return vertices.empty() ? 0 : sumLongitude / (double) vertices.size();
 }
 
+/**
+ * Returns the Vertex furthest away from the average Coordinates of vertices in the set
+ * Time Complexity: O(nlog(n)), where n is the size of the vertices set
+ * @return Reference to furthest Vertex
+ */
 Vertex &DataRepository::getFurthestVertex() {
     std::vector<std::shared_ptr<Vertex>> orderedvertices(vertices.begin(), vertices.end());
     Coordinates averageLocation(getAverageLatitude(), getAverageLongitude());
@@ -61,6 +66,9 @@ Vertex &DataRepository::getFurthestVertex() {
     return *orderedvertices[0];
 }
 
+/**
+ * Clears all current data in DataRepository
+ */
 void DataRepository::clearData() {
     vertices = {};
     sumLongitude = 0;

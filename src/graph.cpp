@@ -44,10 +44,10 @@ double Graph::findEdge(const std::shared_ptr<Vertex> &v1, const std::shared_ptr<
 }
 
 /**
- * Adds a vertex with a given id to the Graph, representing a given Node
+ * Adds a vertex with a given id to the Graph
  * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param id - Id of the Vertex to add
- * @return True if successful, and false if a vertex with the given id already exists
+ * @return Pointer to new Vertex object
  */
 std::shared_ptr<Vertex> Graph::addVertex(const unsigned int &id, Coordinates c) {
     std::shared_ptr<Vertex> newVertex = nullptr;
@@ -60,7 +60,7 @@ std::shared_ptr<Vertex> Graph::addVertex(const unsigned int &id, Coordinates c) 
 
 /**
  * Adds a bidirectional edge to the Graph between the vertices with id source and dest, and a given length
- * Time Complexity: O(1) (average case) | O(|V|) (worst case)
+ * Time Complexity: O(|V|)
  * @param source - Id of the source Vertex
  * @param dest - Id of the destination Vertex
  * @param length - Length of the Edge to be added
@@ -77,9 +77,10 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
     totalEdges++;
 }
 
+
 /**
  * DFS traversal variation that sets the visited attribute to true of the vertices the DFS traverses to
- * Time Complexity: O(|V|^2)
+ * Time Complexity: O(|V|²)
  * @param source - Vertex where the DFS starts
 */
 void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
@@ -95,10 +96,9 @@ void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
     }
 }
 
-
 /**
  * @brief Builds a MST using Prim's algorithm
- * Time Complexity: O(|V|^2)
+ * Time Complexity: O(|V|²)
  */
 void Graph::prim() {
     MutablePriorityQueue<Vertex> q;
@@ -166,7 +166,7 @@ int Graph::addToTour(const std::shared_ptr<Vertex> &stop) {
 
 /**
  * @brief Iterates through the vertex set using DFS, respecting if an edge is selected or not
- * Time Complexity: O(|V|^2)
+ * Time Complexity: O(|V|²)
  * @param source - Vertex where the DFS starts
  * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if self-loop)
  */
@@ -189,7 +189,7 @@ int Graph::preorderMSTTraversal(const std::shared_ptr<Vertex> &source) {
 
 /**
  * Calculates an approximation of the TSP, using the triangular approximation heuristic
- * Time Complexity: O(|V|^2)
+ * Time Complexity: O(|V|²)
  */
 void Graph::triangularTSPTour() {
     /*
@@ -324,8 +324,13 @@ Graph::tspRecursion(std::vector<unsigned int> &currentSolution, double currentSo
     }
 }
 
-
-std::pair<double, std::vector<unsigned int>> Graph::nearestInsertionLoop(unsigned int &start) {
+/**
+ * Nearest insertion heuristic for the Travelling Salesperson Problem
+ * Time Complexity: 0(|V|³)
+ * @param start - Id of the start Vertex for the route
+ * @return - Route length
+ */
+std::pair<double, std::vector<unsigned int>> Graph::nearestInsertionHeuristic(unsigned int &start) {
     double distance = 0;
     std::vector<unsigned int> tour;
     UFDS tourSets(vertexSet.size());
@@ -363,6 +368,13 @@ std::pair<double, std::vector<unsigned int>> Graph::nearestInsertionLoop(unsigne
     return {distance + distanceMatrix[minEdgeIndex][start], tour};
 }
 
+/**
+ * Calculates the nearest edge to any of the vertices in a given tour
+ * Time Complexity: O(|V|²)
+ * @param tour - Vector of the vertex ids in the tour
+ * @param tourSets - UFDS that separates into sets the vertices in tour from the ones not in tour
+ * @return A pair of unsigned ints representing the ids of the chosen edges' extremities
+ */
 std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<unsigned int> tour, UFDS tourSets) {
     double smallestLength = constants::INF;
     std::pair<unsigned int, unsigned int> edgeExtremities;
@@ -381,7 +393,13 @@ std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<un
     return edgeExtremities;
 }
 
-
+/**
+ * Returns the two edges that should be added to the tour for the insertion of the vertex given by newVertexId
+ * Time Complexity: O(|V|)
+ * @param tour - Vector of the vertex ids in the tour
+ * @param newVertexId - Id of the Vertex to be added to the tour
+ * @return A pair of a 3-element vector, representing the order in which the two new edges will unite the new vertex to two pre-existing ones, and a double representing the length of the the two new edges
+ */
 std::pair<std::vector<unsigned int>, double>
 Graph::getInsertionEdges(std::vector<unsigned int> tour, const unsigned int newVertexId) const {
     std::pair<std::vector<unsigned int>, double> result = {{}, constants::INF};
@@ -397,6 +415,9 @@ Graph::getInsertionEdges(std::vector<unsigned int> tour, const unsigned int newV
     return result;
 }
 
+/**
+ * Clears all of the graph's current information
+ */
 void Graph::clearGraph() {
     distanceMatrix = {};
     vertexSet = {};

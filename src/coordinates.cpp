@@ -4,6 +4,7 @@ Coordinates::Coordinates(double latitude, double longitude) : latitude(latitude)
 
 /**
  * Calculates the haversine distance between this and another point
+ * Time Complexity: O(1)
  * @param point - Coordinates of second point
  * @return Haversine distance between two points
  */

@@ -16,7 +16,7 @@ unsigned int Graph::getTotalEdges() const {
 
 /**
  * Finds the vertex with a given id
- * Time Complexity: O(1) (average case) | O(|V|) (worst case)
+ * Time Complexity: O(1)
  * @param id - Id of the vertex to be found
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
@@ -77,7 +77,7 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
 
 /**
  * DFS traversal variation that sets the visited attribute to true of the vertices the DFS traverses to
- * Time Complexity: O(|V|+|E|)
+ * Time Complexity: O(|V|^2)
  * @param source - Vertex where the DFS starts
 */
 void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
@@ -95,7 +95,7 @@ void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
 
 /**
  * @brief Builds a MST using Prim's algorithm
- * Time Complexity: O(|E|log|E|)
+ * Time Complexity: O(|V|^2)
  */
 void Graph::prim(){
     MutablePriorityQueue<Vertex> q;
@@ -163,7 +163,7 @@ int Graph::addToTour(std::shared_ptr<Vertex> stop) {
 
 /**
  * @brief Iterates through the vertex set using DFS, respecting if an edge is selected or not
- * Time Complexity: O(|V|+|E|)
+ * Time Complexity: O(|V|^2)
  * @param source - Vertex where the DFS starts
  * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if self-loop)
  */
@@ -186,7 +186,7 @@ int Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
 
 /**
  * Calculates an approximation of the TSP, using the triangular approximation heuristic
- * Time Complexity: O(|E|log|E|)
+ * Time Complexity: O(|V|^2)
  */
 void Graph::triangularTSPTour(){
     /*

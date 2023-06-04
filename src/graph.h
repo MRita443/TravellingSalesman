@@ -45,7 +45,7 @@ class Graph {
     [[nodiscard]] std::pair<std::vector<unsigned int>, double>
     getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
 
-    double nearestInsertionLoop(unsigned int &start);
+    double nearestInsertionHeuristic(unsigned int &start);
 
     void clearGraph();
 

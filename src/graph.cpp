@@ -16,7 +16,7 @@ unsigned int Graph::getTotalEdges() const {
 
 /**
  * Finds the vertex with a given id
- * Time Complexity: O(1) (average case) | O(|V|) (worst case)
+ * Time Complexity: O(1)
  * @param id - Id of the vertex to be found
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
@@ -25,10 +25,10 @@ std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
 }
 
 /**
- * Adds a vertex with a given id to the Graph, representing a given Node
- * Time Complexity: O(1) (average case) | O(|V|) (worst case)
+ * Adds a vertex with a given id to the Graph
+ * Time Complexity: O(|V|)
  * @param id - Id of the Vertex to add
- * @return True if successful, and false if a vertex with the given id already exists
+ * @return Pointer to new Vertex object
  */
 std::shared_ptr<Vertex> Graph::addVertex(const unsigned int &id, Coordinates c) {
     std::shared_ptr<Vertex> newVertex = nullptr;
@@ -41,7 +41,7 @@ std::shared_ptr<Vertex> Graph::addVertex(const unsigned int &id, Coordinates c) 
 
 /**
  * Adds a bidirectional edge to the Graph between the vertices with id source and dest, and a given length
- * Time Complexity: O(1) (average case) | O(|V|) (worst case)
+ * Time Complexity: O(|V|)
  * @param source - Id of the source Vertex
  * @param dest - Id of the destination Vertex
  * @param length - Length of the Edge to be added
@@ -57,20 +57,6 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
     distanceMatrix[dest][source] = length;
     totalEdges++;
 }
-
-/**
- * DFS traversal variation that sets the visited attribute to true of the vertices the DFS traverses to
- * Time Complexity: O(|V|+|E|)
- * @param source - Vertex where the DFS starts
-*/
-/*void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
-    source->setVisited(true);
-    for (const std::shared_ptr<Edge> &e: source->getAdj()) {
-        if (!e->getDest()->isVisited()) {
-            visitedDFS(e->getDest());
-        }
-    }
-}*/
 
 
 /**
@@ -156,21 +142,6 @@ Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionD
     }
 }
 
-/**
- * Finds the edge connecting two vertices
- * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
- * @param v1id - Id of the first vertex
- * @param v2id - Id of the second vertex
- * @return Pointer to the edge that connects both vertices
- */
-/*std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned int &v2id) const {
-    for (auto e: findVertex(v1id)->getAdj()) {
-        if (e->getDest()->getId() == v2id) return e;
-    }
-    return nullptr;
-}*/
-
-
 unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
     unsigned int currentSolution[n];
     currentSolution[0] = 0;
@@ -179,7 +150,13 @@ unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned i
     return bestSolutionDist;
 }
 
-double Graph::nearestInsertionLoop(unsigned int &start) {
+/**
+ * Nearest insertion heuristic for the Travelling Salesperson Problem
+ * Time Complexity: 0(|V|³)
+ * @param start - Id of the start Vertex for the route
+ * @return - Route length
+ */
+double Graph::nearestInsertionHeuristic(unsigned int &start) {
     double distance = 0;
     std::vector<unsigned int> tour;
     UFDS tourSets(vertexSet.size());
@@ -216,6 +193,13 @@ double Graph::nearestInsertionLoop(unsigned int &start) {
     return distance + distanceMatrix[minEdgeIndex][start];
 }
 
+/**
+ * Calculates the nearest edge to any of the vertices in a given tour
+ * Time Complexity: O(|V|²)
+ * @param tour - Vector of the vertex ids in the tour
+ * @param tourSets - UFDS that separates into sets the vertices in tour from the ones not in tour
+ * @return A pair of unsigned ints representing the ids of the chosen edges' extremities
+ */
 std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<unsigned int> tour, UFDS tourSets) {
     double smallestLength = constants::INF;
     std::pair<unsigned int, unsigned int> edgeExtremities;
@@ -234,7 +218,13 @@ std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<un
     return edgeExtremities;
 }
 
-
+/**
+ * Returns the two edges that should be added to the tour for the insertion of the vertex given by newVertexId
+ * Time Complexity: O(|V|)
+ * @param tour - Vector of the vertex ids in the tour
+ * @param newVertexId - Id of the Vertex to be added to the tour
+ * @return A pair of a 3-element vector, representing the order in which the two new edges will unite the new vertex to two pre-existing ones, and a double representing the length of the the two new edges
+ */
 std::pair<std::vector<unsigned int>, double>
 Graph::getInsertionEdges(std::vector<unsigned int> tour, const unsigned int newVertexId) const {
     std::pair<std::vector<unsigned int>, double> result = {{}, constants::INF};
@@ -250,6 +240,9 @@ Graph::getInsertionEdges(std::vector<unsigned int> tour, const unsigned int newV
     return result;
 }
 
+/**
+ * Clears all of the graph's current information
+ */
 void Graph::clearGraph() {
     distanceMatrix = {};
     vertexSet = {};

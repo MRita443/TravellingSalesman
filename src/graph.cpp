@@ -232,7 +232,7 @@ void Graph::printTour() {
  * Displays tour's Vertices by order
  * @param tour - Vector containing the ordered tour vertices
  */
-void Graph::printTour(const std::vector<unsigned int>& tour) {
+void Graph::printTour(const std::vector<unsigned int> &tour) {
     printf("Path taken: ");
     for (const unsigned int &v: tour) {
         printf(" %d", v);
@@ -244,7 +244,7 @@ void Graph::printTour(const std::vector<unsigned int>& tour) {
  * Displays tour's Vertices by order
  * @param tour - Array containing the ordered tour vertices
  */
-void Graph::printTour(unsigned int tour[]) {
+void Graph::printTour(unsigned int *tour) {
     printf("Path taken: ");
     for (int i = 0; i < vertexSet.size(); i++) {
         printf(" %d", tour[i]);
@@ -252,7 +252,7 @@ void Graph::printTour(unsigned int tour[]) {
     printf("\n");
 }
 
-bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned int n) {
+bool Graph::inSolution(unsigned int j, const std::vector<unsigned int>& solution, unsigned int n) {
     for (int i = 0; i < n; i++) {
         if (solution[i] == j) {
             return true;
@@ -264,17 +264,17 @@ bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned in
 /**
  * Recursive function for tspBT
  * Time Complexity: O(N!) (worst case)
- * @param currentSolution - Array of the path taken so far
+ * @param currentSolution - Vector of the path taken so far
  * @param currentSolutionDist - Weight of the path taken so far
  * @param currentNodeIdx - Id of the node the algorithm is currently on
  * @param bestSolutionDist - Weight of the best path obtained so far
- * @param bestSolution - Array of the best path obtained so far
+ * @param bestSolution - Vector of the best path obtained so far
  * @param n - Number of nodes in the graph
  */
 void
-Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
+Graph::tspRecursion(std::vector<unsigned int> &currentSolution, double currentSolutionDist,
                     unsigned int currentNodeIdx,
-                    double &bestSolutionDist, unsigned int *bestSolution, unsigned int n) {
+                    double &bestSolutionDist, std::vector<unsigned int> &bestSolution, unsigned int n) {
     if (currentNodeIdx == n) {
         //Could need to verify here if last node connects to first
         if (this->distanceMatrix[currentSolution[currentNodeIdx - 1]][0] != constants::INF) {
@@ -308,13 +308,14 @@ Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
  * Time Complexity: O(N!) (worst case)
  * @return The weight of the smallest path obtainable
  */
-std::pair<double, unsigned int *> Graph::tspBT() {
+std::pair<double, std::vector<unsigned int>> Graph::tspBT() {
     unsigned int n = this->vertexSet.size();
-    unsigned int currentSolution[n];
-    unsigned int path[n];
+    std::vector<unsigned int> currentSolution(n + 1);
+    std::vector<unsigned int> path(n + 1);
     currentSolution[0] = 0;
     double bestSolutionDist = constants::INF;
     tspRecursion(currentSolution, 0, 1, bestSolutionDist, path, n);
+    path[n] = 0;
     return {bestSolutionDist, path};
 }
 

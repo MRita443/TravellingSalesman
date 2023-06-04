@@ -50,12 +50,8 @@ class Graph {
 
     void printTour();
 
-    std::pair<double, unsigned int*> tspBT();
+    std::pair<double, std::vector<unsigned int>> tspBT();
 
-    void tspRecursion(unsigned int *currentSolution, double currentSolutionDist, unsigned int currentNodeIdx,
-                      double &bestSolutionDist, unsigned int *bestSolution, unsigned int n);
-
-    static bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 
     [[nodiscard]] std::pair<std::vector<unsigned int>, double>
     getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
@@ -72,6 +68,12 @@ class Graph {
     static void printTour(const std::vector<unsigned int>& tour);
 
     void printTour(unsigned int *tour);
+
+    static bool inSolution(unsigned int j, const std::vector<unsigned int>& solution, unsigned int n);
+
+    void
+    tspRecursion(std::vector<unsigned int> &currentSolution, double currentSolutionDist, unsigned int currentNodeIdx,
+                 double &bestSolutionDist, std::vector<unsigned int> &bestSolution, unsigned int n);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

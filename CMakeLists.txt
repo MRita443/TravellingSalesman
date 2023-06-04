@@ -11,5 +11,6 @@ add_executable(TravellingSalesman
         src/dataRepository.h src/dataRepository.cpp
         src/MutablePriorityQueue.h
         src/coordinates.h src/coordinates.cpp
+        src/UFDS.h src/UFDS.cpp
         src/constants.h
         )

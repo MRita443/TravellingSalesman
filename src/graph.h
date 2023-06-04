@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <memory>
+#include <list>
+#include "UFDS.h"
 #include "vertex.h"
 #include "coordinates.h"
 

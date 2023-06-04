@@ -272,7 +272,7 @@ unsigned int Menu::backtrackingMenu() {
             double milliseconds = duration.count();
             std::cout << "Algorithm execution time: " << milliseconds << " milliseconds" << std::endl;
 
-            cout << "TOUR LENGTH: " << result.first << endl;
+            cout << "TOUR LENGTH: " << fixed << setprecision(2) << result.first << endl;
 
             if (graph.getNumVertex() <= 25) {
                 graph.printTour(result.second);
@@ -427,7 +427,7 @@ unsigned int Menu::triangularApproximationMenu() {
             double milliseconds = duration.count();
             std::cout << "Algorithm execution time: " << milliseconds << " milliseconds" << std::endl;
 
-            cout << endl << "TOUR LENGTH: " << graph.getTourDistance() << endl;
+            cout << endl << "TOUR LENGTH: " << fixed << setprecision(2) << graph.getTourDistance() << endl;
 
             if (graph.getNumVertex() <= 25) {
                 graph.printTour();
@@ -567,7 +567,7 @@ unsigned int Menu::heuristicMenu() {
             double milliseconds = duration.count();
             std::cout << "Algorithm execution time: " << milliseconds << " milliseconds" << std::endl;
 
-            cout << "TOUR LENGTH: " << result.first << endl;
+            cout << "TOUR LENGTH: " << fixed << setprecision(2) << result.first << endl;
 
             if (graph.getNumVertex() <= 25) {
                 graph.printTour(result.second);

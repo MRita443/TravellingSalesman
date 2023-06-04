@@ -262,7 +262,16 @@ unsigned int Menu::backtrackingMenu() {
             dataRepository.clearData();
             extractFileInfo(edgesFilePath, nodesFilePath);
             cout << endl << "Calculating..." << endl;
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> startTime = std::chrono::high_resolution_clock::now();
+
             auto result = graph.tspBT();
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> endTime = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> duration = endTime - startTime;
+            double milliseconds = duration.count();
+            std::cout << "Algorithm execution time: " << milliseconds << " milliseconds" << std::endl;
+
             cout << "TOUR LENGTH: " << result.first << endl;
 
             if (graph.getNumVertex() <= 25) {
@@ -408,7 +417,16 @@ unsigned int Menu::triangularApproximationMenu() {
             extractFileInfo(edgesFilePath, nodesFilePath);
 
             cout << "Calculating..." << endl;
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> startTime = std::chrono::high_resolution_clock::now();
+
             graph.triangularTSPTour();
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> endTime = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> duration = endTime - startTime;
+            double milliseconds = duration.count();
+            std::cout << "Algorithm execution time: " << milliseconds << " milliseconds" << std::endl;
+
             cout << endl << "TOUR LENGTH: " << graph.getTourDistance() << endl;
 
             if (graph.getNumVertex() <= 25) {
@@ -538,7 +556,16 @@ unsigned int Menu::heuristicMenu() {
             if (edgesFilePath.contains("Real-world-Graphs"))
                 start = dataRepository.getFurthestVertex().getId();
             cout << "Calculating..." << endl;
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> startTime = std::chrono::high_resolution_clock::now();
+
             auto result = graph.nearestInsertionLoop(start);
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> endTime = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> duration = endTime - startTime;
+            double milliseconds = duration.count();
+            std::cout << "Algorithm execution time: " << milliseconds << " milliseconds" << std::endl;
+
             cout << "TOUR LENGTH: " << result.first << endl;
 
             if (graph.getNumVertex() <= 25) {

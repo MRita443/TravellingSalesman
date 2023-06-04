@@ -206,6 +206,17 @@ void Menu::extractNodesFile(const std::string &filename) {
     }
 }
 
+/**
+ * Prints the time past during the algorithm's execution
+ * @param time - Time generated in milliseconds
+ */
+void Menu::printTime(double time) {
+    if (time > 1000.0){
+        double seconds = time / 1000.0;
+        std::cout << "Algorithm execution time: " << seconds << " seconds" << std::endl;
+    }
+    else std::cout << "Algorithm execution time: " << time << " milliseconds" << std::endl;
+}
 
 /**
  * Outputs backtracking algorithm menu screen and decides graph function calls according to user input
@@ -262,7 +273,16 @@ unsigned int Menu::backtrackingMenu() {
             dataRepository.clearData();
             extractFileInfo(edgesFilePath, nodesFilePath);
             cout << endl << "Calculating..." << endl;
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> startTime = std::chrono::high_resolution_clock::now();
+
             auto result = graph.tspBT();
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> endTime = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> duration = endTime - startTime;
+            double milliseconds = duration.count();
+            printTime(milliseconds);
+
             cout << "TOUR LENGTH: " << result.first << endl;
 
             if (graph.getNumVertex() <= 25) {
@@ -408,7 +428,16 @@ unsigned int Menu::triangularApproximationMenu() {
             extractFileInfo(edgesFilePath, nodesFilePath);
 
             cout << "Calculating..." << endl;
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> startTime = std::chrono::high_resolution_clock::now();
+
             graph.triangularTSPTour();
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> endTime = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> duration = endTime - startTime;
+            double milliseconds = duration.count();
+            printTime(milliseconds);
+
             cout << endl << "TOUR LENGTH: " << graph.getTourDistance() << endl;
 
             if (graph.getNumVertex() <= 25) {
@@ -539,7 +568,16 @@ unsigned int Menu::heuristicMenu() {
                 start = dataRepository.getFurthestVertex().getId();
 
             cout << "Calculating..." << endl;
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> startTime = std::chrono::high_resolution_clock::now();
+
             auto result = graph.nearestInsertionHeuristic(start);
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> endTime = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> duration = endTime - startTime;
+            double milliseconds = duration.count();
+            printTime(milliseconds);
+
             cout << "TOUR LENGTH: " << result.first << endl;
 
             if (graph.getNumVertex() <= 25) {

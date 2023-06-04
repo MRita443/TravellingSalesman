@@ -276,7 +276,7 @@ unsigned int Menu::backtrackingMenu() {
             graph.clearGraph();
             dataRepository.clearData();
             extractFileInfo(edgesFilePath, nodesFilePath);
-            //TODO: 4.1 Backtracking
+            auto result = graph.tspBT();
         }
     }
     return commandIn;

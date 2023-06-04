@@ -50,16 +50,16 @@ class Graph {
 
     void printTour();
 
-    unsigned int tspBT(const unsigned int **dists, unsigned int n, unsigned int *path);
+    std::pair<double, unsigned int*> tspBT();
 
-    void tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist, unsigned int currentNodeIdx,
-                      unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
-                      const unsigned int **dists);
+    void tspRecursion(unsigned int *currentSolution, double currentSolutionDist, unsigned int currentNodeIdx,
+                      double &bestSolutionDist, unsigned int *bestSolution, unsigned int n);
 
     static bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 
     [[nodiscard]] std::pair<std::vector<unsigned int>, double>
     getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
+
 
     double nearestInsertionLoop(unsigned int &start);
 

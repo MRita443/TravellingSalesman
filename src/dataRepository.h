@@ -10,12 +10,12 @@
 
 class DataRepository {
 
-  private:
+private:
     VertexPointerTable vertices;
     double sumLatitude = 0;
     double sumLongitude = 0;
 
-  public:
+public:
     DataRepository();
 
     const VertexPointerTable &getVertices() const;

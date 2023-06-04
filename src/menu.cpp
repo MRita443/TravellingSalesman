@@ -18,7 +18,6 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     } else if (edgesFilename.contains("Extra_Fully_Connected_Graphs")) {
         extractEdgesFile(edgesFilename, false);
     } else extractEdgesFile(edgesFilename);
-
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
     }
@@ -273,7 +272,9 @@ unsigned int Menu::backtrackingMenu() {
             graph.clearGraph();
             dataRepository.clearData();
             extractFileInfo(edgesFilePath, nodesFilePath);
-            //TODO: 4.1 Backtracking
+            cout << endl << "Calculating..." << endl;
+            auto result = graph.tspBT();
+            cout << "TOUR LENGTH: " << result.first << endl;
         }
     }
     return commandIn;
@@ -544,3 +545,4 @@ unsigned int Menu::heuristicMenu() {
     }
     return commandIn;
 }
+

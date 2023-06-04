@@ -2,6 +2,7 @@
 
 Graph::Graph() = default;
 
+
 unsigned int Graph::getNumVertex() const {
     return (unsigned int) vertexSet.size();
 }
@@ -241,19 +242,29 @@ bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned in
     return false;
 }
 
+/**
+ * Recursive function for tspBT
+ * Time Complexity: O(N!) (worst case)
+ * @param currentSolution - Array of the path taken so far
+ * @param currentSolutionDist - Weight of the path taken so far
+ * @param currentNodeIdx - Id of the node the algorithm is currently on
+ * @param bestSolutionDist - Weight of the best path obtained so far
+ * @param bestSolution - Array of the best path obtained so far
+ * @param n - Number of nodes in the graph
+ */
 void
-Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionDist,
+Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
                     unsigned int currentNodeIdx,
-                    unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
-                    const unsigned int **dists) {
+                    double &bestSolutionDist, unsigned int *bestSolution, unsigned int n) {
     if (currentNodeIdx == n) {
         //Could need to verify here if last node connects to first
-
-        //Add dist from last node back to zero and check if it's an improvement
-        if (currentSolutionDist + dists[currentSolution[currentNodeIdx - 1]][0] < bestSolutionDist) {
-            bestSolutionDist = currentSolutionDist + dists[currentSolution[currentNodeIdx - 1]][0];
-            for (int i = 0; i < n; i++) {
-                bestSolution[i] = currentSolution[i];
+        if(this->distanceMatrix[currentSolution[currentNodeIdx-1]][0] != constants::INF) {
+            //Add dist from last node back to zero and check if it's an improvement
+            if (currentSolutionDist + this->distanceMatrix[currentSolution[currentNodeIdx - 1]][0] < bestSolutionDist) {
+                bestSolutionDist = currentSolutionDist + this->distanceMatrix[currentSolution[currentNodeIdx - 1]][0];
+                for (int i = 0; i < n; i++) {
+                    bestSolution[i] = currentSolution[i];
+                }
             }
         }
         return;
@@ -261,22 +272,30 @@ Graph::tspRecursion(unsigned int *currentSolution, unsigned int currentSolutionD
     }
     //Check if node is already in path
     for (int i = 1; i < n; i++) {
-        if (dists[currentSolution[currentNodeIdx - 1]][i] + currentSolutionDist < bestSolutionDist) {
+        if (this->distanceMatrix[currentSolution[currentNodeIdx - 1]][i] + currentSolutionDist < bestSolutionDist) {
             if (!inSolution(i, currentSolution, currentNodeIdx)) {
                 currentSolution[currentNodeIdx] = i;
-                tspRecursion(currentSolution, dists[currentSolution[currentNodeIdx - 1]][i] + currentSolutionDist,
-                             currentNodeIdx + 1, bestSolutionDist, bestSolution, n, dists);
+                tspRecursion(currentSolution, this->distanceMatrix[currentSolution[currentNodeIdx - 1]][i] + currentSolutionDist,
+                             currentNodeIdx + 1, bestSolutionDist, bestSolution, n);
             }
         }
     }
 }
 
-unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
+
+/**
+ * A backtracking function for the Travelling Salesperson Problem, which looks for the hamiltonian cycle with the smallest length possible
+ * Time Complexity: O(N!) (worst case)
+ * @return The weight of the smallest path obtainable
+ */
+std::pair<double, unsigned int*> Graph::tspBT() {
+    unsigned int n = this->vertexSet.size();
     unsigned int currentSolution[n];
+    unsigned int path[n];
     currentSolution[0] = 0;
-    unsigned int bestSolutionDist = UINT_MAX;
-    tspRecursion(currentSolution, 0, 1, bestSolutionDist, path, n, dists);
-    return bestSolutionDist;
+    double bestSolutionDist = constants::INF;
+    tspRecursion(currentSolution, 0, 1, bestSolutionDist, path, n);
+    return {bestSolutionDist, path};
 }
 
 double Graph::nearestInsertionLoop(unsigned int &start) {
@@ -359,6 +378,5 @@ void Graph::clearGraph() {
 double Graph::getTourDistance() const {
     return tour.distance;
 }
-
 
 

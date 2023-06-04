@@ -40,9 +40,9 @@ class Graph {
 
     void visitedDFS(const std::shared_ptr<Vertex> &source);
 
-    int addToTour(std::shared_ptr<Vertex> stop);
+    int addToTour(const std::shared_ptr<Vertex>& stop);
 
-    int preorderMSTTraversal(std::shared_ptr<Vertex> source);
+    int preorderMSTTraversal(const std::shared_ptr<Vertex>& source);
 
     void prim();
 
@@ -56,7 +56,7 @@ class Graph {
                       unsigned int &bestSolutionDist, unsigned int *bestSolution, unsigned int n,
                       const unsigned int **dists);
 
-    bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
+    static bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 
     [[nodiscard]] std::pair<std::vector<unsigned int>, double>
     getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
@@ -66,6 +66,8 @@ class Graph {
     void clearGraph();
 
     std::pair<unsigned int, unsigned int> getNextHeuristicEdge(std::vector<unsigned int> tour, UFDS tourSets);
+
+    [[nodiscard]] double getTourDistance() const;
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

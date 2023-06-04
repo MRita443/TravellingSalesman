@@ -411,7 +411,10 @@ unsigned int Menu::triangularApproximationMenu() {
             graph.clearGraph();
             dataRepository.clearData();
             extractFileInfo(edgesFilePath, nodesFilePath);
+
+            cout << endl << "Calculating..." << endl;
             graph.triangularTSPTour();
+            cout << "TOUR LENGTH: " << graph.getTourDistance() << endl;
         }
     }
     return commandIn;

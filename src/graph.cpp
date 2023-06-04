@@ -30,7 +30,7 @@ std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
  * @param v1id - Pointer to the first vertex
  * @param v2id - Pointer to the second vertex
  */
-double Graph::findEdge(const std::shared_ptr<Vertex> &v1, const std::shared_ptr<Vertex> &v2) const{
+double Graph::findEdge(const std::shared_ptr<Vertex> &v1, const std::shared_ptr<Vertex> &v2) const {
     unsigned int v1id = v1->getId();
     unsigned int v2id = v2->getId();
 
@@ -82,8 +82,9 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
 */
 void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
-    for (size_t i = 0; i<vertexSet.size(); i++){
-        if (distanceMatrix[source->getId()][i] != constants::INF && source->getId() != i) { //edge existe e não é para si mesma
+    for (size_t i = 0; i < vertexSet.size(); i++) {
+        if (distanceMatrix[source->getId()][i] != constants::INF &&
+            source->getId() != i) { //edge existe e não é para si mesma
             std::shared_ptr<Vertex> v = findVertex(i);
             if (!v->isVisited()) {
                 visitedDFS(v);
@@ -97,14 +98,14 @@ void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
  * @brief Builds a MST using Prim's algorithm
  * Time Complexity: O(|V|^2)
  */
-void Graph::prim(){
+void Graph::prim() {
     MutablePriorityQueue<Vertex> q;
     std::vector<std::vector<bool>> newMatrix(vertexSet.size(), std::vector<bool>(vertexSet.size(), false));
     this->selectedEdges = newMatrix;
 
     std::shared_ptr<Vertex> start = findVertex(0);
 
-    for (std::shared_ptr<Vertex> &v : vertexSet) {
+    for (std::shared_ptr<Vertex> &v: vertexSet) {
         v->setDist(constants::INF);
         v->setVisited(false);
         v->setPath(nullptr);
@@ -112,7 +113,7 @@ void Graph::prim(){
     start->setDist(0);
     q.insert(start);
 
-    while (!q.empty()){
+    while (!q.empty()) {
         //extrai no mais perto da mst, marca-o como visitado e guarda a edge
         std::shared_ptr<Vertex> currentVertex = q.extractMin();
         if (currentVertex->getPath() != nullptr) {
@@ -122,13 +123,13 @@ void Graph::prim(){
         currentVertex->setVisited(true);
 
         //procura vizinho por visitar
-        for (size_t i = 0; i<vertexSet.size(); i++){
+        for (size_t i = 0; i < vertexSet.size(); i++) {
             if (distanceMatrix[currentVertex->getId()][i] == constants::INF || i == currentVertex->getId()) continue;
             std::shared_ptr<Vertex> dest = findVertex(i);
-            if (!dest->isVisited()){
+            if (!dest->isVisited()) {
                 //atualiza dados
                 double oldDist = dest->getDist();
-                if (distanceMatrix[currentVertex->getId()][i] < oldDist){
+                if (distanceMatrix[currentVertex->getId()][i] < oldDist) {
                     dest->setPath(currentVertex);
                     dest->setDist(distanceMatrix[currentVertex->getId()][i]);
                     oldDist == constants::INF ? q.insert(dest) : q.decreaseKey(dest);
@@ -138,22 +139,22 @@ void Graph::prim(){
     }
 }
 
- /**
-  * Adds a vertex to the tour structure and updates the total distance
-  * Time Complexity: O(1)
-  * @param stop - Vertex to add
-  * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if self-loop)
-  */
-int Graph::addToTour(std::shared_ptr<Vertex> stop) {
-    if (!tour.course.empty()){
-        if ((*(tour.course).rbegin())->getId() == stop->getId()){
+/**
+ * Adds a vertex to the tour structure and updates the total distance
+ * Time Complexity: O(1)
+ * @param stop - Vertex to add
+ * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if self-loop)
+ */
+int Graph::addToTour(const std::shared_ptr<Vertex> &stop) {
+    if (!tour.course.empty()) {
+        if ((*(tour.course).rbegin())->getId() == stop->getId()) {
             //selfloop
             return -2;
         }
         double aresta = findEdge((*(tour.course).rbegin()), stop);
-        if (aresta == -1){
+        if (aresta == -1) {
             //rejeitar tour
-            return aresta;
+            return (int) aresta;
         }
         tour.distance += aresta;
     }
@@ -167,15 +168,15 @@ int Graph::addToTour(std::shared_ptr<Vertex> stop) {
  * @param source - Vertex where the DFS starts
  * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if self-loop)
  */
-int Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
+int Graph::preorderMSTTraversal(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
     int exec_val = addToTour(source);
     if (exec_val != 0) return exec_val;
 
-    for (size_t i = 0; i<vertexSet.size(); i++){
+    for (size_t i = 0; i < vertexSet.size(); i++) {
         std::shared_ptr<Vertex> dest = findVertex(i);
 
-        if(!(dest->isVisited()) && selectedEdges[source->getId()][i]){
+        if (!(dest->isVisited()) && selectedEdges[source->getId()][i]) {
             preorderMSTTraversal(dest);
         }
     }
@@ -188,21 +189,23 @@ int Graph::preorderMSTTraversal(std::shared_ptr<Vertex> source){
  * Calculates an approximation of the TSP, using the triangular approximation heuristic
  * Time Complexity: O(|V|^2)
  */
-void Graph::triangularTSPTour(){
+void Graph::triangularTSPTour() {
     /*
     -Build MST
     -Get pre-order of the mst as vector
     -Iterate that order getting total dist
     */
-    tour = {0,{}};
+    tour = {0, {}};
     prim();
 
-    for (std::shared_ptr<Vertex> &v : vertexSet) v->setVisited(false);
+    for (std::shared_ptr<Vertex> &v: vertexSet) v->setVisited(false);
 
     int exec_val = preorderMSTTraversal(findVertex(0));
-    switch (exec_val){
+    switch (exec_val) {
         case 0:
-            printTour();
+            if (vertexSet.size() <= 25) {
+                printTour();
+            }
             break;
         case -1:
             printf("Couldn't calculate approximation of TSP for this graph!\n");
@@ -210,19 +213,20 @@ void Graph::triangularTSPTour(){
         case -2:
             printf("Course would contain self-loop!\n");
             break;
+        default:
+            break;
     }
 
-    return; //results are updated in tour
+    //results are updated in tour
 }
 
 /**
  * Displays Tour's Vertices by order and its total distance
  * Time Complexity: O(|V|)
  */
-void Graph::printTour(){
-    printf("Tour's total Distance: %f\n", tour.distance);
+void Graph::printTour() {
     printf("Path taken: ");
-    for (std::shared_ptr<Vertex> v : tour.course){
+    for (const std::shared_ptr<Vertex> &v: tour.course) {
         printf(" %d", v->getId());
     }
     printf("\n");
@@ -350,6 +354,10 @@ void Graph::clearGraph() {
     distanceMatrix = {};
     vertexSet = {};
     totalEdges = 0;
+}
+
+double Graph::getTourDistance() const {
+    return tour.distance;
 }
 
 

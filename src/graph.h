@@ -1,16 +1,8 @@
 #ifndef TRAVELLINGSALESMAN_GRAPH_H
 #define TRAVELLINGSALESMAN_GRAPH_H
 
-#include <iostream>
 #include <vector>
-#include <queue>
-#include <limits>
-#include <tuple>
-#include <list>
-#include <algorithm>
 #include <memory>
-#include <climits>
-#include <set>
 #include "vertex.h"
 #include "UFDS.h"
 #include "coordinates.h"
@@ -49,14 +41,15 @@ class Graph {
 
     bool inSolution(unsigned int j, const unsigned int *solution, unsigned int n);
 
-    std::pair<unsigned int, unsigned int> getNextHeuristicEdge(std::vector<unsigned int> tour);
-
     [[nodiscard]] std::pair<std::vector<unsigned int>, double>
     getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
 
 
     double nearestInsertionLoop(unsigned int &start);
 
+    void clearGraph();
+
+    std::pair<unsigned int, unsigned int> getNextHeuristicEdge(std::vector<unsigned int> tour, UFDS tourSets);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

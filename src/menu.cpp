@@ -13,9 +13,6 @@ Menu::Menu() = default;
  * Time Complexity: O(n*v), where n is the number of lines of edgesFilename and v is the number of lines in nodesFilename
  */
 void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &nodesFilename) {
-    if (!nodesFilename.empty()) {
-        extractNodesFile(nodesFilename);
-    }
     if (edgesFilename.contains("tourism")) {
         extractEdgesFile(edgesFilename, true, true);
     } else if (edgesFilename.contains("Extra_Fully_Connected_Graphs")) {
@@ -24,7 +21,6 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
     }
-
 }
 
 /**

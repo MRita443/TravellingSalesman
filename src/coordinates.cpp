@@ -2,6 +2,12 @@
 
 Coordinates::Coordinates(double latitude, double longitude) : latitude(latitude), longitude(longitude) {}
 
+/**
+ * Calculates the haversine distance between this and another point
+ * Time Complexity: O(1)
+ * @param point - Coordinates of second point
+ * @return Haversine distance between two points
+ */
 double Coordinates::distanceTo(Coordinates point) const {
     double lat1 = this->latitude, lat2 = point.latitude;
     double lon1 = this->longitude, lon2 = point.longitude;

@@ -537,8 +537,9 @@ unsigned int Menu::heuristicMenu() {
             auto start = random<unsigned int>(0, graph.getNumVertex() - 1);
             if (edgesFilePath.contains("Real-world-Graphs"))
                 start = dataRepository.getFurthestVertex().getId();
+
             cout << "Calculating..." << endl;
-            auto result = graph.nearestInsertionLoop(start);
+            auto result = graph.nearestInsertionHeuristic(start);
             cout << "TOUR LENGTH: " << result.first << endl;
 
             if (graph.getNumVertex() <= 25) {

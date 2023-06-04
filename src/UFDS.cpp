@@ -32,7 +32,7 @@ void UFDS::linkSets(unsigned int i, unsigned int j) {
         if (rank[x] > rank[y]) path[y] = x; // x becomes the root due to having a larger rank
         else {
             path[x] = y; // y becomes the root due to having a larger rank, or ...
-            if (rank[x] == rank[y]) rank[y]++; // ... due to both vertices having the same rank (in order to break the tie)
+            if (rank[x] == rank[y]) rank[y]++; // ... due to both nodes having the same rank (in order to break the tie)
         }
     }
 }

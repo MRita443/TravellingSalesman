@@ -17,12 +17,29 @@ unsigned int Graph::getTotalEdges() const {
 
 /**
  * Finds the vertex with a given id
- * Time Complexity: O(1) (average case) | O(|V|) (worst case)
+ * Time Complexity: O(1)
  * @param id - Id of the vertex to be found
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
 std::shared_ptr<Vertex> Graph::findVertex(const unsigned int &id) const {
     return vertexSet.size() <= id ? nullptr : vertexSet[id];
+}
+
+/**
+ * Finds length of the edge connecting two vertices (if it doesn't explicitly exist, it returns the haversine distance)
+ * Time Complexity: O(1)
+ * @param v1id - Pointer to the first vertex
+ * @param v2id - Pointer to the second vertex
+ */
+double Graph::findEdge(const std::shared_ptr<Vertex> &v1, const std::shared_ptr<Vertex> &v2) const {
+    unsigned int v1id = v1->getId();
+    unsigned int v2id = v2->getId();
+
+    if (v1id == v2id) return -2;
+    if (distanceMatrix[v1id][v2id] != constants::INF) return distanceMatrix[v1id][v2id];
+    else { //haversine function
+        return v1->haversineDistance(v2);
+    }
 }
 
 /**
@@ -61,62 +78,160 @@ Graph::addBidirectionalEdge(const unsigned int &source, const unsigned int &dest
 
 /**
  * DFS traversal variation that sets the visited attribute to true of the vertices the DFS traverses to
- * Time Complexity: O(|V|+|E|)
+ * Time Complexity: O(|V|^2)
  * @param source - Vertex where the DFS starts
 */
-/*void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
+void Graph::visitedDFS(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
-    for (const std::shared_ptr<Edge> &e: source->getAdj()) {
-        if (!e->getDest()->isVisited()) {
-            visitedDFS(e->getDest());
+    for (size_t i = 0; i < vertexSet.size(); i++) {
+        if (distanceMatrix[source->getId()][i] != constants::INF &&
+            source->getId() != i) { //edge existe e não é para si mesma
+            std::shared_ptr<Vertex> v = findVertex(i);
+            if (!v->isVisited()) {
+                visitedDFS(v);
+            }
         }
     }
-}*/
+}
 
 
 /**
- * @brief Builds a MST using Kruskal's algorithm
- * Time Complexity: O(|E|log|E|)
+ * @brief Builds a MST using Prim's algorithm
+ * Time Complexity: O(|V|^2)
  */
-/*void Graph::kruskal() {
-    std::list<std::shared_ptr<Edge>> edges;
-    for (const std::shared_ptr<Vertex>& v: vertexSet) {
-        //v->setVisited(false); //TODO: Check if this is necessary
-        for (const std::shared_ptr<Edge>& e: v->getAdj()) {
-            edges.push_back(e);
-            e->setSelected(false);
+void Graph::prim() {
+    MutablePriorityQueue<Vertex> q;
+    std::vector<std::vector<bool>> newMatrix(vertexSet.size(), std::vector<bool>(vertexSet.size(), false));
+    this->selectedEdges = newMatrix;
+
+    std::shared_ptr<Vertex> start = findVertex(0);
+
+    for (std::shared_ptr<Vertex> &v: vertexSet) {
+        v->setDist(constants::INF);
+        v->setVisited(false);
+        v->setPath(nullptr);
+    }
+    start->setDist(0);
+    q.insert(start);
+
+    while (!q.empty()) {
+        //extrai no mais perto da mst, marca-o como visitado e guarda a edge
+        std::shared_ptr<Vertex> currentVertex = q.extractMin();
+        if (currentVertex->getPath() != nullptr) {
+            selectedEdges[currentVertex->getId()][currentVertex->getPath()->getId()] = true;
+            selectedEdges[currentVertex->getPath()->getId()][currentVertex->getId()] = true;
+        }
+        currentVertex->setVisited(true);
+
+        //procura vizinho por visitar
+        for (size_t i = 0; i < vertexSet.size(); i++) {
+            if (distanceMatrix[currentVertex->getId()][i] == constants::INF || i == currentVertex->getId()) continue;
+            std::shared_ptr<Vertex> dest = findVertex(i);
+            if (!dest->isVisited()) {
+                //atualiza dados
+                double oldDist = dest->getDist();
+                if (distanceMatrix[currentVertex->getId()][i] < oldDist) {
+                    dest->setPath(currentVertex);
+                    dest->setDist(distanceMatrix[currentVertex->getId()][i]);
+                    oldDist == constants::INF ? q.insert(dest) : q.decreaseKey(dest);
+                }
+            }
         }
     }
-    UFDS ufds(vertexSet.size());
+}
 
-    edges.sort([](const std::shared_ptr<Edge> &e1, const std::shared_ptr<Edge> &e2) {
-        return e1->getLength() < e2->getLength();
-    });
-
-    for (const std::shared_ptr<Edge> &e: edges) {
-        if (!isSameSet(e->getOrig()->getId(), e->getDest()->getId())) {
-            e->setSelected(true);
-            linkSets(e->getOrig);
+/**
+ * Adds a vertex to the tour structure and updates the total distance
+ * Time Complexity: O(1)
+ * @param stop - Vertex to add
+ * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if self-loop)
+ */
+int Graph::addToTour(const std::shared_ptr<Vertex> &stop) {
+    if (!tour.course.empty()) {
+        if ((*(tour.course).rbegin())->getId() == stop->getId()) {
+            //selfloop
+            return -2;
         }
+        double aresta = findEdge((*(tour.course).rbegin()), stop);
+        if (aresta == -1) {
+            //rejeitar tour
+            return (int) aresta;
+        }
+        tour.distance += aresta;
     }
-}*/
+    tour.course.push_back(stop);
+    return 0;
+}
 
 /**
  * @brief Iterates through the vertex set using DFS, respecting if an edge is selected or not
- * Registers the path taken in the vertex's path attribute
- * Time Complexity: O(|V|+|E|)
+ * Time Complexity: O(|V|^2)
  * @param source - Vertex where the DFS starts
+ * @return execution errors (0 if none, -1 if couldn't calculate Edge length, -2 if self-loop)
  */
-/*void Graph::dfsKruskalPath(const std::shared_ptr<Vertex> &source) {
+int Graph::preorderMSTTraversal(const std::shared_ptr<Vertex> &source) {
     source->setVisited(true);
-    for (const std::shared_ptr<Edge> &e: source->getAdj()) {
-        if (!e->getDest()->isVisited() && e->isSelected()) {
-            e->getDest()->setPath(e);
-            dfsKruskalPath(e->getDest());
+    int exec_val = addToTour(source);
+    if (exec_val != 0) return exec_val;
+
+    for (size_t i = 0; i < vertexSet.size(); i++) {
+        std::shared_ptr<Vertex> dest = findVertex(i);
+
+        if (!(dest->isVisited()) && selectedEdges[source->getId()][i]) {
+            preorderMSTTraversal(dest);
         }
     }
-}*/
 
+    if (source->getId() == 0) return addToTour(source);
+    return 0;
+}
+
+/**
+ * Calculates an approximation of the TSP, using the triangular approximation heuristic
+ * Time Complexity: O(|V|^2)
+ */
+void Graph::triangularTSPTour() {
+    /*
+    -Build MST
+    -Get pre-order of the mst as vector
+    -Iterate that order getting total dist
+    */
+    tour = {0, {}};
+    prim();
+
+    for (std::shared_ptr<Vertex> &v: vertexSet) v->setVisited(false);
+
+    int exec_val = preorderMSTTraversal(findVertex(0));
+    switch (exec_val) {
+        case 0:
+            if (vertexSet.size() <= 25) {
+                printTour();
+            }
+            break;
+        case -1:
+            printf("Couldn't calculate approximation of TSP for this graph!\n");
+            break;
+        case -2:
+            printf("Course would contain self-loop!\n");
+            break;
+        default:
+            break;
+    }
+
+    //results are updated in tour
+}
+
+/**
+ * Displays Tour's Vertices by order and its total distance
+ * Time Complexity: O(|V|)
+ */
+void Graph::printTour() {
+    printf("Path taken: ");
+    for (const std::shared_ptr<Vertex> &v: tour.course) {
+        printf(" %d", v->getId());
+    }
+    printf("\n");
+}
 
 bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned int n) {
     for (int i = 0; i < n; i++) {
@@ -168,6 +283,7 @@ Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
     }
 }
 
+<<<<<<< HEAD
 /**
  * Finds the edge connecting two vertices
  * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
@@ -192,6 +308,9 @@ Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
  */
 std::pair<double, unsigned int*> Graph::tspBT() {
     unsigned int n = this->vertexSet.size();
+=======
+unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
+>>>>>>> 05560a3483933fd63c762b899c8e6548112a1627
     unsigned int currentSolution[n];
     unsigned int path[n];
     currentSolution[0] = 0;
@@ -203,6 +322,7 @@ std::pair<double, unsigned int*> Graph::tspBT() {
 double Graph::nearestInsertionLoop(unsigned int &start) {
     double distance = 0;
     std::vector<unsigned int> tour;
+    UFDS tourSets(vertexSet.size());
 
     //Get shortest adjacent edge
     std::vector<double> adjacent = distanceMatrix[start];
@@ -212,12 +332,12 @@ double Graph::nearestInsertionLoop(unsigned int &start) {
     //Initialize the partial tour with the chosen vertex and its closest neighbour
     tour.push_back(start);
     tour.push_back(minEdgeIndex);
-    // TODO(?): Set path of adjacent edge to be the start vertex
+    tourSets.linkSets(start, minEdgeIndex);
     distance += distanceMatrix[start][minEdgeIndex];
 
     //Two cities are already in the tour, repeat for the leftover cities
     for (int i = 2; i < vertexSet.size(); i++) {
-        std::pair<unsigned int, unsigned int> nextEdge = getNextHeuristicEdge(tour);
+        std::pair<unsigned int, unsigned int> nextEdge = getNextHeuristicEdge(tour, tourSets);
         unsigned int newVertexId = nextEdge.second;
 
         auto insertionEdges = getInsertionEdges(tour, newVertexId);
@@ -225,6 +345,8 @@ double Graph::nearestInsertionLoop(unsigned int &start) {
         unsigned int closingVertex = insertionEdges.first.back();
         auto closingVertexIt = std::find(tour.begin(), tour.end(), closingVertex);
         tour.insert(closingVertexIt, newVertexId); //Insert new vertex in between the two old vertices
+
+        tourSets.linkSets(start, newVertexId);
 
         //Remove the length of the edge that was replaced, and add the length of the two new edges
         distance =
@@ -234,14 +356,14 @@ double Graph::nearestInsertionLoop(unsigned int &start) {
     return distance + distanceMatrix[minEdgeIndex][start];
 }
 
-std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<unsigned int> tour) {
+std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<unsigned int> tour, UFDS tourSets) {
     double smallestLength = constants::INF;
     std::pair<unsigned int, unsigned int> edgeExtremities;
 
     for (auto id: tour) {
         for (int i = 0; i < distanceMatrix[id].size(); i++) {
             //If it's an edge to a vertex not yet in the tour
-            if (std::find(tour.begin(), tour.end(), i) == tour.end()) {
+            if (!tourSets.isSameSet(tour[0], i)) {
                 if (distanceMatrix[id][i] < smallestLength) {
                     smallestLength = distanceMatrix[id][i];
                     edgeExtremities = {id, i};
@@ -268,8 +390,19 @@ Graph::getInsertionEdges(std::vector<unsigned int> tour, const unsigned int newV
     return result;
 }
 
+<<<<<<< HEAD
 std::vector<std::vector<double>> Graph::getDistanceMatrix() {
     return distanceMatrix;
+=======
+void Graph::clearGraph() {
+    distanceMatrix = {};
+    vertexSet = {};
+    totalEdges = 0;
+}
+
+double Graph::getTourDistance() const {
+    return tour.distance;
+>>>>>>> 05560a3483933fd63c762b899c8e6548112a1627
 }
 
 

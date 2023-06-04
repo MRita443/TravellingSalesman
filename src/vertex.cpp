@@ -14,7 +14,7 @@ unsigned int Vertex::getIndegree() const {
     return this->indegree;
 }
 
-unsigned int Vertex::getPath() const {
+std::shared_ptr<Vertex> Vertex::getPath() const {
     return this->path;
 }
 
@@ -31,16 +31,33 @@ void Vertex::setIndegree(unsigned int indegree) {
 }
 
 
-void Vertex::setPath(unsigned int path) {
+void Vertex::setPath(std::shared_ptr<Vertex> path) {
     this->path = path;
 }
 
+double Vertex::haversineDistance(const std::shared_ptr<Vertex> &other) const{
+    return coordinates.distanceTo(other->getCoordinates());
+}
 
 const Coordinates &Vertex::getCoordinates() const {
     return coordinates;
 }
 
-void Vertex::setCoordinates(const Coordinates &coordinates) {
-    Vertex::coordinates = coordinates;
+void Vertex::setCoordinates(const Coordinates &newCoordinates) {
+    Vertex::coordinates = newCoordinates;
 }
 
+double Vertex::getDist() const {
+    return this->dist;
+}
+
+void Vertex::setDist(const double newDist) {
+    this->dist = newDist;
+}
+
+bool Vertex::operator<(const Vertex &rhs) const {
+    if (dist != rhs.getDist()){
+        return dist < rhs.getDist();
+    }
+    return id < rhs.getId();
+}

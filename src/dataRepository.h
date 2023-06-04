@@ -31,6 +31,8 @@ class DataRepository {
     Vertex &getFurthestVertex();
 
     std::shared_ptr<Vertex> addVertexEntry(unsigned int id, double latitude, double longitude);
+
+    void clearData();
 };
 
 

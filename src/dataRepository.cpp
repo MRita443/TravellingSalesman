@@ -60,3 +60,9 @@ Vertex &DataRepository::getFurthestVertex() {
               });
     return *orderedvertices[0];
 }
+
+void DataRepository::clearData() {
+    vertices = {};
+    sumLongitude = 0;
+    sumLatitude = 0;
+}

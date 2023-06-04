@@ -47,6 +47,8 @@ class Menu {
     unsigned int triangularApproximationMenu();
 
     unsigned int heuristicMenu();
+
+    void printTime(double time);
 };
 
 

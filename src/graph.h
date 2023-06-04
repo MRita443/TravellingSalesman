@@ -61,13 +61,17 @@ class Graph {
     getInsertionEdges(std::vector<unsigned int> tour, unsigned int newVertexId) const;
 
 
-    double nearestInsertionLoop(unsigned int &start);
+    std::pair<double, std::vector<unsigned int>> nearestInsertionLoop(unsigned int &start);
 
     void clearGraph();
 
     std::pair<unsigned int, unsigned int> getNextHeuristicEdge(std::vector<unsigned int> tour, UFDS tourSets);
 
     [[nodiscard]] double getTourDistance() const;
+
+    static void printTour(const std::vector<unsigned int>& tour);
+
+    void printTour(unsigned int *tour);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

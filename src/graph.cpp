@@ -203,11 +203,6 @@ void Graph::triangularTSPTour() {
 
     int exec_val = preorderMSTTraversal(findVertex(0));
     switch (exec_val) {
-        case 0:
-            if (vertexSet.size() <= 25) {
-                printTour();
-            }
-            break;
         case -1:
             printf("Couldn't calculate approximation of TSP for this graph!\n");
             break;
@@ -222,13 +217,37 @@ void Graph::triangularTSPTour() {
 }
 
 /**
- * Displays Tour's Vertices by order and its total distance
+ * Displays tour's Vertices by order
  * Time Complexity: O(|V|)
  */
 void Graph::printTour() {
     printf("Path taken: ");
     for (const std::shared_ptr<Vertex> &v: tour.course) {
         printf(" %d", v->getId());
+    }
+    printf("\n");
+}
+
+/**
+ * Displays tour's Vertices by order
+ * @param tour - Vector containing the ordered tour vertices
+ */
+void Graph::printTour(const std::vector<unsigned int>& tour) {
+    printf("Path taken: ");
+    for (const unsigned int &v: tour) {
+        printf(" %d", v);
+    }
+    printf("\n");
+}
+
+/**
+ * Displays tour's Vertices by order
+ * @param tour - Array containing the ordered tour vertices
+ */
+void Graph::printTour(unsigned int tour[]) {
+    printf("Path taken: ");
+    for (int i = 0; i < vertexSet.size(); i++) {
+        printf(" %d", tour[i]);
     }
     printf("\n");
 }
@@ -258,7 +277,7 @@ Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
                     double &bestSolutionDist, unsigned int *bestSolution, unsigned int n) {
     if (currentNodeIdx == n) {
         //Could need to verify here if last node connects to first
-        if(this->distanceMatrix[currentSolution[currentNodeIdx-1]][0] != constants::INF) {
+        if (this->distanceMatrix[currentSolution[currentNodeIdx - 1]][0] != constants::INF) {
             //Add dist from last node back to zero and check if it's an improvement
             if (currentSolutionDist + this->distanceMatrix[currentSolution[currentNodeIdx - 1]][0] < bestSolutionDist) {
                 bestSolutionDist = currentSolutionDist + this->distanceMatrix[currentSolution[currentNodeIdx - 1]][0];
@@ -275,7 +294,8 @@ Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
         if (this->distanceMatrix[currentSolution[currentNodeIdx - 1]][i] + currentSolutionDist < bestSolutionDist) {
             if (!inSolution(i, currentSolution, currentNodeIdx)) {
                 currentSolution[currentNodeIdx] = i;
-                tspRecursion(currentSolution, this->distanceMatrix[currentSolution[currentNodeIdx - 1]][i] + currentSolutionDist,
+                tspRecursion(currentSolution,
+                             this->distanceMatrix[currentSolution[currentNodeIdx - 1]][i] + currentSolutionDist,
                              currentNodeIdx + 1, bestSolutionDist, bestSolution, n);
             }
         }
@@ -288,7 +308,7 @@ Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
  * Time Complexity: O(N!) (worst case)
  * @return The weight of the smallest path obtainable
  */
-std::pair<double, unsigned int*> Graph::tspBT() {
+std::pair<double, unsigned int *> Graph::tspBT() {
     unsigned int n = this->vertexSet.size();
     unsigned int currentSolution[n];
     unsigned int path[n];
@@ -298,7 +318,7 @@ std::pair<double, unsigned int*> Graph::tspBT() {
     return {bestSolutionDist, path};
 }
 
-double Graph::nearestInsertionLoop(unsigned int &start) {
+std::pair<double, std::vector<unsigned int>> Graph::nearestInsertionLoop(unsigned int &start) {
     double distance = 0;
     std::vector<unsigned int> tour;
     UFDS tourSets(vertexSet.size());
@@ -332,7 +352,8 @@ double Graph::nearestInsertionLoop(unsigned int &start) {
                 distance - distanceMatrix[insertionEdges.first[0]][insertionEdges.first.back()] + insertionEdges.second;
     }
     //The two untied edges will always be the starting two vertices
-    return distance + distanceMatrix[minEdgeIndex][start];
+    tour.push_back(start);
+    return {distance + distanceMatrix[minEdgeIndex][start], tour};
 }
 
 std::pair<unsigned int, unsigned int> Graph::getNextHeuristicEdge(std::vector<unsigned int> tour, UFDS tourSets) {

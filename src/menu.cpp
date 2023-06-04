@@ -275,6 +275,10 @@ unsigned int Menu::backtrackingMenu() {
             cout << endl << "Calculating..." << endl;
             auto result = graph.tspBT();
             cout << "TOUR LENGTH: " << result.first << endl;
+
+            if(graph.getNumVertex() <= 25){
+                graph.printTour(result.second);
+            }
         }
     }
     return commandIn;
@@ -416,6 +420,10 @@ unsigned int Menu::triangularApproximationMenu() {
             cout << endl << "Calculating..." << endl;
             graph.triangularTSPTour();
             cout << "TOUR LENGTH: " << graph.getTourDistance() << endl;
+
+            if(graph.getNumVertex() <= 25){
+                graph.printTour();
+            }
         }
     }
     return commandIn;
@@ -540,7 +548,11 @@ unsigned int Menu::heuristicMenu() {
                 start = dataRepository.getFurthestVertex().getId();
             cout << endl << "Calculating..." << endl;
             auto result = graph.nearestInsertionLoop(start);
-            cout << "TOUR LENGTH: " << result << endl;
+            cout << "TOUR LENGTH: " << result.first << endl;
+
+            if(graph.getNumVertex() <= 25){
+                graph.printTour(result.second);
+            }
         }
     }
     return commandIn;

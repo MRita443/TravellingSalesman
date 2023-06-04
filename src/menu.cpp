@@ -7,13 +7,6 @@ unsigned const Menu::COLUMNS_PER_LINE = 3;
 
 Menu::Menu() = default;
 
-/**
- * Delegates initialization of the menu, calling the appropriate functions for information extraction and output
- */
-/*void Menu::initializeMenu() {
-    extractFileInfo();
-    mainMenu();
-}*/
 
 /**
  * Delegates extracting file info, calling the appropriate functions for each file

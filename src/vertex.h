@@ -3,19 +3,15 @@
 
 #include <utility>
 #include <iostream>
-#include <vector>
 #include <queue>
-#include <limits>
-#include <algorithm>
 #include <unordered_set>
-#include <memory>
 #include "constants.h"
 #include "coordinates.h"
 #include "MutablePriorityQueue.h"
 
 class Vertex {
   public:
-    Vertex(const unsigned int &id, Coordinates c = {0, 0});
+    explicit Vertex(const unsigned int &id, Coordinates c = {0, 0});
 
     [[nodiscard]] unsigned int getId() const;
 

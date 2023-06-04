@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <random>
 #include <unordered_set>
 #include "graph.h"
 #include "dataRepository.h"
@@ -19,6 +20,14 @@ class Menu {
     unsigned static const COLUMN_WIDTH;
     unsigned static const COLUMNS_PER_LINE;
 
+    template<typename T>
+    T random(T range_from, T range_to) {
+        std::random_device rand_dev;
+        std::mt19937 generator(rand_dev());
+        std::uniform_int_distribution<T> distr(range_from, range_to);
+        return distr(generator);
+    }
+
   public:
     Menu();
 
@@ -28,20 +37,15 @@ class Menu {
 
     void extractFileInfo(const std::string &edgesFilename, const std::string &nodesFilename = "");
 
-    void initializeMenu();
-
-    unsigned int serviceMetricsMenu();
-
-    unsigned int costOptMenu();
-
-    unsigned int failuresMenu();
-
     void mainMenu();
 
     static bool checkInput(unsigned int checkLength = 0);
 
-    static void nodeDoesntExist();
+    unsigned int backtrackingMenu();
 
+    unsigned int triangularApproximationMenu();
+
+    unsigned int heuristicMenu();
 };
 
 

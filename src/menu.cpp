@@ -25,22 +25,6 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     if (!nodesFilename.empty()) {
         extractNodesFile(nodesFilename);
     }
-<<<<<<< HEAD
-/*    unsigned int start = 0;
-    if (edgesFilename.contains("Real-world-Graphs"))
-        start = dataRepository.getFurthestVertex().getId();
-    auto result = graph.nearestInsertionLoop(start);*/
-    auto start = std::chrono::high_resolution_clock::now();
-    graph.initDistanceMatrix();
-    //auto start = graph.findVertex(dataRepository.getFurthestVertex().getId());
-    //auto result = graph.nearestInsertionLoop(start);
-    auto results = graph.tspBT();
-    //unsigned int* path = results.second;
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop-start);
-    std::cout << results.first << endl << duration.count() << endl;
-=======
->>>>>>> 05560a3483933fd63c762b899c8e6548112a1627
 }
 
 /**

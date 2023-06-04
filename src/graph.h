@@ -3,13 +3,7 @@
 
 #include <vector>
 #include <memory>
-<<<<<<< HEAD
-#include <climits>
-#include <set>
-#include "vertex.h"
-=======
 #include <list>
->>>>>>> 05560a3483933fd63c762b899c8e6548112a1627
 #include "UFDS.h"
 #include "vertex.h"
 #include "coordinates.h"
@@ -69,25 +63,11 @@ class Graph {
 
     double nearestInsertionLoop(unsigned int &start);
 
-<<<<<<< HEAD
-    std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
-
-    std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
-    getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const;
-
-    void initDistanceMatrix();
-
-    std::vector<std::vector<double>> getDistanceMatrix();
-
-    bool
-    addBidirectionalEdge(const std::shared_ptr<Vertex> &source, const std::shared_ptr<Vertex> &dest, double length);
-=======
     void clearGraph();
 
     std::pair<unsigned int, unsigned int> getNextHeuristicEdge(std::vector<unsigned int> tour, UFDS tourSets);
 
     [[nodiscard]] double getTourDistance() const;
->>>>>>> 05560a3483933fd63c762b899c8e6548112a1627
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

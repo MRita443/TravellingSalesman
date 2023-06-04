@@ -283,34 +283,8 @@ Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
     }
 }
 
-<<<<<<< HEAD
-/**
- * Finds the edge connecting two vertices
- * Time Complexity: O(|E|) (average case) | O(|V|*|E|) (worst case)
- * @param v1id - Id of the first vertex
- * @param v2id - Id of the second vertex
- * @return Pointer to the edge that connects both vertices
- */
-/*std::shared_ptr<Edge> Graph::findEdge(const unsigned int &v1id, const unsigned int &v2id) const {
-    for (auto e: findVertex(v1id)->getAdj()) {
-        if (e->getDest()->getId() == v2id) return e;
-    }
-    return nullptr;
-}*/
 
-/**
- * A backtracking function for the Travelling Salesperson Problem, which looks for the hamiltonian cycle with the smallest length possible
- * Time Complexity: O(N!) (worst case)
- * @param dists - Distance map for the graph used
- * @param n - Number of nodes
- * @param path - A vector to store the path taken
- * @return The weight of the smallest path obtainable
- */
-std::pair<double, unsigned int*> Graph::tspBT() {
-    unsigned int n = this->vertexSet.size();
-=======
 unsigned int Graph::tspBT(const unsigned int **dists, unsigned int n, unsigned int path[]) {
->>>>>>> 05560a3483933fd63c762b899c8e6548112a1627
     unsigned int currentSolution[n];
     unsigned int path[n];
     currentSolution[0] = 0;
@@ -390,10 +364,6 @@ Graph::getInsertionEdges(std::vector<unsigned int> tour, const unsigned int newV
     return result;
 }
 
-<<<<<<< HEAD
-std::vector<std::vector<double>> Graph::getDistanceMatrix() {
-    return distanceMatrix;
-=======
 void Graph::clearGraph() {
     distanceMatrix = {};
     vertexSet = {};
@@ -402,7 +372,6 @@ void Graph::clearGraph() {
 
 double Graph::getTourDistance() const {
     return tour.distance;
->>>>>>> 05560a3483933fd63c762b899c8e6548112a1627
 }
 
 

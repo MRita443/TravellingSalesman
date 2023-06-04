@@ -221,8 +221,6 @@ unsigned int Menu::backtrackingMenu() {
         cout << setw(COLUMN_WIDTH) << setfill(' ') << "Shipping: [1]" << setw(COLUMN_WIDTH)
              << "Stadiums: [2]" << setw(COLUMN_WIDTH) << "Tourism: [3]"
              << endl;
-        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 25: [4]" << setw(COLUMN_WIDTH)
-             << "Connected Graph 50: [5]" << endl;
         cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
 
         cout << endl << "Please select the problem for which you'd like to execute the backtracking algorithm: ";
@@ -247,15 +245,6 @@ unsigned int Menu::backtrackingMenu() {
                 edgesFilePath = "../dataset/Toy-Graphs/tourism.csv";
                 break;
             }
-            case '4': {
-                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_25.csv";
-                break;
-            }
-            case '5': {
-                edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_50.csv";
-                break;
-
-            }
             case 'b': {
                 return '\0';
             }
@@ -276,7 +265,7 @@ unsigned int Menu::backtrackingMenu() {
             auto result = graph.tspBT();
             cout << "TOUR LENGTH: " << result.first << endl;
 
-            if(graph.getNumVertex() <= 25){
+            if (graph.getNumVertex() <= 25) {
                 graph.printTour(result.second);
             }
         }
@@ -308,13 +297,13 @@ unsigned int Menu::triangularApproximationMenu() {
              << "Connected Graph 300: [8]" << endl;
         cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 400: [9]" << setw(COLUMN_WIDTH) << setfill(' ')
              << "Connected Graph 500: [A]" << setw(COLUMN_WIDTH)
-             << "Connected Graph 600: [B]" << endl;
-        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 700: [C]" << setw(COLUMN_WIDTH) << setfill(' ')
-             << "Connected Graph 800: [D]" << setw(COLUMN_WIDTH)
-             << "Connected Graph 900: [E]" << endl;
-        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Real World Graph 1: [F]" << setw(COLUMN_WIDTH) << setfill(' ')
-             << "Real World Graph 2: [G]" << setw(COLUMN_WIDTH)
-             << "Real World Graph 3: [H]" << endl;
+             << "Connected Graph 600: [C]" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 700: [D]" << setw(COLUMN_WIDTH) << setfill(' ')
+             << "Connected Graph 800: [E]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 900: [F]" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Real World Graph 1: [G]" << setw(COLUMN_WIDTH) << setfill(' ')
+             << "Real World Graph 2: [H]" << setw(COLUMN_WIDTH)
+             << "Real World Graph 3: [I]" << endl;
         cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
 
         cout << endl
@@ -369,33 +358,33 @@ unsigned int Menu::triangularApproximationMenu() {
                 edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_500.csv";
                 break;
             }
-            case 'B': {
+            case 'C': {
                 edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_600.csv";
                 break;
             }
-            case 'C': {
+            case 'D': {
                 edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_700.csv";
                 break;
             }
-            case 'D': {
+            case 'E': {
                 edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_800.csv";
                 break;
             }
-            case 'E': {
+            case 'F': {
                 edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_900.csv";
                 break;
             }
-            case 'F': {
+            case 'G': {
                 edgesFilePath = "../dataset/Real-world-Graphs/graph1/edges.csv";
                 nodesFilePath = "../dataset/Real-world-Graphs/graph1/nodes.csv";
                 break;
             }
-            case 'G': {
+            case 'H': {
                 edgesFilePath = "../dataset/Real-world-Graphs/graph2/edges.csv";
                 nodesFilePath = "../dataset/Real-world-Graphs/graph2/nodes.csv";
                 break;
             }
-            case 'H': {
+            case 'I': {
                 edgesFilePath = "../dataset/Real-world-Graphs/graph3/edges.csv";
                 nodesFilePath = "../dataset/Real-world-Graphs/graph3/nodes.csv";
                 break;
@@ -413,15 +402,16 @@ unsigned int Menu::triangularApproximationMenu() {
         }
 
         if (!edgesFilePath.empty()) {
+            cout << endl << "Loading graph..." << endl;
             graph.clearGraph();
             dataRepository.clearData();
             extractFileInfo(edgesFilePath, nodesFilePath);
 
-            cout << endl << "Calculating..." << endl;
+            cout << "Calculating..." << endl;
             graph.triangularTSPTour();
-            cout << "TOUR LENGTH: " << graph.getTourDistance() << endl;
+            cout << endl << "TOUR LENGTH: " << graph.getTourDistance() << endl;
 
-            if(graph.getNumVertex() <= 25){
+            if (graph.getNumVertex() <= 25) {
                 graph.printTour();
             }
         }
@@ -541,16 +531,17 @@ unsigned int Menu::heuristicMenu() {
         if (!edgesFilePath.empty()) {
             graph.clearGraph();
             dataRepository.clearData();
+            cout << endl << "Loading graph..." << endl;
             extractFileInfo(edgesFilePath, nodesFilePath);
 
             auto start = random<unsigned int>(0, graph.getNumVertex() - 1);
             if (edgesFilePath.contains("Real-world-Graphs"))
                 start = dataRepository.getFurthestVertex().getId();
-            cout << endl << "Calculating..." << endl;
+            cout << "Calculating..." << endl;
             auto result = graph.nearestInsertionLoop(start);
             cout << "TOUR LENGTH: " << result.first << endl;
 
-            if(graph.getNumVertex() <= 25){
+            if (graph.getNumVertex() <= 25) {
                 graph.printTour(result.second);
             }
         }

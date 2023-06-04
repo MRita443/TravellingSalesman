@@ -36,7 +36,8 @@ double Graph::findEdge(const std::shared_ptr<Vertex> &v1, const std::shared_ptr<
     unsigned int v2id = v2->getId();
 
     if (v1id == v2id) return -2;
-    if (distanceMatrix[v1id][v2id] != constants::INF) return distanceMatrix[v1id][v2id];
+    if (distanceMatrix[v1id].size() > v2id && distanceMatrix[v1id][v2id] != constants::INF)
+        return distanceMatrix[v1id][v2id];
     else { //haversine function
         return v1->haversineDistance(v2);
     }
@@ -252,7 +253,7 @@ void Graph::printTour(unsigned int *tour) {
     printf("\n");
 }
 
-bool Graph::inSolution(unsigned int j, const std::vector<unsigned int>& solution, unsigned int n) {
+bool Graph::inSolution(unsigned int j, const std::vector<unsigned int> &solution, unsigned int n) {
     for (int i = 0; i < n; i++) {
         if (solution[i] == j) {
             return true;
@@ -260,6 +261,23 @@ bool Graph::inSolution(unsigned int j, const std::vector<unsigned int>& solution
     }
     return false;
 }
+
+/**
+ * A backtracking function for the Travelling Salesperson Problem, which looks for the hamiltonian cycle with the smallest length possible
+ * Time Complexity: O(N!) (worst case)
+ * @return The weight of the smallest path obtainable
+ */
+std::pair<double, std::vector<unsigned int>> Graph::tspBT() {
+    unsigned int n = this->vertexSet.size();
+    std::vector<unsigned int> currentSolution(n + 1);
+    std::vector<unsigned int> path(n + 1);
+    currentSolution[0] = 0;
+    double bestSolutionDist = constants::INF;
+    tspRecursion(currentSolution, 0, 1, bestSolutionDist, path, n);
+    path[n] = 0;
+    return {bestSolutionDist, path};
+}
+
 
 /**
  * Recursive function for tspBT
@@ -291,7 +309,11 @@ Graph::tspRecursion(std::vector<unsigned int> &currentSolution, double currentSo
     }
     //Check if node is already in path
     for (int i = 1; i < n; i++) {
-        if (this->distanceMatrix[currentSolution[currentNodeIdx - 1]][i] + currentSolutionDist < bestSolutionDist) {
+        if (i == 12) {
+            int a = 1;
+        }
+        if (this->distanceMatrix[currentSolution[currentNodeIdx - 1]].size() > i &&
+            this->distanceMatrix[currentSolution[currentNodeIdx - 1]][i] + currentSolutionDist < bestSolutionDist) {
             if (!inSolution(i, currentSolution, currentNodeIdx)) {
                 currentSolution[currentNodeIdx] = i;
                 tspRecursion(currentSolution,
@@ -302,22 +324,6 @@ Graph::tspRecursion(std::vector<unsigned int> &currentSolution, double currentSo
     }
 }
 
-
-/**
- * A backtracking function for the Travelling Salesperson Problem, which looks for the hamiltonian cycle with the smallest length possible
- * Time Complexity: O(N!) (worst case)
- * @return The weight of the smallest path obtainable
- */
-std::pair<double, std::vector<unsigned int>> Graph::tspBT() {
-    unsigned int n = this->vertexSet.size();
-    std::vector<unsigned int> currentSolution(n + 1);
-    std::vector<unsigned int> path(n + 1);
-    currentSolution[0] = 0;
-    double bestSolutionDist = constants::INF;
-    tspRecursion(currentSolution, 0, 1, bestSolutionDist, path, n);
-    path[n] = 0;
-    return {bestSolutionDist, path};
-}
 
 std::pair<double, std::vector<unsigned int>> Graph::nearestInsertionLoop(unsigned int &start) {
     double distance = 0;

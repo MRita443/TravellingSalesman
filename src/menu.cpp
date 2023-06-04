@@ -28,16 +28,12 @@ void Menu::extractFileInfo(const std::string &edgesFilename, const std::string &
     } else if (edgesFilename.contains("Extra_Fully_Connected_Graphs")) {
         extractEdgesFile(edgesFilename, false);
     } else extractEdgesFile(edgesFilename);
-
-    if (!nodesFilename.empty()) {
-        extractNodesFile(nodesFilename);
-    }
+    
 /*    unsigned int start = 0;
     if (edgesFilename.contains("Real-world-Graphs"))
         start = dataRepository.getFurthestVertex().getId();
     auto result = graph.nearestInsertionLoop(start);*/
     auto start = std::chrono::high_resolution_clock::now();
-    graph.initDistanceMatrix();
     //auto start = graph.findVertex(dataRepository.getFurthestVertex().getId());
     //auto result = graph.nearestInsertionLoop(start);
     auto results = graph.tspBT();

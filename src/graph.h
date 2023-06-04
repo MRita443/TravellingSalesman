@@ -57,17 +57,6 @@ class Graph {
 
     double nearestInsertionLoop(unsigned int &start);
 
-    std::shared_ptr<Edge> findEdge(const unsigned int &v1id, const unsigned int &v2id) const;
-
-    std::pair<std::shared_ptr<Edge>, std::shared_ptr<Edge>>
-    getInsertionEdges(const std::list<Edge> &possibleEdges, const std::shared_ptr<Vertex> &newVertex) const;
-
-    void initDistanceMatrix();
-
-    std::vector<std::vector<double>> getDistanceMatrix();
-
-    bool
-    addBidirectionalEdge(const std::shared_ptr<Vertex> &source, const std::shared_ptr<Vertex> &dest, double length);
 };
 
 #endif //TRAVELLINGSALESMAN_GRAPH_H

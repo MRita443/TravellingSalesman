@@ -136,7 +136,6 @@ bool Graph::inSolution(unsigned int j, const unsigned int *solution, unsigned in
  * @param bestSolutionDist - Weight of the best path obtained so far
  * @param bestSolution - Array of the best path obtained so far
  * @param n - Number of nodes in the graph
- * @param dists - Distance Matrix for the graph
  */
 void
 Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
@@ -185,9 +184,6 @@ Graph::tspRecursion(unsigned int *currentSolution, double currentSolutionDist,
 /**
  * A backtracking function for the Travelling Salesperson Problem, which looks for the hamiltonian cycle with the smallest length possible
  * Time Complexity: O(N!) (worst case)
- * @param dists - Distance map for the graph used
- * @param n - Number of nodes
- * @param path - A vector to store the path taken
  * @return The weight of the smallest path obtainable
  */
 std::pair<double, unsigned int*> Graph::tspBT() {
@@ -268,7 +264,4 @@ Graph::getInsertionEdges(std::vector<unsigned int> tour, const unsigned int newV
     return result;
 }
 
-std::vector<std::vector<double>> Graph::getDistanceMatrix() {
-    return distanceMatrix;
-}
 

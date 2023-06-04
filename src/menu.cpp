@@ -411,8 +411,7 @@ unsigned int Menu::triangularApproximationMenu() {
             graph.clearGraph();
             dataRepository.clearData();
             extractFileInfo(edgesFilePath, nodesFilePath);
-
-           //TODO: 4.2 Triangular Approximation
+            graph.triangularTSPTour();
         }
     }
     return commandIn;

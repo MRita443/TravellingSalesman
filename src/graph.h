@@ -3,18 +3,28 @@
 
 #include <vector>
 #include <memory>
-#include "vertex.h"
+#include <list>
 #include "UFDS.h"
+#include "vertex.h"
 #include "coordinates.h"
 
 class Graph {
-  private:
+  protected:
+    struct tour_t {
+        double distance;
+        std::list<std::shared_ptr<Vertex>> course;
+    };
+
+    tour_t tour = {0, {}};
     unsigned int totalEdges = 0;
     std::vector<std::shared_ptr<Vertex>> vertexSet;    // vertex set
+    std::vector<std::vector<bool>> selectedEdges;
     std::vector<std::vector<double>> distanceMatrix;
 
   public:
     Graph();
+
+    [[nodiscard]] double findEdge(const std::shared_ptr<Vertex> &v1, const std::shared_ptr<Vertex> &v2) const;
 
     [[nodiscard]] unsigned int getNumVertex() const;
 
@@ -30,9 +40,15 @@ class Graph {
 
     void visitedDFS(const std::shared_ptr<Vertex> &source);
 
-    void dfsKruskalPath(const std::shared_ptr<Vertex> &source);
+    int addToTour(std::shared_ptr<Vertex> stop);
 
-    void kruskal();
+    int preorderMSTTraversal(std::shared_ptr<Vertex> source);
+
+    void prim();
+
+    void triangularTSPTour();
+
+    void printTour();
 
     unsigned int tspBT(const unsigned int **dists, unsigned int n, unsigned int *path);
 

@@ -468,10 +468,10 @@ unsigned int Menu::heuristicMenu() {
              << "Connected Graph 300: [8]" << endl;
         cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 400: [9]" << setw(COLUMN_WIDTH) << setfill(' ')
              << "Connected Graph 500: [A]" << setw(COLUMN_WIDTH)
-             << "Connected Graph 600: [B]" << endl;
-        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 700: [C]" << setw(COLUMN_WIDTH) << setfill(' ')
-             << "Connected Graph 800: [D]" << setw(COLUMN_WIDTH)
-             << "Connected Graph 900: [E]" << endl;
+             << "Connected Graph 600: [C]" << endl;
+        cout << setw(COLUMN_WIDTH) << setfill(' ') << "Connected Graph 700: [D]" << setw(COLUMN_WIDTH) << setfill(' ')
+             << "Connected Graph 800: [E]" << setw(COLUMN_WIDTH)
+             << "Connected Graph 900: [F]" << endl;
         cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
 
         cout << endl
@@ -526,19 +526,19 @@ unsigned int Menu::heuristicMenu() {
                 edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_500.csv";
                 break;
             }
-            case 'B': {
+            case 'C': {
                 edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_600.csv";
                 break;
             }
-            case 'C': {
+            case 'D': {
                 edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_700.csv";
                 break;
             }
-            case 'D': {
+            case 'E': {
                 edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_800.csv";
                 break;
             }
-            case 'E': {
+            case 'F': {
                 edgesFilePath = "../dataset/Extra_Fully_Connected_Graphs/edges_900.csv";
                 break;
             }

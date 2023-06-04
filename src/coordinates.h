@@ -8,10 +8,10 @@
 #include <cmath>
 
 class Coordinates {
-  private:
+private:
     double latitude;
     double longitude;
-  public:
+public:
     Coordinates(double latitude, double longitude);
 
     [[nodiscard]] double getLatitude() const;

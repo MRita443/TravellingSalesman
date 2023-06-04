@@ -11,6 +11,7 @@ double Coordinates::distanceTo(Coordinates point) const {
     double lat1 = this->latitude, lat2 = point.latitude;
     double lon1 = this->longitude, lon2 = point.longitude;
 
+    if ((lat1 == 0 && lon1 == 0) || (lat2 == 0 && lon2 == 0)) return -1;
 
     // distance between latitudes
     // and longitudes

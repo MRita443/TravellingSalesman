@@ -10,6 +10,7 @@
 #include <cmath>
 #include <random>
 #include <unordered_set>
+#include <chrono>
 #include "graph.h"
 #include "dataRepository.h"
 
@@ -50,3 +51,4 @@ class Menu {
 
 
 #endif //TRAVELLINGSALESMAN_MENU_H
+

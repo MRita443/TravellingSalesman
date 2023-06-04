@@ -1,11 +1,7 @@
 #ifndef TRAVELLINGSALESMAN_VERTEX_H
 #define TRAVELLINGSALESMAN_VERTEX_H
 
-#include <iostream>
-#include <vector>
-#include <queue>
 #include <limits>
-#include <algorithm>
 #include <unordered_set>
 #include <memory>
 #include "constants.h"
@@ -13,7 +9,7 @@
 
 class Vertex {
   public:
-    Vertex(const unsigned int &id, Coordinates c = {0, 0});
+    explicit Vertex(const unsigned int &id, Coordinates c = {0, 0});
 
     [[nodiscard]] unsigned int getId() const;
 
@@ -45,7 +41,7 @@ class Vertex {
     bool visited = false; // used by DFS, BFS, Prim ...
     unsigned int indegree = 0; // used by topsort
 
-    unsigned int path = -1; //Id of the preceding vertex
+    unsigned int path = -1; //ID of the preceding vertex
 };
 
 struct VertexPointerHash {
